@@ -17,8 +17,8 @@
 	<Configurations>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
+			OutputDirectory="obj\$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="obj\$(ConfigurationName)"
 			ConfigurationType="1"
 			>
 			<Tool
@@ -59,7 +59,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="qtmain.lib QtCore4.lib QtGui4.lib OgreMain.lib OIS.lib NxOgre.lib NxOgreOGRE3D.lib"
-				OutputFile="$(OutDir)\$(ProjectName).exe"
+				OutputFile="bin\$(ConfigurationName)\$(ProjectName).exe"
 				AdditionalLibraryDirectories="$(QTDIR)\lib;&quot;$(OGRE_SRC)\lib\release&quot;;&quot;$(OGRE_SRC)\Dependencies\lib\Release&quot;;.\Dependencies\NxOgre\sdk"
 				GenerateDebugInformation="false"
 				SubSystem="2"
@@ -88,8 +88,8 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
+			OutputDirectory="obj\$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="obj\$(ConfigurationName)"
 			ConfigurationType="1"
 			>
 			<Tool
@@ -131,7 +131,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="qtmaind.lib QtCored4.lib QtGuid4.lib OgreMain_d.lib OIS_d.lib NxOgre_Debug.lib NxOgreOGRE3D_Debug.lib"
-				OutputFile="$(OutDir)\$(ProjectName).exe"
+				OutputFile="bin\$(ConfigurationName)\$(ProjectName).exe"
 				AdditionalLibraryDirectories="$(QTDIR)\lib;&quot;$(OGRE_SRC)\lib\debug&quot;;&quot;$(OGRE_SRC)\Dependencies\lib\Debug&quot;;.\Dependencies\NxOgre\sdk"
 				GenerateDebugInformation="true"
 				SubSystem="2"
