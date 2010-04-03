@@ -1,7 +1,7 @@
-glob:Release/
-glob:Debug/
 glob:*.suo
 glob:*.ncb
 glob:ParticleFluids.vcproj.corei7.BennyWasty.user
 glob:Dependencies/
 glob:GeneratedFiles/
+glob:bin/
+glob:obj/
