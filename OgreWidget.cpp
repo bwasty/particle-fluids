@@ -1,6 +1,6 @@
 // from http://www.ogre3d.org/forums/viewtopic.php?p=367010&sid=5f3feeed878d9121b62dec0d82e7d19e#p367010 (orginally from Ogitor)
 #include "stdafx.h"
-#include "ogrewidget2.h"
+#include "ogrewidget.h"
 
 const QPoint     OgreWidget::invalidMousePoint(-1,-1);
 const Ogre::Real OgreWidget::turboModifier(10);
