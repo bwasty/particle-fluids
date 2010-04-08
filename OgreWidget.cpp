@@ -2,13 +2,16 @@
 #include "stdafx.h"
 #include "ogrewidget.h"
 
+#include <OGRE3DRenderSystem.h>
+#include <OGRE3DRenderable.h>
+
 const QPoint     OgreWidget::invalidMousePoint(-1,-1);
 const Ogre::Real OgreWidget::turboModifier(10);
 
 OgreWidget::OgreWidget(QWidget *parent)
 :QWidget(parent),
-ogreRoot(0), ogreSceneManager(0), ogreRenderWindow(0), ogreViewport(0),
-ogreCamera(0), oldPos(invalidMousePoint), selectedNode(0)
+mRoot(0), mSceneMgr(0), mRenderWindow(0), mViewport(0),
+mCamera(0), oldPos(invalidMousePoint), selectedNode(0)
 {
     setAttribute(Qt::WA_OpaquePaintEvent);
     setAttribute(Qt::WA_PaintOnScreen);
@@ -18,44 +21,45 @@ ogreCamera(0), oldPos(invalidMousePoint), selectedNode(0)
 
 OgreWidget::~OgreWidget()
 {
-    if(ogreRenderWindow)
+    if(mRenderWindow)
     {
-        ogreRenderWindow->removeAllViewports();
+        mRenderWindow->removeAllViewports();
     }
 
-    if(ogreRoot)
+    if(mRoot)
     {
-        ogreRoot->detachRenderTarget(ogreRenderWindow);
+        mRoot->detachRenderTarget(mRenderWindow);
 
-        if(ogreSceneManager)
+        if(mSceneMgr)
         {
-            ogreRoot->destroySceneManager(ogreSceneManager);
+            mRoot->destroySceneManager(mSceneMgr);
         }
     }
 
-    delete ogreRoot;
+    delete mRoot;
 }
 
 void OgreWidget::setBackgroundColor(QColor c)
 {
-    if(ogreViewport)
+    if(mViewport)
     {
         Ogre::ColourValue ogreColour;
         ogreColour.setAsARGB(c.rgba());
-        ogreViewport->setBackgroundColour(ogreColour);
+        mViewport->setBackgroundColour(ogreColour);
     }
 }
 
 void OgreWidget::setCameraPosition(const Ogre::Vector3 &pos)
 {
-        ogreCamera->setPosition(pos);
-        ogreCamera->lookAt(0,50,0);
+        mCamera->setPosition(pos);
+        mCamera->lookAt(0,50,0);
     update();
     emit cameraPositionChanged(pos);
 }
 
 void OgreWidget::keyPressEvent(QKeyEvent *e)
 {
+		// TODO: toggle visual debugger
         static QMap<int, Ogre::Vector3> keyCoordModificationMapping;
         static bool mappingInitialised = false;
 
@@ -73,9 +77,9 @@ void OgreWidget::keyPressEvent(QKeyEvent *e)
 
         QMap<int, Ogre::Vector3>::iterator keyPressed =
                 keyCoordModificationMapping.find(e->key());
-        if(keyPressed != keyCoordModificationMapping.end() && ogreCamera)
+        if(keyPressed != keyCoordModificationMapping.end() && mCamera)
         {
-                const Ogre::Vector3 &actualCamPos = ogreCamera->getPosition();
+                const Ogre::Vector3 &actualCamPos = mCamera->getPosition();
                 setCameraPosition(actualCamPos + keyPressed.value());
 
                 e->accept();
@@ -93,8 +97,8 @@ void OgreWidget::mouseDoubleClickEvent(QMouseEvent *e)
         Ogre::Real x = e->pos().x() / (float)width();
         Ogre::Real y = e->pos().y() / (float)height();
 
-        Ogre::Ray ray = ogreCamera->getCameraToViewportRay(x, y);
-        Ogre::RaySceneQuery *query = ogreSceneManager->createRayQuery(ray);
+        Ogre::Ray ray = mCamera->getCameraToViewportRay(x, y);
+        Ogre::RaySceneQuery *query = mSceneMgr->createRayQuery(ray);
         Ogre::RaySceneQueryResult &queryResult = query->execute();
         Ogre::RaySceneQueryResult::iterator queryResultIterator = queryResult.begin();
 
@@ -112,7 +116,7 @@ void OgreWidget::mouseDoubleClickEvent(QMouseEvent *e)
             selectedNode = 0;
         }
 
-        ogreSceneManager->destroyQuery(query);
+        mSceneMgr->destroyQuery(query);
 
         update();
         e->accept();
@@ -138,7 +142,7 @@ void OgreWidget::mouseMoveEvent(QMouseEvent *e)
         }
 
         Ogre::Vector3 camTranslation(deltaX, deltaY, 0);
-        const Ogre::Vector3 &actualCamPos = ogreCamera->getPosition();
+        const Ogre::Vector3 &actualCamPos = mCamera->getPosition();
         setCameraPosition(actualCamPos + camTranslation);
 
         oldPos = pos;
@@ -180,9 +184,9 @@ void OgreWidget::moveEvent(QMoveEvent *e)
 {
     QWidget::moveEvent(e);
 
-    if(e->isAccepted() && ogreRenderWindow)
+    if(e->isAccepted() && mRenderWindow)
     {
-        ogreRenderWindow->windowMovedOrResized();
+        mRenderWindow->windowMovedOrResized();
         update();
     }
 }
@@ -197,9 +201,9 @@ QPaintEngine* OgreWidget::paintEngine() const
 void OgreWidget::paintEvent(QPaintEvent *e)
 {
 	// TODO!: paintEvent: see other OgreWidget...frameRenderingQueued? also look renderOneFrame!
-    ogreRoot->_fireFrameStarted();
-        ogreRenderWindow->update();
-    ogreRoot->_fireFrameEnded();
+    mRoot->_fireFrameStarted();
+        mRenderWindow->update();
+    mRoot->_fireFrameEnded();
 
     e->accept();
 }
@@ -211,22 +215,22 @@ void OgreWidget::resizeEvent(QResizeEvent *e)
     if(e->isAccepted())
     {
         const QSize &newSize = e->size();
-        if(ogreRenderWindow)
+        if(mRenderWindow)
         {
-            ogreRenderWindow->resize(newSize.width(), newSize.height());
-            ogreRenderWindow->windowMovedOrResized();
+            mRenderWindow->resize(newSize.width(), newSize.height());
+            mRenderWindow->windowMovedOrResized();
         }
-        if(ogreCamera)
+        if(mCamera)
         {
             Ogre::Real aspectRatio = Ogre::Real(newSize.width()) / Ogre::Real(newSize.height());
-            ogreCamera->setAspectRatio(aspectRatio);
+            mCamera->setAspectRatio(aspectRatio);
         }
     }
 }
 
 void OgreWidget::showEvent(QShowEvent *e)
 {
-    if(!ogreRoot)
+    if(!mRoot)
     {
         initOgreSystem();
     }
@@ -243,7 +247,7 @@ void OgreWidget::wheelEvent(QWheelEvent *e)
         zTranslation.z *= turboModifier;
     }
 
-    const Ogre::Vector3 &actualCamPos = ogreCamera->getPosition();
+    const Ogre::Vector3 &actualCamPos = mCamera->getPosition();
     setCameraPosition(actualCamPos + zTranslation);
 
     e->accept();
@@ -251,38 +255,39 @@ void OgreWidget::wheelEvent(QWheelEvent *e)
 
 void OgreWidget::initOgreSystem()
 {
-    ogreRoot = new Ogre::Root();
+    mRoot = new Ogre::Root();
 
 	// TODO: config options: do better
-    Ogre::RenderSystem *renderSystem = ogreRoot->getRenderSystemByName("OpenGL Rendering Subsystem");
-    ogreRoot->setRenderSystem(renderSystem);
-    ogreRoot->initialise(false);
+    Ogre::RenderSystem *renderSystem = mRoot->getRenderSystemByName("OpenGL Rendering Subsystem");
+    mRoot->setRenderSystem(renderSystem);
+    mRoot->initialise(false);
 
-    ogreSceneManager = ogreRoot->createSceneManager(Ogre::ST_GENERIC);
+    mSceneMgr = mRoot->createSceneManager(Ogre::ST_GENERIC);
 
     Ogre::NameValuePairList viewConfig;
     Ogre::String widgetHandle;
     widgetHandle = Ogre::StringConverter::toString((size_t)((HWND)winId()));
     viewConfig["externalWindowHandle"] = widgetHandle;
-    ogreRenderWindow = ogreRoot->createRenderWindow("Ogre rendering window",
+    mRenderWindow = mRoot->createRenderWindow("Ogre rendering window",
                 width(), height(), false, &viewConfig);
 
-    ogreCamera = ogreSceneManager->createCamera("Camera");
+    mCamera = mSceneMgr->createCamera("Camera");
     Ogre::Vector3 camPos(0, 50,150);
-        ogreCamera->setPosition(camPos);
-        ogreCamera->lookAt(0,50,0);
+        mCamera->setPosition(camPos);
+        mCamera->lookAt(0,50,0);
     emit cameraPositionChanged(camPos);
 
 	// TODO: near/far clip
-    ogreViewport = ogreRenderWindow->addViewport(ogreCamera);
-    ogreViewport->setBackgroundColour(Ogre::ColourValue(0,0,0));
-    ogreCamera->setAspectRatio(Ogre::Real(width()) / Ogre::Real(height()));
+    mViewport = mRenderWindow->addViewport(mCamera);
+    mViewport->setBackgroundColour(Ogre::ColourValue(0,0,0));
+    mCamera->setAspectRatio(Ogre::Real(width()) / Ogre::Real(height()));
 
-        setupNLoadResources();
-        createScene();
+    setupResources();
+	setupNxOgre();
+    createScene();
 }
 
-void OgreWidget::setupNLoadResources() // TODO: setupNLoadResources -> setupResources?
+void OgreWidget::setupResources()
 {
         // Load resource paths from config file
         Ogre::ConfigFile cf;
@@ -310,12 +315,34 @@ void OgreWidget::setupNLoadResources() // TODO: setupNLoadResources -> setupReso
         Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
 }
 
+void OgreWidget::setupNxOgre() {
+	mPhysicsWorld = NxOgre::World::createWorld();
+	mPhysicsScene = mPhysicsWorld->createScene();
+	mPhysicsRenderSystem = new OGRE3DRenderSystem(mPhysicsScene);
+	
+	mPhysicsTimeController = NxOgre::TimeController::getSingleton();
+
+	mVisualDebugger = mPhysicsWorld->getVisualDebugger();
+	mVisualDebuggerRenderable = new OGRE3DRenderable(NxOgre::Enums::RenderableType_VisualDebugger);
+	mVisualDebugger->setRenderable(mVisualDebuggerRenderable);
+	mVisualDebuggerNode = mSceneMgr->getRootSceneNode()->createChildSceneNode();
+	mVisualDebuggerNode->attachObject(mVisualDebuggerRenderable);
+	mVisualDebugger->setVisualisationMode(NxOgre::Enums::VisualDebugger_ShowNone);
+
+	// Remote Debugger
+	mPhysicsWorld->getRemoteDebugger()->connect();
+}
+
 void OgreWidget::createScene()
 {
-        ogreSceneManager->setAmbientLight(Ogre::ColourValue(1,1,1));
+    mSceneMgr->setAmbientLight(Ogre::ColourValue(1,1,1));
 
-        Ogre::Entity *robotEntity = ogreSceneManager->createEntity("Axs", "axes.mesh");
-        Ogre::SceneNode *robotNode = ogreSceneManager->getRootSceneNode()->createChildSceneNode("RobotNode");
-        robotNode->attachObject(robotEntity);
-        robotNode->yaw(Ogre::Radian(Ogre::Degree(-90)));
+    Ogre::Entity *entity = mSceneMgr->createEntity("Axes", "axes.mesh");
+    Ogre::SceneNode *node = mSceneMgr->getRootSceneNode()->createChildSceneNode("node");
+    node->attachObject(entity);
+    //node->yaw(Ogre::Radian(Ogre::Degree(-90)));
+
+	// TODO: visual ground plane
+
+	// TODO: physical ground plane
 }

@@ -6,6 +6,16 @@
 #include <QtGui>
 #include <Ogre.h>
 
+namespace NxOgre {
+	class World;
+	class TimeController;
+	class Scene;
+	class VisualDebugger;
+}
+
+class OGRE3DRenderSystem;
+class OGRE3DRenderable;
+
 class OgreWidget : public QWidget
 {
     Q_OBJECT
@@ -38,22 +48,32 @@ protected:
 
 private:
     void initOgreSystem();
-        void setupNLoadResources();
-        void createScene();
+    void setupResources();
+	void setupNxOgre();
+    void createScene();
 
 private:
     static const Ogre::Real turboModifier;
     static const QPoint invalidMousePoint;
 
 private:
-    Ogre::Root          *ogreRoot;
-    Ogre::SceneManager  *ogreSceneManager;
-    Ogre::RenderWindow  *ogreRenderWindow;
-    Ogre::Viewport      *ogreViewport;
-    Ogre::Camera        *ogreCamera;
+    Ogre::Root          *mRoot;
+    Ogre::SceneManager  *mSceneMgr;
+    Ogre::RenderWindow  *mRenderWindow;
+    Ogre::Viewport      *mViewport;
+    Ogre::Camera        *mCamera;
 
     QPoint oldPos;
     Ogre::SceneNode *selectedNode;
+
+	// NxOgre
+	NxOgre::World* mPhysicsWorld;
+	NxOgre::TimeController* mPhysicsTimeController;
+	NxOgre::Scene* mPhysicsScene;
+	OGRE3DRenderSystem* mPhysicsRenderSystem;
+	NxOgre::VisualDebugger*	mVisualDebugger;
+	OGRE3DRenderable*		mVisualDebuggerRenderable;
+	Ogre::SceneNode*		mVisualDebuggerNode;
 };
 
 #endif OGREWIDGET_H
