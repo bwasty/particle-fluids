@@ -262,16 +262,7 @@ void OgreWidget::initOgreSystem()
 
     Ogre::NameValuePairList viewConfig;
     Ogre::String widgetHandle;
-#ifdef Q_WS_WIN
     widgetHandle = Ogre::StringConverter::toString((size_t)((HWND)winId()));
-#else
-    QWidget *q_parent = dynamic_cast <QWidget *> (parent());
-    QX11Info xInfo = x11Info();
-
-    widgetHandle = Ogre::StringConverter::toString ((unsigned long)xInfo.display()) +
-        ":" + Ogre::StringConverter::toString ((unsigned int)xInfo.screen()) +
-        ":" + Ogre::StringConverter::toString ((unsigned long)q_parent->winId());
-#endif
     viewConfig["externalWindowHandle"] = widgetHandle;
     ogreRenderWindow = ogreRoot->createRenderWindow("Ogre rendering window",
                 width(), height(), false, &viewConfig);
@@ -310,16 +301,8 @@ void OgreWidget::setupNLoadResources() // TODO: setupNLoadResources -> setupReso
                 {
                         typeName = i->first;
                         archName = i->second;
-#if OGRE_PLATFORM == OGRE_PLATFORM_APPLE
-                        // OS X does not set the working directory relative to the app,
-                        // In order to make things portable on OS X we need to provide
-                        // the loading with it's own bundle path location
-                        Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
-                                Ogre::String(macBundlePath() + "/" + archName), typeName, secName);
-#else
                         Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
                                 archName, typeName, secName);
-#endif
                 }
         }
 
