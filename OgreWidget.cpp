@@ -1,173 +1,338 @@
-// from http://projectify.blogspot.com/2009/06/qt-ogre-vs2008-express.html
+// from http://www.ogre3d.org/forums/viewtopic.php?p=367010&sid=5f3feeed878d9121b62dec0d82e7d19e#p367010 (orginally from Ogitor)
 #include "stdafx.h"
-#include "OgreWidget.h"
+#include "ogrewidget2.h"
 
-#pragma warning( push )
-#pragma warning( disable : 4100 )
+const QPoint     OgreWidget::invalidMousePoint(-1,-1);
+const Ogre::Real OgreWidget::turboModifier(10);
 
-#include <OgreRenderWindow.h>
-#include <OgreRoot.h>
-#include <OgreStringConverter.h>
-#include <OgreRenderSystem.h>
-
-#pragma warning( pop ) 
-
-#include <windows.h>
-
-
-namespace QtOgre
+OgreWidget::OgreWidget(QWidget *parent)
+:QWidget(parent),
+ogreRoot(0), ogreSceneManager(0), ogreRenderWindow(0), ogreViewport(0),
+ogreCamera(0), oldPos(invalidMousePoint), selectedNode(0)
 {
-	OgreWidget::OgreWidget(QWidget* pParentWidget, Qt::WindowFlags f)
-	:QWidget(pParentWidget, f | Qt::MSWindowsOwnDC)
-	,m_pOgreRenderWindow(0)
-	,m_pParentWidget(pParentWidget)
-	{		
-		QWidget *q_parent = dynamic_cast <QWidget *> (parent());
-		
-		//It is possible you might need one of these on other platforms
-		//setAttribute(Qt::WA_PaintOnScreen);
-		//setAttribute(Qt::WA_NoSystemBackground);
-		//setAttribute(Qt::WA_OpaquePaintEvent);
-		//setAutoFillBackground( false );
+    setAttribute(Qt::WA_OpaquePaintEvent);
+    setAttribute(Qt::WA_PaintOnScreen);
+    setMinimumSize(240,240);
+        setFocusPolicy(Qt::ClickFocus);
+}
 
-		//Create the ogre root singleton
-		m_Root = new Ogre::Root();
-		//Initialise the ogre system, select the render plugins (if OpenGL is present, OpenGL is selected)
-		initialiseOgre();
+OgreWidget::~OgreWidget()
+{
+    if(ogreRenderWindow)
+    {
+        ogreRenderWindow->removeAllViewports();
+    }
 
-		//Set window parameters
-		Ogre::NameValuePairList ogreWindowParams;
-		//Full Screen Anti Aliasing
-		ogreWindowParams["FSAA"] = "8";
-		//Other code needed for Linux
-		ogreWindowParams["parentWindowHandle"] = Ogre::StringConverter::toString((unsigned long)q_parent->winId());
+    if(ogreRoot)
+    {
+        ogreRoot->detachRenderTarget(ogreRenderWindow);
 
-		//Finally create our window.
-		m_pOgreRenderWindow = Ogre::Root::getSingletonPtr()->createRenderWindow("OgreWindow", width(), height(), false, &ogreWindowParams);
+        if(ogreSceneManager)
+        {
+            ogreRoot->destroySceneManager(ogreSceneManager);
+        }
+    }
 
-		WId window_id;
-		//Other code need for linux
-		m_pOgreRenderWindow->getCustomAttribute ("HWND", &window_id);
+    delete ogreRoot;
+}
 
-		// Take over the ogre created window.
-		QWidget::create (window_id);
+void OgreWidget::setBackgroundColor(QColor c)
+{
+    if(ogreViewport)
+    {
+        Ogre::ColourValue ogreColour;
+        ogreColour.setAsARGB(c.rgba());
+        ogreViewport->setBackgroundColour(ogreColour);
+    }
+}
 
-		moveAndResize();
+void OgreWidget::setCameraPosition(const Ogre::Vector3 &pos)
+{
+        ogreCamera->setPosition(pos);
+        ogreCamera->lookAt(0,50,0);
+    update();
+    emit cameraPositionChanged(pos);
+}
 
-		//Connect a timer to the update method
-		m_UpdateTimer = new QTimer;
-		QObject::connect(m_UpdateTimer, SIGNAL(timeout()), this, SLOT(update()));
-		//Reducing the timer should give a higher framerate
-		m_UpdateTimer->start(40);
-	}
+void OgreWidget::keyPressEvent(QKeyEvent *e)
+{
+        static QMap<int, Ogre::Vector3> keyCoordModificationMapping;
+        static bool mappingInitialised = false;
 
-	OgreWidget::~OgreWidget()
-	{
-	}
+        if(!mappingInitialised)
+        {
+                keyCoordModificationMapping[Qt::Key_W]         = Ogre::Vector3( 0, 0,-5);
+                keyCoordModificationMapping[Qt::Key_S]         = Ogre::Vector3( 0, 0, 5);
+                keyCoordModificationMapping[Qt::Key_A]         = Ogre::Vector3(-5, 0, 0);
+                keyCoordModificationMapping[Qt::Key_D]         = Ogre::Vector3( 5, 0, 0);
+                keyCoordModificationMapping[Qt::Key_PageUp]   = Ogre::Vector3( 0, 5, 0);
+                keyCoordModificationMapping[Qt::Key_PageDown] = Ogre::Vector3( 0,-5, 0);
 
-	Ogre::RenderWindow* OgreWidget::getOgreRenderWindow() const
-	{
-		return m_pOgreRenderWindow;
-	}
+                mappingInitialised = true;
+        }
 
-	/* Adding this was the solution to a flickering issue for someone using Qt and Ogre
-	QPaintEngine *OgreWidget:: paintEngine() const
-	{
-		return 0;
-	}*/
+        QMap<int, Ogre::Vector3>::iterator keyPressed =
+                keyCoordModificationMapping.find(e->key());
+        if(keyPressed != keyCoordModificationMapping.end() && ogreCamera)
+        {
+                const Ogre::Vector3 &actualCamPos = ogreCamera->getPosition();
+                setCameraPosition(actualCamPos + keyPressed.value());
 
-	void OgreWidget::paintEvent(QPaintEvent* /*evt*/)
-	{
-		Ogre::Root::getSingleton()._fireFrameStarted();
-		m_pOgreRenderWindow->update();
-		Ogre::Root::getSingleton()._fireFrameRenderingQueued();
-		Ogre::Root::getSingleton()._fireFrameEnded();
-	}
+                e->accept();
+        }
+    else
+    {
+        e->ignore();
+    }
+}
 
-	void OgreWidget::resizeEvent(QResizeEvent* /*evt*/)
-	{
-		moveAndResize();
-	}
+void OgreWidget::mouseDoubleClickEvent(QMouseEvent *e)
+{
+    if(e->buttons().testFlag(Qt::LeftButton))
+    {
+        Ogre::Real x = e->pos().x() / (float)width();
+        Ogre::Real y = e->pos().y() / (float)height();
 
-	void OgreWidget::moveAndResize()
-	{
-		m_pOgreRenderWindow->reposition (x(),y());
-		m_pOgreRenderWindow->resize(width(), height());
-		m_pOgreRenderWindow->windowMovedOrResized();
+        Ogre::Ray ray = ogreCamera->getCameraToViewportRay(x, y);
+        Ogre::RaySceneQuery *query = ogreSceneManager->createRayQuery(ray);
+        Ogre::RaySceneQueryResult &queryResult = query->execute();
+        Ogre::RaySceneQueryResult::iterator queryResultIterator = queryResult.begin();
 
-		for(int ct = 0; ct < m_pOgreRenderWindow->getNumViewports(); ++ct)
-		{
-			Ogre::Viewport* pViewport = m_pOgreRenderWindow->getViewport(ct);
-			Ogre::Camera* pCamera = pViewport->getCamera();
-			pCamera->setAspectRatio(static_cast<Ogre::Real>(pViewport->getActualWidth()) / static_cast<Ogre::Real>(pViewport->getActualHeight()));
-		}
-	}
+        if(queryResultIterator != queryResult.end())
+        {
+            if(queryResultIterator->movable)
+            {
+                selectedNode = queryResultIterator->movable->getParentSceneNode();
+                selectedNode->showBoundingBox(true);
+            }
+        }
+        else
+        {
+            selectedNode->showBoundingBox(false);
+            selectedNode = 0;
+        }
 
-	void OgreWidget::initialiseOgre(void)
-	{			
-		//This will choose the OpenGL rendersystem as default
-		//and will try to use Direct3D if loading OpenGL failed
-		Ogre::RenderSystem* OpenGLRenderSystem = 0;
-		Ogre::RenderSystem* Direct3D9RenderSystem = 0;
+        ogreSceneManager->destroyQuery(query);
 
-		try
-		{
-			#if defined(_DEBUG)			
-				m_Root->loadPlugin("RenderSystem_GL_d");
-			#else
-				m_Root->loadPlugin("RenderSystem_GL");		
-			#endif
-		}
-		catch(...)
-		{
-			qWarning("Failed to load OpenGL plugin");
-		}
-		try
-		{
-			#if defined(_DEBUG)			
-				m_Root->loadPlugin("RenderSystem_Direct3D9_d");
-			#else
-				m_Root->loadPlugin("RenderSystem_Direct3D9");		
-			#endif
-		}
-		catch(...)
-		{
-			qWarning("Failed to load Direct3D9 plugin");
-		}
+        update();
+        e->accept();
+    }
+    else
+    {
+        e->ignore();
+    }
+}
 
-		Ogre::RenderSystemList list = Ogre::Root::getSingletonPtr()->getAvailableRenderers();
-		Ogre::RenderSystemList::iterator i = list.begin();
+void OgreWidget::mouseMoveEvent(QMouseEvent *e)
+{
+    if(e->buttons().testFlag(Qt::LeftButton) && oldPos != invalidMousePoint)
+    {
+        const QPoint &pos = e->pos();
+        Ogre::Real deltaX = pos.x() - oldPos.x();
+        Ogre::Real deltaY = pos.y() - oldPos.y();
 
-		while (i != list.end())
-		{
-			if ((*i)->getName() == "OpenGL Rendering Subsystem")
-			{
-				OpenGLRenderSystem = *i;
-			}
-			if ((*i)->getName() == "Direct3D9 Rendering Subsystem")
-			{
-				Direct3D9RenderSystem = *i;
-			}
-			i++;
-		}
+        if(e->modifiers().testFlag(Qt::ControlModifier))
+        {
+            deltaX *= turboModifier;
+            deltaY *= turboModifier;
+        }
 
-		if(!(OpenGLRenderSystem || Direct3D9RenderSystem))
-		{
-			qCritical("No rendering subsystems found");
-			exit(0);
-		}
+        Ogre::Vector3 camTranslation(deltaX, deltaY, 0);
+        const Ogre::Vector3 &actualCamPos = ogreCamera->getPosition();
+        setCameraPosition(actualCamPos + camTranslation);
 
-		if(OpenGLRenderSystem != 0)
-		{
-			m_ActiveRenderSystem = OpenGLRenderSystem;
-		}
-		else if(Direct3D9RenderSystem != 0)
-		{
-			m_ActiveRenderSystem = Direct3D9RenderSystem;
-		}
-		
-		Ogre::Root::getSingletonPtr()->setRenderSystem(m_ActiveRenderSystem);
+        oldPos = pos;
+        e->accept();
+    }
+    else
+    {
+        e->ignore();
+    }
+}
 
-		Ogre::Root::getSingletonPtr()->initialise(false);
-	}
+void OgreWidget::mousePressEvent(QMouseEvent *e)
+{
+    if(e->buttons().testFlag(Qt::LeftButton))
+    {
+        oldPos = e->pos();
+        e->accept();
+    }
+    else
+    {
+        e->ignore();
+    }
+}
+
+void OgreWidget::mouseReleaseEvent(QMouseEvent *e)
+{
+    if(!e->buttons().testFlag(Qt::LeftButton))
+    {
+        oldPos = QPoint(invalidMousePoint);
+        e->accept();
+    }
+    else
+    {
+        e->ignore();
+    }
+}
+
+void OgreWidget::moveEvent(QMoveEvent *e)
+{
+    QWidget::moveEvent(e);
+
+    if(e->isAccepted() && ogreRenderWindow)
+    {
+        ogreRenderWindow->windowMovedOrResized();
+        update();
+    }
+}
+
+QPaintEngine* OgreWidget::paintEngine() const
+{
+    // We don't want another paint engine to get in the way for our Ogre based paint engine.
+    // So we return nothing.
+    return NULL;
+}
+
+void OgreWidget::paintEvent(QPaintEvent *e)
+{
+	// TODO!: paintEvent: see other OgreWidget...frameRenderingQueued? also look renderOneFrame!
+    ogreRoot->_fireFrameStarted();
+        ogreRenderWindow->update();
+    ogreRoot->_fireFrameEnded();
+
+    e->accept();
+}
+
+void OgreWidget::resizeEvent(QResizeEvent *e)
+{
+    QWidget::resizeEvent(e);
+
+    if(e->isAccepted())
+    {
+        const QSize &newSize = e->size();
+        if(ogreRenderWindow)
+        {
+            ogreRenderWindow->resize(newSize.width(), newSize.height());
+            ogreRenderWindow->windowMovedOrResized();
+        }
+        if(ogreCamera)
+        {
+            Ogre::Real aspectRatio = Ogre::Real(newSize.width()) / Ogre::Real(newSize.height());
+            ogreCamera->setAspectRatio(aspectRatio);
+        }
+    }
+}
+
+void OgreWidget::showEvent(QShowEvent *e)
+{
+    if(!ogreRoot)
+    {
+        initOgreSystem();
+    }
+
+    QWidget::showEvent(e);
+}
+
+void OgreWidget::wheelEvent(QWheelEvent *e)
+{
+    Ogre::Vector3 zTranslation(0,0, -e->delta() / 60);
+
+    if(e->modifiers().testFlag(Qt::ControlModifier))
+    {
+        zTranslation.z *= turboModifier;
+    }
+
+    const Ogre::Vector3 &actualCamPos = ogreCamera->getPosition();
+    setCameraPosition(actualCamPos + zTranslation);
+
+    e->accept();
+}
+
+void OgreWidget::initOgreSystem()
+{
+    ogreRoot = new Ogre::Root();
+
+	// TODO: config options: do better
+    Ogre::RenderSystem *renderSystem = ogreRoot->getRenderSystemByName("OpenGL Rendering Subsystem");
+    ogreRoot->setRenderSystem(renderSystem);
+    ogreRoot->initialise(false);
+
+    ogreSceneManager = ogreRoot->createSceneManager(Ogre::ST_GENERIC);
+
+    Ogre::NameValuePairList viewConfig;
+    Ogre::String widgetHandle;
+#ifdef Q_WS_WIN
+    widgetHandle = Ogre::StringConverter::toString((size_t)((HWND)winId()));
+#else
+    QWidget *q_parent = dynamic_cast <QWidget *> (parent());
+    QX11Info xInfo = x11Info();
+
+    widgetHandle = Ogre::StringConverter::toString ((unsigned long)xInfo.display()) +
+        ":" + Ogre::StringConverter::toString ((unsigned int)xInfo.screen()) +
+        ":" + Ogre::StringConverter::toString ((unsigned long)q_parent->winId());
+#endif
+    viewConfig["externalWindowHandle"] = widgetHandle;
+    ogreRenderWindow = ogreRoot->createRenderWindow("Ogre rendering window",
+                width(), height(), false, &viewConfig);
+
+    ogreCamera = ogreSceneManager->createCamera("Camera");
+    Ogre::Vector3 camPos(0, 50,150);
+        ogreCamera->setPosition(camPos);
+        ogreCamera->lookAt(0,50,0);
+    emit cameraPositionChanged(camPos);
+
+	// TODO: near/far clip
+    ogreViewport = ogreRenderWindow->addViewport(ogreCamera);
+    ogreViewport->setBackgroundColour(Ogre::ColourValue(0,0,0));
+    ogreCamera->setAspectRatio(Ogre::Real(width()) / Ogre::Real(height()));
+
+        setupNLoadResources();
+        createScene();
+}
+
+void OgreWidget::setupNLoadResources() // TODO: setupNLoadResources -> setupResources?
+{
+        // Load resource paths from config file
+        Ogre::ConfigFile cf;
+        cf.load("resources.cfg"); 
+
+        // Go through all sections & settings in the file
+        Ogre::ConfigFile::SectionIterator seci = cf.getSectionIterator();
+
+        Ogre::String secName, typeName, archName;
+        while (seci.hasMoreElements())
+        {
+                secName = seci.peekNextKey();
+                Ogre::ConfigFile::SettingsMultiMap *settings = seci.getNext();
+                Ogre::ConfigFile::SettingsMultiMap::iterator i;
+                for (i = settings->begin(); i != settings->end(); ++i)
+                {
+                        typeName = i->first;
+                        archName = i->second;
+#if OGRE_PLATFORM == OGRE_PLATFORM_APPLE
+                        // OS X does not set the working directory relative to the app,
+                        // In order to make things portable on OS X we need to provide
+                        // the loading with it's own bundle path location
+                        Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+                                Ogre::String(macBundlePath() + "/" + archName), typeName, secName);
+#else
+                        Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+                                archName, typeName, secName);
+#endif
+                }
+        }
+
+        // Initialise, parse scripts etc
+        Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
+}
+
+void OgreWidget::createScene()
+{
+        ogreSceneManager->setAmbientLight(Ogre::ColourValue(1,1,1));
+
+        Ogre::Entity *robotEntity = ogreSceneManager->createEntity("Axs", "axes.mesh");
+        Ogre::SceneNode *robotNode = ogreSceneManager->getRootSceneNode()->createChildSceneNode("RobotNode");
+        robotNode->attachObject(robotEntity);
+        robotNode->yaw(Ogre::Radian(Ogre::Degree(-90)));
 }
