@@ -59,31 +59,39 @@ void OgreWidget::setCameraPosition(const Ogre::Vector3 &pos)
 
 void OgreWidget::keyPressEvent(QKeyEvent *e)
 {
-		// TODO: toggle visual debugger
-        static QMap<int, Ogre::Vector3> keyCoordModificationMapping;
-        static bool mappingInitialised = false;
+    static QMap<int, Ogre::Vector3> keyCoordModificationMapping;
+    static bool mappingInitialised = false;
 
-        if(!mappingInitialised)
-        {
-                keyCoordModificationMapping[Qt::Key_W]         = Ogre::Vector3( 0, 0,-5);
-                keyCoordModificationMapping[Qt::Key_S]         = Ogre::Vector3( 0, 0, 5);
-                keyCoordModificationMapping[Qt::Key_A]         = Ogre::Vector3(-5, 0, 0);
-                keyCoordModificationMapping[Qt::Key_D]         = Ogre::Vector3( 5, 0, 0);
-                keyCoordModificationMapping[Qt::Key_PageUp]   = Ogre::Vector3( 0, 5, 0);
-                keyCoordModificationMapping[Qt::Key_PageDown] = Ogre::Vector3( 0,-5, 0);
+    if(!mappingInitialised)
+    {
+            keyCoordModificationMapping[Qt::Key_W]         = Ogre::Vector3( 0, 0,-5);
+            keyCoordModificationMapping[Qt::Key_S]         = Ogre::Vector3( 0, 0, 5);
+            keyCoordModificationMapping[Qt::Key_A]         = Ogre::Vector3(-5, 0, 0);
+            keyCoordModificationMapping[Qt::Key_D]         = Ogre::Vector3( 5, 0, 0);
+            keyCoordModificationMapping[Qt::Key_PageUp]   = Ogre::Vector3( 0, 5, 0);
+            keyCoordModificationMapping[Qt::Key_PageDown] = Ogre::Vector3( 0,-5, 0);
 
-                mappingInitialised = true;
-        }
+            mappingInitialised = true;
+    }
 
-        QMap<int, Ogre::Vector3>::iterator keyPressed =
-                keyCoordModificationMapping.find(e->key());
-        if(keyPressed != keyCoordModificationMapping.end() && mCamera)
-        {
-                const Ogre::Vector3 &actualCamPos = mCamera->getPosition();
-                setCameraPosition(actualCamPos + keyPressed.value());
+    QMap<int, Ogre::Vector3>::iterator keyPressed =
+            keyCoordModificationMapping.find(e->key());
+    if(keyPressed != keyCoordModificationMapping.end() && mCamera)
+    {
+            const Ogre::Vector3 &actualCamPos = mCamera->getPosition();
+            setCameraPosition(actualCamPos + keyPressed.value());
 
-                e->accept();
-        }
+            e->accept();
+    }
+	else if (e->key() == Qt::Key_P) {
+		// TODO: visual debugger: Button, enable remote debugger
+		static bool visualDebuggerOn = false;
+		if (!visualDebuggerOn)
+			mVisualDebugger->setVisualisationMode(NxOgre::Enums::VisualDebugger_ShowAll);
+		else
+			mVisualDebugger->setVisualisationMode(NxOgre::Enums::VisualDebugger_ShowNone);
+		visualDebuggerOn = !visualDebuggerOn;
+	}
     else
     {
         e->ignore();
@@ -200,7 +208,7 @@ QPaintEngine* OgreWidget::paintEngine() const
 
 void OgreWidget::paintEvent(QPaintEvent *e)
 {
-	// TODO!: paintEvent: see other OgreWidget...frameRenderingQueued? also look renderOneFrame!
+	// TODO: paintEvent: see other OgreWidget...frameRenderingQueued? also look renderOneFrame!
     mRoot->_fireFrameStarted();
         mRenderWindow->update();
     mRoot->_fireFrameEnded();
