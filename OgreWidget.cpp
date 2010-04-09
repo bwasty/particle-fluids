@@ -210,8 +210,7 @@ QPaintEngine* OgreWidget::paintEngine() const
 
 void OgreWidget::paintEvent(QPaintEvent *e)
 {
-	// TODO: how often does paintevent get called? need timer?
-
+	// TODO!!!: timer for rendering/physics update
 	// TODO: paintEvent: see other OgreWidget...frameRenderingQueued? also look renderOneFrame!
     mRoot->_fireFrameStarted();
     mRenderWindow->update();
@@ -290,9 +289,9 @@ void OgreWidget::initOgreSystem()
                 width(), height(), false, &viewConfig);
 
     mCamera = mSceneMgr->createCamera("Camera");
-    Ogre::Vector3 camPos(0, 50,150);
+    Ogre::Vector3 camPos(0, 10,30);
         mCamera->setPosition(camPos);
-        mCamera->lookAt(0,50,0);
+        mCamera->lookAt(0,0,0);
     emit cameraPositionChanged(camPos);
 
 	// TODO: near/far clip
@@ -378,7 +377,33 @@ void OgreWidget::createScene()
 	groundEnt->setCastShadows(false);
 
 	// physical ground plane
-	NxOgre::PlaneGeometryDescription desc;
-	mPhysicsScene->createSceneGeometry(desc);
+	NxOgre::PlaneGeometryDescription pdesc;
+	mPhysicsScene->createSceneGeometry(pdesc);
 
+
+	// Fluid
+	NxOgre::FluidDescription desc;
+	desc.mMaxParticles = 10000;
+	desc.mKernelRadiusMultiplier = 2.0f;
+	desc.mRestParticlesPerMetre = 7.0f;
+	desc.mMotionLimitMultiplier = 3.0f;
+	desc.mPacketSizeMultiplier = 8;
+	desc.mCollisionDistanceMultiplier = 0.1f;
+	desc.mStiffness = 50.0f;
+	desc.mViscosity = 40.0f;
+	desc.mRestDensity = 1000.0f;
+	desc.mSimulationMethod = NxOgre::Enums::FluidSimulationMethod_SPH;
+	desc.mFlags |= NxOgre::Enums::FluidFlags_Hardware;
+	  
+	NxOgre::Fluid* fluid = mPhysicsRenderSystem->createFluid(desc, "BaseWhiteNoLighting", OGRE3DFluidType_Velocity);
+
+	NxOgre::FluidEmitterDescription edesc;
+	edesc.mPose.set(0, 5, 0);
+	edesc.mParticleLifetime = 4.5;
+	edesc.mRate = 250;
+	edesc.mType = NxOgre::Enums::FluidEmitterType_Pressure;
+	edesc.mRandomAngle = 0.25f;
+	edesc.mRandomPosition.set(0.25f, 0.25f, 0.25f);
+	edesc.mReplusionCoefficient = 0.02f;
+	NxOgre::FluidEmitter* emitter = fluid->createEmitter(edesc);
 }
