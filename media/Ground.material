@@ -1,0 +1,11 @@
+material Ground
+{
+	technique
+	{
+		pass
+		{
+			ambient 0.600000 0.500000 0.200000 1.0
+			diffuse 0.600000 0.500000 0.200000 1.0
+		}
+	}
+}

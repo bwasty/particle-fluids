@@ -5,6 +5,8 @@
 #include <OGRE3DRenderSystem.h>
 #include <OGRE3DRenderable.h>
 
+using namespace Ogre;
+
 const QPoint     OgreWidget::invalidMousePoint(-1,-1);
 const Ogre::Real OgreWidget::turboModifier(10);
 
@@ -208,9 +210,17 @@ QPaintEngine* OgreWidget::paintEngine() const
 
 void OgreWidget::paintEvent(QPaintEvent *e)
 {
+	// TODO: how often does paintevent get called? need timer?
+
 	// TODO: paintEvent: see other OgreWidget...frameRenderingQueued? also look renderOneFrame!
     mRoot->_fireFrameStarted();
-        mRenderWindow->update();
+    mRenderWindow->update();
+
+	// TODO: better place? (PhysX update)
+	mPhysicsTimeController->advance(1.0f/60.0f);///evt.timeSinceLastFrame*mSimulationSpeed);//1.0f/60.0f);
+	mVisualDebugger->draw();
+	mVisualDebuggerNode->needUpdate();
+
     mRoot->_fireFrameEnded();
 
     e->accept();
@@ -345,12 +355,30 @@ void OgreWidget::createScene()
 {
     mSceneMgr->setAmbientLight(Ogre::ColourValue(1,1,1));
 
-    Ogre::Entity *entity = mSceneMgr->createEntity("Axes", "axes.mesh");
-    Ogre::SceneNode *node = mSceneMgr->getRootSceneNode()->createChildSceneNode("node");
-    node->attachObject(entity);
+	//Light *light = mSceneMgr->createLight("SunLight");
+	//light->setType(Light::LT_DIRECTIONAL);
+	//light->setDirection(-Vector3::UNIT_Y+Vector3::UNIT_X*0.2);
+	//light->setDiffuseColour(1.0, 1.0, 1.0);
+	//light->setSpecularColour(1.0, 1.0, 1.0);
+
+    //Ogre::Entity *entity = mSceneMgr->createEntity("Axes", "axes.mesh");
+    //Ogre::SceneNode *node = mSceneMgr->getRootSceneNode()->createChildSceneNode("node");
+    //node->attachObject(entity);
     //node->yaw(Ogre::Radian(Ogre::Degree(-90)));
 
-	// TODO: visual ground plane
+	// visual ground plane
+	Plane plane(Vector3::UNIT_Y, 0);
+	MeshManager::getSingleton().createPlane("ground",
+		ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, plane,
+		500,500,20,20,true,1,5,5,Vector3::UNIT_Z);
 
-	// TODO: physical ground plane
+	Entity* groundEnt = mSceneMgr->createEntity("GroundEntity", "ground");
+	mSceneMgr->getRootSceneNode()->createChildSceneNode()->attachObject(groundEnt);
+	groundEnt->setMaterialName("Ground");
+	groundEnt->setCastShadows(false);
+
+	// physical ground plane
+	NxOgre::PlaneGeometryDescription desc;
+	mPhysicsScene->createSceneGeometry(desc);
+
 }
