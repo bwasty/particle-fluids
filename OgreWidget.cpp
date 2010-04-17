@@ -56,7 +56,7 @@ void OgreWidget::setCameraPosition(const Ogre::Vector3 &pos)
         mCamera->setPosition(pos);
         mCamera->lookAt(0,50,0);
     update();
-    emit cameraPositionChanged(pos);
+    //emit cameraPositionChanged(pos);
 }
 
 void OgreWidget::keyPressEvent(QKeyEvent *e)
@@ -105,31 +105,31 @@ void OgreWidget::mouseDoubleClickEvent(QMouseEvent *e)
 {
     if(e->buttons().testFlag(Qt::LeftButton))
     {
-        Ogre::Real x = e->pos().x() / (float)width();
-        Ogre::Real y = e->pos().y() / (float)height();
+        //Ogre::Real x = e->pos().x() / (float)width();
+        //Ogre::Real y = e->pos().y() / (float)height();
 
-        Ogre::Ray ray = mCamera->getCameraToViewportRay(x, y);
-        Ogre::RaySceneQuery *query = mSceneMgr->createRayQuery(ray);
-        Ogre::RaySceneQueryResult &queryResult = query->execute();
-        Ogre::RaySceneQueryResult::iterator queryResultIterator = queryResult.begin();
+        //Ogre::Ray ray = mCamera->getCameraToViewportRay(x, y);
+        //Ogre::RaySceneQuery *query = mSceneMgr->createRayQuery(ray);
+        //Ogre::RaySceneQueryResult &queryResult = query->execute();
+        //Ogre::RaySceneQueryResult::iterator queryResultIterator = queryResult.begin();
 
-        if(queryResultIterator != queryResult.end())
-        {
-            if(queryResultIterator->movable)
-            {
-                selectedNode = queryResultIterator->movable->getParentSceneNode();
-                selectedNode->showBoundingBox(true);
-            }
-        }
-        else
-        {
-            selectedNode->showBoundingBox(false);
-            selectedNode = 0;
-        }
+        //if(queryResultIterator != queryResult.end())
+        //{
+        //    if(queryResultIterator->movable)
+        //    {
+        //        selectedNode = queryResultIterator->movable->getParentSceneNode();
+        //        selectedNode->showBoundingBox(true);
+        //    }
+        //}
+        //else
+        //{
+        //    selectedNode->showBoundingBox(false);
+        //    selectedNode = 0;
+        //}
 
-        mSceneMgr->destroyQuery(query);
+        //mSceneMgr->destroyQuery(query);
 
-        update();
+        //update();
         e->accept();
     }
     else
@@ -305,7 +305,7 @@ void OgreWidget::initOgreSystem()
     Ogre::Vector3 camPos(0, 10,30);
         mCamera->setPosition(camPos);
         mCamera->lookAt(0,0,0);
-    emit cameraPositionChanged(camPos);
+    //emit cameraPositionChanged(camPos);
 
 	// TODO: near/far clip
     mViewport = mRenderWindow->addViewport(mCamera);

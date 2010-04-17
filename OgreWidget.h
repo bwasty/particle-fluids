@@ -37,7 +37,7 @@ public slots:
     void setCameraPosition(const Ogre::Vector3 &pos);
 
 signals:
-    void cameraPositionChanged(const Ogre::Vector3 &pos);
+    //void cameraPositionChanged(const Ogre::Vector3 &pos);
 
 protected:
     virtual void keyPressEvent(QKeyEvent *e);
