@@ -16,7 +16,7 @@ namespace NxOgre {
 class OGRE3DRenderSystem;
 class OGRE3DRenderable;
 
-class OgreWidget : public QWidget
+class OgreWidget : public QWidget, public Ogre::FrameListener
 {
     Q_OBJECT
 
@@ -26,6 +26,11 @@ public:
 
     // Override QWidget::paintEngine to return NULL
     QPaintEngine* paintEngine() const; // Turn off QTs paint engine for the Ogre widget.
+
+	// FrameListener
+	//bool frameStarted(const Ogre::FrameEvent &evt);
+	bool frameRenderingQueued(const Ogre::FrameEvent &evt);
+	bool frameEnded(const Ogre::FrameEvent &evt);
 
 public slots:
     void setBackgroundColor(QColor c);
@@ -52,6 +57,8 @@ private:
 	void setupNxOgre();
     void createScene();
 
+	void updateFrameStats();
+
 private:
     static const Ogre::Real turboModifier;
     static const QPoint invalidMousePoint;
@@ -74,6 +81,8 @@ private:
 	NxOgre::VisualDebugger*	mVisualDebugger;
 	OGRE3DRenderable*		mVisualDebuggerRenderable;
 	Ogre::SceneNode*		mVisualDebuggerNode;
+
+	Ogre::Overlay* mDebugOverlay;
 };
 
 #endif OGREWIDGET_H

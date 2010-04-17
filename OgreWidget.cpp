@@ -64,6 +64,7 @@ void OgreWidget::keyPressEvent(QKeyEvent *e)
     static QMap<int, Ogre::Vector3> keyCoordModificationMapping;
     static bool mappingInitialised = false;
 
+	// TODO!!: fix controls
     if(!mappingInitialised)
     {
             keyCoordModificationMapping[Qt::Key_W]         = Ogre::Vector3( 0, 0,-5);
@@ -86,7 +87,7 @@ void OgreWidget::keyPressEvent(QKeyEvent *e)
             e->accept();
     }
 	else if (e->key() == Qt::Key_P) {
-		// TODO: visual debugger: Button, enable remote debugger
+		// TODO: visual debugger: Button
 		static bool visualDebuggerOn = false;
 		if (!visualDebuggerOn)
 			mVisualDebugger->setVisualisationMode(NxOgre::Enums::VisualDebugger_ShowAll);
@@ -210,19 +211,31 @@ QPaintEngine* OgreWidget::paintEngine() const
 
 void OgreWidget::paintEvent(QPaintEvent *e)
 {
-	// TODO!!!: timer for rendering/physics update
-	// TODO: paintEvent: see other OgreWidget...frameRenderingQueued? also look renderOneFrame!
-    mRoot->_fireFrameStarted();
-    mRenderWindow->update();
+    //mRoot->_fireFrameStarted();
+    //mRenderWindow->update();
 
-	// TODO: better place? (PhysX update)
+	mRoot->renderOneFrame();
+
+    //mRoot->_fireFrameEnded();
+
+    e->accept();
+}
+
+bool OgreWidget::frameRenderingQueued(const Ogre::FrameEvent &evt) {
 	mPhysicsTimeController->advance(1.0f/60.0f);///evt.timeSinceLastFrame*mSimulationSpeed);//1.0f/60.0f);
 	mVisualDebugger->draw();
 	mVisualDebuggerNode->needUpdate();
 
-    mRoot->_fireFrameEnded();
+	updateFrameStats();
 
-    e->accept();
+	return true;
+}
+
+
+bool OgreWidget::frameEnded(const Ogre::FrameEvent &evt) {
+
+
+	return true;
 }
 
 void OgreWidget::resizeEvent(QResizeEvent *e)
@@ -302,6 +315,12 @@ void OgreWidget::initOgreSystem()
     setupResources();
 	setupNxOgre();
     createScene();
+
+	mDebugOverlay = OverlayManager::getSingleton().getByName("Core/DebugOverlay");
+	mDebugOverlay->remove2D(mDebugOverlay->getChild("Core/LogoPanel"));
+	mDebugOverlay->show();
+
+	mRoot->addFrameListener(this);
 }
 
 void OgreWidget::setupResources()
@@ -406,4 +425,40 @@ void OgreWidget::createScene()
 	edesc.mRandomPosition.set(0.25f, 0.25f, 0.25f);
 	edesc.mReplusionCoefficient = 0.02f;
 	NxOgre::FluidEmitter* emitter = fluid->createEmitter(edesc);
+}
+
+void OgreWidget::updateFrameStats(void)
+{
+	static String currFps = "Current FPS: ";
+	static String avgFps = "Average FPS: ";
+	static String bestFps = "Best FPS: ";
+	static String worstFps = "Worst FPS: ";
+	static String tris = "Triangle Count: ";
+	static String batches = "Batch Count: ";
+
+	// update stats when necessary
+	try {
+		OverlayElement* guiAvg = OverlayManager::getSingleton().getOverlayElement("Core/AverageFps");
+		OverlayElement* guiCurr = OverlayManager::getSingleton().getOverlayElement("Core/CurrFps");
+		OverlayElement* guiBest = OverlayManager::getSingleton().getOverlayElement("Core/BestFps");
+		OverlayElement* guiWorst = OverlayManager::getSingleton().getOverlayElement("Core/WorstFps");
+
+		const RenderTarget::FrameStats& stats = mRenderWindow->getStatistics();
+		guiAvg->setCaption(avgFps + StringConverter::toString(stats.avgFPS));
+		guiCurr->setCaption(currFps + StringConverter::toString(stats.lastFPS));
+		guiBest->setCaption(bestFps + StringConverter::toString(stats.bestFPS)
+			+" "+StringConverter::toString(stats.bestFrameTime)+" ms");
+		guiWorst->setCaption(worstFps + StringConverter::toString(stats.worstFPS)
+			+" "+StringConverter::toString(stats.worstFrameTime)+" ms");
+
+		OverlayElement* guiTris = OverlayManager::getSingleton().getOverlayElement("Core/NumTris");
+		guiTris->setCaption(tris + StringConverter::toString(stats.triangleCount));
+
+		OverlayElement* guiBatches = OverlayManager::getSingleton().getOverlayElement("Core/NumBatches");
+		guiBatches->setCaption(batches + StringConverter::toString(stats.batchCount));
+
+		OverlayElement* guiDbg = OverlayManager::getSingleton().getOverlayElement("Core/DebugText");
+		//guiDbg->setCaption(mDebugText);
+	}
+	catch(...) { /* ignore */ }
 }

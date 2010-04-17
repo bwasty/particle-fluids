@@ -8,6 +8,13 @@ ParticleFluids::ParticleFluids(QWidget *parent, Qt::WFlags flags)
 	ui.setupUi(this);
 	OgreWidget* ow = new OgreWidget(this);
 	setCentralWidget(ow);
+
+	QTimer* timer = new QTimer();
+	timer->setInterval(0);
+	connect(timer, SIGNAL(timeout()), ow, SLOT(update()));
+	timer->start();
+
+	// TODO: show camera position in status bar
 }
 
 ParticleFluids::~ParticleFluids()
