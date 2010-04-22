@@ -34,7 +34,7 @@ public:
 
 public slots:
     void setBackgroundColor(QColor c);
-    void setCameraPosition(const Ogre::Vector3 &pos);
+    //void setCameraPosition(const Ogre::Vector3 &pos);
 
 signals:
     //void cameraPositionChanged(const Ogre::Vector3 &pos);

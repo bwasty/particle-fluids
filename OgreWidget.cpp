@@ -51,28 +51,28 @@ void OgreWidget::setBackgroundColor(QColor c)
     }
 }
 
-void OgreWidget::setCameraPosition(const Ogre::Vector3 &pos)
-{
-        mCamera->setPosition(pos);
-        mCamera->lookAt(0,50,0);
-    update();
-    //emit cameraPositionChanged(pos);
-}
+//void OgreWidget::setCameraPosition(const Ogre::Vector3 &pos)
+//{
+//        mCamera->setPosition(pos);
+//        //mCamera->lookAt(0,50,0);
+//		//update();
+//		//emit cameraPositionChanged(pos);
+//}
 
 void OgreWidget::keyPressEvent(QKeyEvent *e)
 {
     static QMap<int, Ogre::Vector3> keyCoordModificationMapping;
     static bool mappingInitialised = false;
 
-	// TODO!!: fix controls
+	// TODO!!: fix controls - make movement in looking direction
     if(!mappingInitialised)
     {
-            keyCoordModificationMapping[Qt::Key_W]         = Ogre::Vector3( 0, 0,-5);
-            keyCoordModificationMapping[Qt::Key_S]         = Ogre::Vector3( 0, 0, 5);
-            keyCoordModificationMapping[Qt::Key_A]         = Ogre::Vector3(-5, 0, 0);
-            keyCoordModificationMapping[Qt::Key_D]         = Ogre::Vector3( 5, 0, 0);
-            keyCoordModificationMapping[Qt::Key_PageUp]   = Ogre::Vector3( 0, 5, 0);
-            keyCoordModificationMapping[Qt::Key_PageDown] = Ogre::Vector3( 0,-5, 0);
+            keyCoordModificationMapping[Qt::Key_W]         = Ogre::Vector3( 0, 0,-1);
+            keyCoordModificationMapping[Qt::Key_S]         = Ogre::Vector3( 0, 0, 1);
+            keyCoordModificationMapping[Qt::Key_A]         = Ogre::Vector3(-1, 0, 0);
+            keyCoordModificationMapping[Qt::Key_D]         = Ogre::Vector3( 1, 0, 0);
+            keyCoordModificationMapping[Qt::Key_Q]		   = Ogre::Vector3( 0, 1, 0);
+            keyCoordModificationMapping[Qt::Key_E]		   = Ogre::Vector3( 0,-1, 0);
 
             mappingInitialised = true;
     }
@@ -81,13 +81,14 @@ void OgreWidget::keyPressEvent(QKeyEvent *e)
             keyCoordModificationMapping.find(e->key());
     if(keyPressed != keyCoordModificationMapping.end() && mCamera)
     {
-            const Ogre::Vector3 &actualCamPos = mCamera->getPosition();
-            setCameraPosition(actualCamPos + keyPressed.value());
+            //const Ogre::Vector3 &actualCamPos = mCamera->getPosition();
+            //setCameraPosition(actualCamPos + keyPressed.value());
+			mCamera->moveRelative(keyPressed.value() * 3);
 
             e->accept();
     }
 	else if (e->key() == Qt::Key_P) {
-		// TODO: visual debugger: Button
+		// TODO: visual debugger: Button in Toolbar
 		static bool visualDebuggerOn = false;
 		if (!visualDebuggerOn)
 			mVisualDebugger->setVisualisationMode(NxOgre::Enums::VisualDebugger_ShowAll);
@@ -105,31 +106,32 @@ void OgreWidget::mouseDoubleClickEvent(QMouseEvent *e)
 {
     if(e->buttons().testFlag(Qt::LeftButton))
     {
-        //Ogre::Real x = e->pos().x() / (float)width();
-        //Ogre::Real y = e->pos().y() / (float)height();
+		// TODO!: raytest: show pos in status bar instead showing bb
+        Ogre::Real x = e->pos().x() / (float)width();
+        Ogre::Real y = e->pos().y() / (float)height();
 
-        //Ogre::Ray ray = mCamera->getCameraToViewportRay(x, y);
-        //Ogre::RaySceneQuery *query = mSceneMgr->createRayQuery(ray);
-        //Ogre::RaySceneQueryResult &queryResult = query->execute();
-        //Ogre::RaySceneQueryResult::iterator queryResultIterator = queryResult.begin();
+        Ogre::Ray ray = mCamera->getCameraToViewportRay(x, y);
+        Ogre::RaySceneQuery *query = mSceneMgr->createRayQuery(ray);
+        Ogre::RaySceneQueryResult &queryResult = query->execute();
+        Ogre::RaySceneQueryResult::iterator queryResultIterator = queryResult.begin();
 
-        //if(queryResultIterator != queryResult.end())
-        //{
-        //    if(queryResultIterator->movable)
-        //    {
-        //        selectedNode = queryResultIterator->movable->getParentSceneNode();
-        //        selectedNode->showBoundingBox(true);
-        //    }
-        //}
-        //else
-        //{
-        //    selectedNode->showBoundingBox(false);
-        //    selectedNode = 0;
-        //}
+        if(queryResultIterator != queryResult.end())
+        {
+            if(queryResultIterator->movable)
+            {
+                selectedNode = queryResultIterator->movable->getParentSceneNode();
+                selectedNode->showBoundingBox(true);
+            }
+        }
+        else
+        {
+            selectedNode->showBoundingBox(false);
+            selectedNode = 0;
+        }
 
-        //mSceneMgr->destroyQuery(query);
+        mSceneMgr->destroyQuery(query);
 
-        //update();
+        update();
         e->accept();
     }
     else
@@ -152,9 +154,12 @@ void OgreWidget::mouseMoveEvent(QMouseEvent *e)
             deltaY *= turboModifier;
         }
 
-        Ogre::Vector3 camTranslation(deltaX, deltaY, 0);
-        const Ogre::Vector3 &actualCamPos = mCamera->getPosition();
-        setCameraPosition(actualCamPos + camTranslation);
+        //Ogre::Vector3 camTranslation(deltaX, deltaY, 0);
+        //const Ogre::Vector3 &actualCamPos = mCamera->getPosition();
+        //setCameraPosition(actualCamPos + camTranslation);
+		static Real cameraRotationPerMouseMovement = 0.2;
+		mCamera->yaw(Degree(-cameraRotationPerMouseMovement * deltaX));
+        mCamera->pitch(Degree(-cameraRotationPerMouseMovement * deltaY));
 
         oldPos = pos;
         e->accept();
@@ -270,15 +275,16 @@ void OgreWidget::showEvent(QShowEvent *e)
 
 void OgreWidget::wheelEvent(QWheelEvent *e)
 {
-    Ogre::Vector3 zTranslation(0,0, -e->delta() / 60);
+    //Ogre::Vector3 zTranslation(0,0, -e->delta() / 60);
 
-    if(e->modifiers().testFlag(Qt::ControlModifier))
-    {
-        zTranslation.z *= turboModifier;
-    }
+    //if(e->modifiers().testFlag(Qt::ControlModifier))
+    //{
+    //    zTranslation.z *= turboModifier;
+    //}
 
-    const Ogre::Vector3 &actualCamPos = mCamera->getPosition();
-    setCameraPosition(actualCamPos + zTranslation);
+    //const Ogre::Vector3 &actualCamPos = mCamera->getPosition();
+    //setCameraPosition(actualCamPos + zTranslation);
+	// TODO: mouse wheel zoom
 
     e->accept();
 }
@@ -307,10 +313,11 @@ void OgreWidget::initOgreSystem()
         mCamera->lookAt(0,0,0);
     //emit cameraPositionChanged(camPos);
 
-	// TODO: near/far clip
+	// TODO: far clip?
     mViewport = mRenderWindow->addViewport(mCamera);
     mViewport->setBackgroundColour(Ogre::ColourValue(0,0,0));
     mCamera->setAspectRatio(Ogre::Real(width()) / Ogre::Real(height()));
+	mCamera->setNearClipDistance(1.0);
 
     setupResources();
 	setupNxOgre();
@@ -371,13 +378,14 @@ void OgreWidget::setupNxOgre() {
 
 void OgreWidget::createScene()
 {
-    mSceneMgr->setAmbientLight(Ogre::ColourValue(1,1,1));
+    mSceneMgr->setAmbientLight(Ogre::ColourValue(0.5,0.5,0.5));
 
-	//Light *light = mSceneMgr->createLight("SunLight");
-	//light->setType(Light::LT_DIRECTIONAL);
-	//light->setDirection(-Vector3::UNIT_Y+Vector3::UNIT_X*0.2);
-	//light->setDiffuseColour(1.0, 1.0, 1.0);
-	//light->setSpecularColour(1.0, 1.0, 1.0);
+
+	Light *light = mSceneMgr->createLight("SunLight");
+	light->setType(Light::LT_DIRECTIONAL);
+	light->setDirection(-Vector3::UNIT_Y+Vector3::UNIT_X*0.2);
+	light->setDiffuseColour(0.5, 0.5, 0.5);
+	light->setSpecularColour(1.0, 1.0, 1.0);
 
     //Ogre::Entity *entity = mSceneMgr->createEntity("Axes", "axes.mesh");
     //Ogre::SceneNode *node = mSceneMgr->getRootSceneNode()->createChildSceneNode("node");
@@ -414,7 +422,7 @@ void OgreWidget::createScene()
 	desc.mSimulationMethod = NxOgre::Enums::FluidSimulationMethod_SPH;
 	desc.mFlags |= NxOgre::Enums::FluidFlags_Hardware;
 	  
-	NxOgre::Fluid* fluid = mPhysicsRenderSystem->createFluid(desc, "BaseWhiteNoLighting", OGRE3DFluidType_Velocity);
+	NxOgre::Fluid* fluid = mPhysicsRenderSystem->createFluid(desc, "BaseWhiteNoLighting", OGRE3DFluidType_Position); //OGRE3DFluidType_Velocity OGRE3DFluidType_Position OGRE3DFluidType_OgreParticle
 
 	NxOgre::FluidEmitterDescription edesc;
 	edesc.mPose.set(0, 5, 0);
