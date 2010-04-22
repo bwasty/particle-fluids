@@ -61,18 +61,18 @@ void OgreWidget::setBackgroundColor(QColor c)
 
 void OgreWidget::keyPressEvent(QKeyEvent *e)
 {
+	// TODO: camera moving speed?
     static QMap<int, Ogre::Vector3> keyCoordModificationMapping;
     static bool mappingInitialised = false;
 
-	// TODO!!: fix controls - make movement in looking direction
     if(!mappingInitialised)
     {
             keyCoordModificationMapping[Qt::Key_W]         = Ogre::Vector3( 0, 0,-1);
             keyCoordModificationMapping[Qt::Key_S]         = Ogre::Vector3( 0, 0, 1);
             keyCoordModificationMapping[Qt::Key_A]         = Ogre::Vector3(-1, 0, 0);
             keyCoordModificationMapping[Qt::Key_D]         = Ogre::Vector3( 1, 0, 0);
-            keyCoordModificationMapping[Qt::Key_Q]		   = Ogre::Vector3( 0, 1, 0);
-            keyCoordModificationMapping[Qt::Key_E]		   = Ogre::Vector3( 0,-1, 0);
+            keyCoordModificationMapping[Qt::Key_E]		   = Ogre::Vector3( 0, 1, 0);
+            keyCoordModificationMapping[Qt::Key_Q]		   = Ogre::Vector3( 0,-1, 0);
 
             mappingInitialised = true;
     }
@@ -106,7 +106,7 @@ void OgreWidget::mouseDoubleClickEvent(QMouseEvent *e)
 {
     if(e->buttons().testFlag(Qt::LeftButton))
     {
-		// TODO!: raytest: show pos in status bar instead showing bb
+		// TODO: raytest: show pos in status bar instead showing bb
         Ogre::Real x = e->pos().x() / (float)width();
         Ogre::Real y = e->pos().y() / (float)height();
 
@@ -410,7 +410,7 @@ void OgreWidget::createScene()
 
 	// Fluid
 	NxOgre::FluidDescription desc;
-	desc.mMaxParticles = 10000;
+	desc.mMaxParticles = 60000;
 	desc.mKernelRadiusMultiplier = 2.0f;
 	desc.mRestParticlesPerMetre = 7.0f;
 	desc.mMotionLimitMultiplier = 3.0f;
@@ -421,14 +421,17 @@ void OgreWidget::createScene()
 	desc.mRestDensity = 1000.0f;
 	desc.mSimulationMethod = NxOgre::Enums::FluidSimulationMethod_SPH;
 	desc.mFlags |= NxOgre::Enums::FluidFlags_Hardware;
+	desc.mExternalAcceleration.set(0,-9.81, 0);
+	//desc.mDamping
+
 	  
 	NxOgre::Fluid* fluid = mPhysicsRenderSystem->createFluid(desc, "BaseWhiteNoLighting", OGRE3DFluidType_Position); //OGRE3DFluidType_Velocity OGRE3DFluidType_Position OGRE3DFluidType_OgreParticle
 
 	NxOgre::FluidEmitterDescription edesc;
 	edesc.mPose.set(0, 5, 0);
-	edesc.mParticleLifetime = 4.5;
-	edesc.mRate = 250;
-	edesc.mType = NxOgre::Enums::FluidEmitterType_Pressure;
+	edesc.mParticleLifetime = 0;
+	edesc.mRate = 5000;
+	edesc.mType = NxOgre::Enums::FluidEmitterType_FlowRate;// NxOgre::Enums::FluidEmitterType_FlowRate FluidEmitterType_Pressure
 	edesc.mRandomAngle = 0.25f;
 	edesc.mRandomPosition.set(0.25f, 0.25f, 0.25f);
 	edesc.mReplusionCoefficient = 0.02f;
