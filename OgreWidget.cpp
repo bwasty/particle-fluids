@@ -2,8 +2,9 @@
 #include "stdafx.h"
 #include "ogrewidget.h"
 
-#include <OGRE3DRenderSystem.h>
-#include <OGRE3DRenderable.h>
+//#include <OGRE3DRenderSystem.h>
+//#include <OGRE3DRenderable.h>
+#include <Critter.h>
 
 using namespace Ogre;
 
@@ -361,12 +362,12 @@ void OgreWidget::setupResources()
 void OgreWidget::setupNxOgre() {
 	mPhysicsWorld = NxOgre::World::createWorld();
 	mPhysicsScene = mPhysicsWorld->createScene();
-	mPhysicsRenderSystem = new OGRE3DRenderSystem(mPhysicsScene);
+	mPhysicsRenderSystem = new Critter::RenderSystem(mPhysicsScene);
 	
 	mPhysicsTimeController = NxOgre::TimeController::getSingleton();
 
 	mVisualDebugger = mPhysicsWorld->getVisualDebugger();
-	mVisualDebuggerRenderable = new OGRE3DRenderable(NxOgre::Enums::RenderableType_VisualDebugger);
+	mVisualDebuggerRenderable = new Critter::Renderable(NxOgre::Enums::RenderableType_VisualDebugger);
 	mVisualDebugger->setRenderable(mVisualDebuggerRenderable);
 	mVisualDebuggerNode = mSceneMgr->getRootSceneNode()->createChildSceneNode();
 	mVisualDebuggerNode->attachObject(mVisualDebuggerRenderable);
@@ -425,7 +426,7 @@ void OgreWidget::createScene()
 	//desc.mDamping
 
 	  
-	NxOgre::Fluid* fluid = mPhysicsRenderSystem->createFluid(desc, "BaseWhiteNoLighting", OGRE3DFluidType_Position); //OGRE3DFluidType_Velocity OGRE3DFluidType_Position OGRE3DFluidType_OgreParticle
+	NxOgre::Fluid* fluid = mPhysicsRenderSystem->createFluid(desc, "BaseWhiteNoLighting", Critter::Enums::FluidType_Position); //OGRE3DFluidType_Velocity OGRE3DFluidType_Position OGRE3DFluidType_OgreParticle
 
 	NxOgre::FluidEmitterDescription edesc;
 	edesc.mPose.set(0, 5, 0);

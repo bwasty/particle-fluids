@@ -4,6 +4,7 @@
 	Version="9,00"
 	Name="ParticleFluids"
 	ProjectGUID="{52813862-2D9D-4556-8E97-53445EF3051B}"
+	RootNamespace="ParticleFluids"
 	Keyword="Qt4VSv1.0"
 	TargetFrameworkVersion="0"
 	>
@@ -39,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/MP"
-				AdditionalIncludeDirectories=".\GeneratedFiles;&quot;$(QTDIR)\include&quot;;&quot;.\GeneratedFiles\$(ConfigurationName)&quot;;&quot;$(QTDIR)\include\qtmain&quot;;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;.\;&quot;$(OGRE_SRC)\include\OGRE&quot;;&quot;$(OGRE_SRC)\Dependencies\include\&quot;;.\Dependencies\NxOgre\sdk"
+				AdditionalIncludeDirectories=".\GeneratedFiles;&quot;$(QTDIR)\include&quot;;&quot;.\GeneratedFiles\$(ConfigurationName)&quot;;&quot;$(QTDIR)\include\qtmain&quot;;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;.\;&quot;$(OGRE_SRC)\include\&quot;;&quot;$(OGRE_SRC)\include\OGRE&quot;;&quot;$(OGRE_SRC)\Dependencies\include\&quot;;.\Dependencies\NxOgre\sdk;&quot;.\Dependencies\NxOgre-Critter\sdk&quot;"
 				PreprocessorDefinitions="UNICODE,WIN32,QT_LARGEFILE_SUPPORT,QT_THREAD_SUPPORT,QT_NO_DEBUG,NDEBUG,QT_CORE_LIB,QT_GUI_LIB"
 				RuntimeLibrary="2"
 				TreatWChar_tAsBuiltInType="false"
@@ -59,9 +60,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="qtmain.lib QtCore4.lib QtGui4.lib OgreMain.lib OIS.lib NxOgre.lib NxOgreOGRE3D.lib"
+				AdditionalDependencies="qtmain.lib QtCore4.lib QtGui4.lib OgreMain.lib OIS.lib NxOgreFinal.lib CritterFinalStatic.lib"
 				OutputFile="bin\$(ConfigurationName)\$(ProjectName).exe"
-				AdditionalLibraryDirectories="$(QTDIR)\lib;&quot;$(OGRE_SRC)\lib\release&quot;;&quot;$(OGRE_SRC)\Dependencies\lib\Release&quot;;.\Dependencies\NxOgre\sdk"
+				AdditionalLibraryDirectories="&quot;$(QTDIR)\lib&quot;;&quot;$(OGRE_SRC)\lib\release&quot;;&quot;$(OGRE_SRC)\Dependencies\lib\Release&quot;;.\Dependencies\NxOgre\sdk;&quot;.\Dependencies\NxOgre-Critter\sdk&quot;"
 				GenerateDebugInformation="false"
 				SubSystem="2"
 			/>
@@ -112,7 +113,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/MP"
 				Optimization="0"
-				AdditionalIncludeDirectories=".\GeneratedFiles;&quot;$(QTDIR)\include&quot;;&quot;.\GeneratedFiles\$(ConfigurationName)&quot;;&quot;$(QTDIR)\include\qtmain&quot;;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;.\;&quot;$(OGRE_SRC)\include\OGRE&quot;;&quot;$(OGRE_SRC)\Dependencies\include\&quot;;.\Dependencies\NxOgre\sdk"
+				AdditionalIncludeDirectories=".\GeneratedFiles;&quot;$(QTDIR)\include&quot;;&quot;.\GeneratedFiles\$(ConfigurationName)&quot;;&quot;$(QTDIR)\include\qtmain&quot;;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;.\;&quot;$(OGRE_SRC)\include\&quot;;&quot;$(OGRE_SRC)\include\OGRE&quot;;&quot;$(OGRE_SRC)\Dependencies\include\&quot;;.\Dependencies\NxOgre\sdk;&quot;.\Dependencies\NxOgre-Critter\sdk&quot;"
 				PreprocessorDefinitions="UNICODE,WIN32,QT_LARGEFILE_SUPPORT,QT_THREAD_SUPPORT,QT_CORE_LIB,QT_GUI_LIB"
 				RuntimeLibrary="3"
 				TreatWChar_tAsBuiltInType="false"
@@ -132,9 +133,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="qtmaind.lib QtCored4.lib QtGuid4.lib OgreMain_d.lib OIS_d.lib NxOgre_Debug.lib NxOgreOGRE3D_Debug.lib"
+				AdditionalDependencies="qtmaind.lib QtCored4.lib QtGuid4.lib OgreMain_d.lib OIS_d.lib NxOgreDebug.lib CritterDebugStatic.lib"
 				OutputFile="bin\$(ConfigurationName)\$(ProjectName).exe"
-				AdditionalLibraryDirectories="$(QTDIR)\lib;&quot;$(OGRE_SRC)\lib\debug&quot;;&quot;$(OGRE_SRC)\Dependencies\lib\Debug&quot;;.\Dependencies\NxOgre\sdk"
+				AdditionalLibraryDirectories="&quot;$(QTDIR)\lib&quot;;&quot;$(OGRE_SRC)\lib\debug&quot;;&quot;$(OGRE_SRC)\Dependencies\lib\Debug&quot;;.\Dependencies\NxOgre\sdk;&quot;.\Dependencies\NxOgre-Critter\sdk&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 			/>
@@ -216,7 +217,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB  -I&quot;.\GeneratedFiles\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)\.&quot; -I&quot;$(QTDIR)\include\qtmain\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;.\.&quot; -I&quot;$(OGRE_SRC)\include\OGRE\.&quot; -I&quot;$(OGRE_SRC)\Dependencies\include\.&quot; -I&quot;.\Dependencies\NxOgre\sdk\.&quot; &quot;.\OgreWidget.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot; &quot;-fStdAfx.h&quot; &quot;-f..\..\OgreWidget.h&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB  -I&quot;.\GeneratedFiles\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)\.&quot; -I&quot;$(QTDIR)\include\qtmain\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;.\.&quot; -I&quot;$(OGRE_SRC)\include\.&quot; -I&quot;$(OGRE_SRC)\include\OGRE\.&quot; -I&quot;$(OGRE_SRC)\Dependencies\include\.&quot; -I&quot;.\Dependencies\NxOgre\sdk\.&quot; -I&quot;.\Dependencies\NxOgre-Critter\sdk\.&quot; &quot;.\OgreWidget.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot; &quot;-fStdAfx.h&quot; &quot;-f..\..\OgreWidget.h&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -227,7 +228,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB  -I&quot;.\GeneratedFiles\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)\.&quot; -I&quot;$(QTDIR)\include\qtmain\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;.\.&quot; -I&quot;$(OGRE_SRC)\include\OGRE\.&quot; -I&quot;$(OGRE_SRC)\Dependencies\include\.&quot; -I&quot;.\Dependencies\NxOgre\sdk\.&quot; &quot;.\OgreWidget.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot; &quot;-fStdAfx.h&quot; &quot;-f..\..\OgreWidget.h&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB  -I&quot;.\GeneratedFiles\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)\.&quot; -I&quot;$(QTDIR)\include\qtmain\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;.\.&quot; -I&quot;$(OGRE_SRC)\include\.&quot; -I&quot;$(OGRE_SRC)\include\OGRE\.&quot; -I&quot;$(OGRE_SRC)\Dependencies\include\.&quot; -I&quot;.\Dependencies\NxOgre\sdk\.&quot; -I&quot;.\Dependencies\NxOgre-Critter\sdk\.&quot; &quot;.\OgreWidget.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot; &quot;-fStdAfx.h&quot; &quot;-f..\..\OgreWidget.h&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -242,7 +243,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB  -I&quot;.\GeneratedFiles\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)\.&quot; -I&quot;$(QTDIR)\include\qtmain\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;.\.&quot; -I&quot;$(OGRE_SRC)\include\OGRE\.&quot; -I&quot;$(OGRE_SRC)\Dependencies\include\.&quot; -I&quot;.\Dependencies\NxOgre\sdk\.&quot; &quot;.\particlefluids.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot; &quot;-fStdAfx.h&quot; &quot;-f..\..\particlefluids.h&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB  -I&quot;.\GeneratedFiles\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)\.&quot; -I&quot;$(QTDIR)\include\qtmain\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;.\.&quot; -I&quot;$(OGRE_SRC)\include\.&quot; -I&quot;$(OGRE_SRC)\include\OGRE\.&quot; -I&quot;$(OGRE_SRC)\Dependencies\include\.&quot; -I&quot;.\Dependencies\NxOgre\sdk\.&quot; -I&quot;.\Dependencies\NxOgre-Critter\sdk\.&quot; &quot;.\particlefluids.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot; &quot;-fStdAfx.h&quot; &quot;-f..\..\particlefluids.h&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -253,7 +254,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB  -I&quot;.\GeneratedFiles\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)\.&quot; -I&quot;$(QTDIR)\include\qtmain\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;.\.&quot; -I&quot;$(OGRE_SRC)\include\OGRE\.&quot; -I&quot;$(OGRE_SRC)\Dependencies\include\.&quot; -I&quot;.\Dependencies\NxOgre\sdk\.&quot; &quot;.\particlefluids.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot; &quot;-fStdAfx.h&quot; &quot;-f..\..\particlefluids.h&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB  -I&quot;.\GeneratedFiles\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)\.&quot; -I&quot;$(QTDIR)\include\qtmain\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;.\.&quot; -I&quot;$(OGRE_SRC)\include\.&quot; -I&quot;$(OGRE_SRC)\include\OGRE\.&quot; -I&quot;$(OGRE_SRC)\Dependencies\include\.&quot; -I&quot;.\Dependencies\NxOgre\sdk\.&quot; -I&quot;.\Dependencies\NxOgre-Critter\sdk\.&quot; &quot;.\particlefluids.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot; &quot;-fStdAfx.h&quot; &quot;-f..\..\particlefluids.h&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>

@@ -13,8 +13,10 @@ namespace NxOgre {
 	class VisualDebugger;
 }
 
-class OGRE3DRenderSystem;
-class OGRE3DRenderable;
+namespace Critter {
+	class RenderSystem;
+	class Renderable;
+}
 
 class OgreWidget : public QWidget, public Ogre::FrameListener
 {
@@ -77,9 +79,9 @@ private:
 	NxOgre::World* mPhysicsWorld;
 	NxOgre::TimeController* mPhysicsTimeController;
 	NxOgre::Scene* mPhysicsScene;
-	OGRE3DRenderSystem* mPhysicsRenderSystem;
+	Critter::RenderSystem* mPhysicsRenderSystem;
 	NxOgre::VisualDebugger*	mVisualDebugger;
-	OGRE3DRenderable*		mVisualDebuggerRenderable;
+	Critter::Renderable*		mVisualDebuggerRenderable;
 	Ogre::SceneNode*		mVisualDebuggerNode;
 
 	Ogre::Overlay* mDebugOverlay;
