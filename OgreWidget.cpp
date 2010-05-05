@@ -228,7 +228,7 @@ void OgreWidget::paintEvent(QPaintEvent *e)
 }
 
 bool OgreWidget::frameRenderingQueued(const Ogre::FrameEvent &evt) {
-	mPhysicsTimeController->advance(1.0f/60.0f);///evt.timeSinceLastFrame*mSimulationSpeed);//1.0f/60.0f);
+	mPhysicsTimeController->advance(evt.timeSinceLastFrame*12);//1.0f/60.0f);///evt.timeSinceLastFrame*mSimulationSpeed);//1.0f/60.0f);
 	mVisualDebugger->draw();
 	mVisualDebuggerNode->needUpdate();
 
@@ -408,6 +408,13 @@ void OgreWidget::createScene()
 	NxOgre::PlaneGeometryDescription pdesc;
 	mPhysicsScene->createSceneGeometry(pdesc);
 
+	// box for surrounding the fluid
+	mPhysicsScene->createSceneGeometry(NxOgre::BoxDescription(16,16,1), NxOgre::Vec3(0,0,-4));
+	mPhysicsScene->createSceneGeometry(NxOgre::BoxDescription(16,16,1), NxOgre::Vec3(0,0, 4));
+	mPhysicsScene->createSceneGeometry(NxOgre::BoxDescription(1,16,16), NxOgre::Vec3(-4,0, 0));
+	mPhysicsScene->createSceneGeometry(NxOgre::BoxDescription(1,16,16), NxOgre::Vec3(4,0, 0));
+	mPhysicsScene->createSceneGeometry(NxOgre::BoxDescription(16,1,18), NxOgre::Vec3(0,4, 0));
+
 
 	// Fluid
 	NxOgre::FluidDescription desc;
@@ -438,6 +445,9 @@ void OgreWidget::createScene()
 	edesc.mRandomAngle = 0.25f;
 	edesc.mRandomPosition.set(0.25f, 0.25f, 0.25f);
 	edesc.mReplusionCoefficient = 0.02f;
+	//	edesc.mReplusionCoefficient = 0.8f; --> from other code snippet
+//edesc.mDimensionX = 4.0f;
+//edesc.mDimensionY = 4.0f;
 	NxOgre::FluidEmitter* emitter = fluid->createEmitter(edesc);
 }
 

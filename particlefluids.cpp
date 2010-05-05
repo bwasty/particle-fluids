@@ -29,10 +29,14 @@ ParticleFluids::ParticleFluids(QWidget *parent, Qt::WFlags flags)
 
 	propertyEditor->show();
 
-	QtVariantProperty *maxParticles = variantManager->addProperty(QVariant::Int, "Max Particles");
-	maxParticles->setValue(40000);
+	QtVariantProperty *property = variantManager->addProperty(QVariant::Int, "Max Particles");
+	property->setValue(40000);
 
-	propertyEditor->addProperty(maxParticles);
+	propertyEditor->addProperty(property);
+
+	property = variantManager->addProperty(QVariant::Double, "KernelRadiusMultiplier");
+	property->setValue(2.0f);
+	propertyEditor->addProperty(property);
 }
 
 ParticleFluids::~ParticleFluids()
