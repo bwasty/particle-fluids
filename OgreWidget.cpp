@@ -424,9 +424,11 @@ void OgreWidget::createScene()
 	desc.mFlags |= NxOgre::Enums::FluidFlags_Hardware;
 	desc.mExternalAcceleration.set(0,-9.81, 0);
 	//desc.mDamping
+	//desc.mSurfaceTension
 
 	  
 	NxOgre::Fluid* fluid = mPhysicsRenderSystem->createFluid(desc, "BaseWhiteNoLighting", Critter::Enums::FluidType_Position); //OGRE3DFluidType_Velocity OGRE3DFluidType_Position OGRE3DFluidType_OgreParticle
+
 
 	NxOgre::FluidEmitterDescription edesc;
 	edesc.mPose.set(0, 5, 0);
