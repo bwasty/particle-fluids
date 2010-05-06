@@ -29,18 +29,14 @@ mCamera(0), oldPos(invalidMousePoint), selectedNode(0), mFluid(0)
 	mFluidDescription.mRestDensity = 1000.0f;
 	mFluidDescription.mViscosity = 40.0f;
 	mFluidDescription.mStiffness = 50.0f;
-	//mFluidDescription.mDamping // nonnegative
-	//mFluidDescription.mSurfaceTension
-	//mFluidDescription.mExternalAcceleration.set(0,-9.81, 0);
+	mFluidDescription.mDamping = 0; // nonnegative
+	mFluidDescription.mSurfaceTension = 0;
 	mFluidDescription.mMotionLimitMultiplier = 3.0f;
 	mFluidDescription.mPacketSizeMultiplier = 8;
-	mFluidDescription.mCollisionDistanceMultiplier = 0.1f;
+	mFluidDescription.mCollisionDistanceMultiplier = 0.12f;
 	mFluidDescription.mSimulationMethod = NxOgre::Enums::FluidSimulationMethod_SPH;
-	mFluidDescription.mFlags |= NxOgre::Enums::FluidFlags_Hardware; // NX_FF_COLLISION_TWOWAY, 
-	
-	
-	
-
+	mFluidDescription.mFlags |= NxOgre::Enums::FluidFlags_Hardware; // FluidFlags_CollisionTwoWay NxOgre::Enums::FluidFlags_DisableGravity
+	//mFluidDescription.mExternalAcceleration.set(0,-9.81, 0);
 
 	//NxOgre::FluidEmitterDescription edesc;
 	mEmitterDescription.mPose.set(0, 8, 0);
