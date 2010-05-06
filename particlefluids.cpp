@@ -50,13 +50,25 @@ void ParticleFluids::setupPhysXGUI() {
 	
 	QtVariantProperty *property = variantManager->addProperty(QVariant::Int, "MaxParticles");
 	property->setAttribute("singleStep", 200);
-	property->setValue(mOgreWidget->mFluidDescription.mMaxParticles); // TODO!!!: make sure OgreWidget is initialized
+	property->setValue(mOgreWidget->mFluidDescription.mMaxParticles);
 	group->addSubProperty(property);
 
 	property = variantManager->addProperty(QVariant::Double, "KernelRadiusMultiplier");
 	property->setValue(mOgreWidget->mFluidDescription.mKernelRadiusMultiplier);
 	property->setAttribute("decimals", 4);
+	property->setToolTip("along with restParticlesPerMeter, controls the radius of influence for each particle. \
+radius = KernelRadiusMultiplier / RestParticlesPerMeter. Should be set around 2.0 and definitely below 2.5 for optimal performance and simulation quality.");
 	group->addSubProperty(property);
+
+	//TODO!!!: add rest of fluid, emitter, general parameters
+	property = variantManager->addProperty(QVariant::Double, "RestParticlesPerMetre");
+	property->setValue(mOgreWidget->mFluidDescription.mRestParticlesPerMetre);
+	property->setAttribute("decimals", 4);
+	property->setToolTip("The particle resolution given as particles per linear meter measured when the fluid is in its rest state (relaxed).\
+Even if the particle system is simulated without particle interactions, this parameter defines the emission density of the emitters.");
+	group->addSubProperty(property);
+
+
 
 	group = groupManager->addProperty("Emitter");
 	propertyEditor->addProperty(group);
@@ -79,6 +91,5 @@ void ParticleFluids::propertyValueChanged(QtProperty* property, const QVariant &
 	else if (pName == "") {
 	}
 
-	// TODO!!!: make sure OgreWidget is initialized
-	//mOgreWidget->createFluid();
+	mOgreWidget->createFluid();
 }

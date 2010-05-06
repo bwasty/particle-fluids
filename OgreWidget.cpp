@@ -20,6 +20,39 @@ mCamera(0), oldPos(invalidMousePoint), selectedNode(0), mFluid(0)
     setAttribute(Qt::WA_PaintOnScreen);
     setMinimumSize(240,240);
         setFocusPolicy(Qt::ClickFocus);
+
+	// initial fluid parameters Fluid
+
+	mFluidDescription.mMaxParticles = 60000;
+	mFluidDescription.mKernelRadiusMultiplier = 2.0f;
+	mFluidDescription.mRestParticlesPerMetre = 7.0f;
+	mFluidDescription.mRestDensity = 1000.0f;
+	mFluidDescription.mViscosity = 40.0f;
+	mFluidDescription.mStiffness = 50.0f;
+	//mFluidDescription.mDamping // nonnegative
+	//mFluidDescription.mSurfaceTension
+	//mFluidDescription.mExternalAcceleration.set(0,-9.81, 0);
+	mFluidDescription.mMotionLimitMultiplier = 3.0f;
+	mFluidDescription.mPacketSizeMultiplier = 8;
+	mFluidDescription.mCollisionDistanceMultiplier = 0.1f;
+	mFluidDescription.mSimulationMethod = NxOgre::Enums::FluidSimulationMethod_SPH;
+	mFluidDescription.mFlags |= NxOgre::Enums::FluidFlags_Hardware; // NX_FF_COLLISION_TWOWAY, 
+	
+	
+	
+
+
+	//NxOgre::FluidEmitterDescription edesc;
+	mEmitterDescription.mPose.set(0, 8, 0);
+	mEmitterDescription.mParticleLifetime = 0;
+	mEmitterDescription.mRate = 5000;
+	mEmitterDescription.mType = NxOgre::Enums::FluidEmitterType_FlowRate;// NxOgre::Enums::FluidEmitterType_FlowRate FluidEmitterType_Pressure
+	mEmitterDescription.mRandomAngle = 0.25f;
+	mEmitterDescription.mRandomPosition.set(0.25f, 0.25f, 0.25f);
+	mEmitterDescription.mReplusionCoefficient = 0.02f;
+	//	edesc.mReplusionCoefficient = 0.8f; --> from other code snippet
+//edesc.mDimensionX = 4.0f;
+//edesc.mDimensionY = 4.0f;
 }
 
 OgreWidget::~OgreWidget()
@@ -418,35 +451,6 @@ void OgreWidget::createScene()
 
 
 	// TODO!!: move fluid creation to function, retrieve values from property browser (how to retrieve -> QSet from manager->properties())
-	// Fluid
-	//NxOgre::FluidDescription desc;
-	mFluidDescription.mMaxParticles = 60000;
-	mFluidDescription.mKernelRadiusMultiplier = 2.0f;
-	mFluidDescription.mRestParticlesPerMetre = 7.0f;
-	mFluidDescription.mMotionLimitMultiplier = 3.0f;
-	mFluidDescription.mPacketSizeMultiplier = 8;
-	mFluidDescription.mCollisionDistanceMultiplier = 0.1f;
-	mFluidDescription.mStiffness = 50.0f;
-	mFluidDescription.mViscosity = 40.0f;
-	mFluidDescription.mRestDensity = 1000.0f;
-	mFluidDescription.mSimulationMethod = NxOgre::Enums::FluidSimulationMethod_SPH;
-	mFluidDescription.mFlags |= NxOgre::Enums::FluidFlags_Hardware; // NX_FF_COLLISION_TWOWAY, 
-	//mFluidDescription.mExternalAcceleration.set(0,-9.81, 0);
-	//mFluidDescription.mDamping // nonnegative
-	//mFluidDescription.mSurfaceTension
-
-
-	//NxOgre::FluidEmitterDescription edesc;
-	mEmitterDescription.mPose.set(0, 8, 0);
-	mEmitterDescription.mParticleLifetime = 0;
-	mEmitterDescription.mRate = 5000;
-	mEmitterDescription.mType = NxOgre::Enums::FluidEmitterType_FlowRate;// NxOgre::Enums::FluidEmitterType_FlowRate FluidEmitterType_Pressure
-	mEmitterDescription.mRandomAngle = 0.25f;
-	mEmitterDescription.mRandomPosition.set(0.25f, 0.25f, 0.25f);
-	mEmitterDescription.mReplusionCoefficient = 0.02f;
-	//	edesc.mReplusionCoefficient = 0.8f; --> from other code snippet
-//edesc.mDimensionX = 4.0f;
-//edesc.mDimensionY = 4.0f;
 	
 	createFluid();
 
