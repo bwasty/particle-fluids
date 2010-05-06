@@ -14,7 +14,7 @@ const Ogre::Real OgreWidget::turboModifier(10);
 OgreWidget::OgreWidget(QWidget *parent)
 :QWidget(parent),
 mRoot(0), mSceneMgr(0), mRenderWindow(0), mViewport(0),
-mCamera(0), oldPos(invalidMousePoint), selectedNode(0)
+mCamera(0), oldPos(invalidMousePoint), selectedNode(0), mFluid(0)
 {
     setAttribute(Qt::WA_OpaquePaintEvent);
     setAttribute(Qt::WA_PaintOnScreen);
@@ -362,6 +362,7 @@ void OgreWidget::setupResources()
 void OgreWidget::setupNxOgre() {
 	mPhysicsWorld = NxOgre::World::createWorld();
 	mPhysicsScene = mPhysicsWorld->createScene();
+	mPhysicsScene->setGravity(NxOgre::Vec3(0.0f,-9.81f,0.0f));
 	mPhysicsRenderSystem = new Critter::RenderSystem(mPhysicsScene);
 	
 	mPhysicsTimeController = NxOgre::TimeController::getSingleton();
@@ -416,39 +417,51 @@ void OgreWidget::createScene()
 	mPhysicsScene->createSceneGeometry(NxOgre::BoxDescription(16,1,18), NxOgre::Vec3(0,4, 0));
 
 
+	// TODO!!: move fluid creation to function, retrieve values from property browser (how to retrieve -> QSet from manager->properties())
 	// Fluid
-	NxOgre::FluidDescription desc;
-	desc.mMaxParticles = 60000;
-	desc.mKernelRadiusMultiplier = 2.0f;
-	desc.mRestParticlesPerMetre = 7.0f;
-	desc.mMotionLimitMultiplier = 3.0f;
-	desc.mPacketSizeMultiplier = 8;
-	desc.mCollisionDistanceMultiplier = 0.1f;
-	desc.mStiffness = 50.0f;
-	desc.mViscosity = 40.0f;
-	desc.mRestDensity = 1000.0f;
-	desc.mSimulationMethod = NxOgre::Enums::FluidSimulationMethod_SPH;
-	desc.mFlags |= NxOgre::Enums::FluidFlags_Hardware;
-	desc.mExternalAcceleration.set(0,-9.81, 0);
-	//desc.mDamping
-	//desc.mSurfaceTension
-
-	  
-	NxOgre::Fluid* fluid = mPhysicsRenderSystem->createFluid(desc, "BaseWhiteNoLighting", Critter::Enums::FluidType_Position); //OGRE3DFluidType_Velocity OGRE3DFluidType_Position OGRE3DFluidType_OgreParticle
+	//NxOgre::FluidDescription desc;
+	mFluidDescription.mMaxParticles = 60000;
+	mFluidDescription.mKernelRadiusMultiplier = 2.0f;
+	mFluidDescription.mRestParticlesPerMetre = 7.0f;
+	mFluidDescription.mMotionLimitMultiplier = 3.0f;
+	mFluidDescription.mPacketSizeMultiplier = 8;
+	mFluidDescription.mCollisionDistanceMultiplier = 0.1f;
+	mFluidDescription.mStiffness = 50.0f;
+	mFluidDescription.mViscosity = 40.0f;
+	mFluidDescription.mRestDensity = 1000.0f;
+	mFluidDescription.mSimulationMethod = NxOgre::Enums::FluidSimulationMethod_SPH;
+	mFluidDescription.mFlags |= NxOgre::Enums::FluidFlags_Hardware; // NX_FF_COLLISION_TWOWAY, 
+	//mFluidDescription.mExternalAcceleration.set(0,-9.81, 0);
+	//mFluidDescription.mDamping // nonnegative
+	//mFluidDescription.mSurfaceTension
 
 
-	NxOgre::FluidEmitterDescription edesc;
-	edesc.mPose.set(0, 5, 0);
-	edesc.mParticleLifetime = 0;
-	edesc.mRate = 5000;
-	edesc.mType = NxOgre::Enums::FluidEmitterType_FlowRate;// NxOgre::Enums::FluidEmitterType_FlowRate FluidEmitterType_Pressure
-	edesc.mRandomAngle = 0.25f;
-	edesc.mRandomPosition.set(0.25f, 0.25f, 0.25f);
-	edesc.mReplusionCoefficient = 0.02f;
+	//NxOgre::FluidEmitterDescription edesc;
+	mEmitterDescription.mPose.set(0, 8, 0);
+	mEmitterDescription.mParticleLifetime = 0;
+	mEmitterDescription.mRate = 5000;
+	mEmitterDescription.mType = NxOgre::Enums::FluidEmitterType_FlowRate;// NxOgre::Enums::FluidEmitterType_FlowRate FluidEmitterType_Pressure
+	mEmitterDescription.mRandomAngle = 0.25f;
+	mEmitterDescription.mRandomPosition.set(0.25f, 0.25f, 0.25f);
+	mEmitterDescription.mReplusionCoefficient = 0.02f;
 	//	edesc.mReplusionCoefficient = 0.8f; --> from other code snippet
 //edesc.mDimensionX = 4.0f;
 //edesc.mDimensionY = 4.0f;
-	NxOgre::FluidEmitter* emitter = fluid->createEmitter(edesc);
+	
+	createFluid();
+
+	//mPhysicsScene->createActor(NxOgre::BoxDescription(1,1,1), NxOgre::Vec3(0,10,0));
+}
+
+void OgreWidget::createFluid() {
+	if (mFluid) {
+		mFluid->destroyEmitter(mEmitter);
+		mPhysicsRenderSystem->destroyFluid(mFluid);
+		mFluid = 0;
+	}
+
+	mFluid = mPhysicsRenderSystem->createFluid(mFluidDescription, "BaseWhiteNoLighting", Critter::Enums::FluidType_Position); //OGRE3DFluidType_Velocity OGRE3DFluidType_Position OGRE3DFluidType_OgreParticle
+	mEmitter = mFluid->createEmitter(mEmitterDescription);
 }
 
 void OgreWidget::updateFrameStats(void)

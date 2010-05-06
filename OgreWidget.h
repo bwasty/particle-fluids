@@ -5,12 +5,17 @@
 
 #include <QtGui>
 #include <Ogre.h>
+#include <NxOgreFluidDescription.h>
+#include <NxOgreFluidEmitterDescription.h>
 
 namespace NxOgre {
 	class World;
 	class TimeController;
 	class Scene;
 	class VisualDebugger;
+	class Fluid;
+	class FluidEmitter;
+	class FluidDescription;
 }
 
 namespace Critter {
@@ -33,6 +38,8 @@ public:
 	//bool frameStarted(const Ogre::FrameEvent &evt);
 	bool frameRenderingQueued(const Ogre::FrameEvent &evt);
 	bool frameEnded(const Ogre::FrameEvent &evt);
+
+	void createFluid();
 
 public slots:
     void setBackgroundColor(QColor c);
@@ -84,7 +91,13 @@ private:
 	Critter::Renderable*		mVisualDebuggerRenderable;
 	Ogre::SceneNode*		mVisualDebuggerNode;
 
+	NxOgre::Fluid* mFluid;
+	NxOgre::FluidEmitter* mEmitter;
+
 	Ogre::Overlay* mDebugOverlay;
+public:
+	NxOgre::FluidDescription mFluidDescription;
+	NxOgre::FluidEmitterDescription mEmitterDescription;
 };
 
 #endif OGREWIDGET_H
