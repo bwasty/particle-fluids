@@ -42,7 +42,9 @@ mCamera(0), oldPos(invalidMousePoint), selectedNode(0), mFluid(0)
 	mEmitterDescription.mPose.set(0, 8, 0);
 	mEmitterDescription.mParticleLifetime = 0;
 	mEmitterDescription.mRate = 5000;
+	mEmitterDescription.mFluidSpeed = 1;
 	mEmitterDescription.mType = NxOgre::Enums::FluidEmitterType_FlowRate;// NxOgre::Enums::FluidEmitterType_FlowRate FluidEmitterType_Pressure
+	mEmitterDescription.mShape = NxOgre::Enums::FluidEmitterShape_Ellipse;
 	mEmitterDescription.mRandomAngle = 0.25f;
 	mEmitterDescription.mRandomPosition.set(0.25f, 0.25f, 0.25f);
 	mEmitterDescription.mReplusionCoefficient = 0.02f;
@@ -91,7 +93,7 @@ void OgreWidget::setBackgroundColor(QColor c)
 
 void OgreWidget::keyPressEvent(QKeyEvent *e)
 {
-	// TODO: camera moving speed?
+	// TODO?: camera moving speed?
     static QMap<int, Ogre::Vector3> keyCoordModificationMapping;
     static bool mappingInitialised = false;
 
@@ -314,7 +316,7 @@ void OgreWidget::wheelEvent(QWheelEvent *e)
 
     //const Ogre::Vector3 &actualCamPos = mCamera->getPosition();
     //setCameraPosition(actualCamPos + zTranslation);
-	// TODO: mouse wheel zoom
+	// TODO?: mouse wheel zoom
 
     e->accept();
 }
@@ -323,7 +325,7 @@ void OgreWidget::initOgreSystem()
 {
     mRoot = new Ogre::Root();
 
-	// TODO: config options: do better
+	// TODO?: config options: do better
     Ogre::RenderSystem *renderSystem = mRoot->getRenderSystemByName("OpenGL Rendering Subsystem");
     mRoot->setRenderSystem(renderSystem);
     mRoot->initialise(false);
@@ -343,7 +345,6 @@ void OgreWidget::initOgreSystem()
         mCamera->lookAt(0,0,0);
     //emit cameraPositionChanged(camPos);
 
-	// TODO: far clip?
     mViewport = mRenderWindow->addViewport(mCamera);
     mViewport->setBackgroundColour(Ogre::ColourValue(0,0,0));
     mCamera->setAspectRatio(Ogre::Real(width()) / Ogre::Real(height()));
@@ -444,9 +445,6 @@ void OgreWidget::createScene()
 	mPhysicsScene->createSceneGeometry(NxOgre::BoxDescription(1,16,16), NxOgre::Vec3(-4,0, 0));
 	mPhysicsScene->createSceneGeometry(NxOgre::BoxDescription(1,16,16), NxOgre::Vec3(4,0, 0));
 	mPhysicsScene->createSceneGeometry(NxOgre::BoxDescription(16,1,18), NxOgre::Vec3(0,4, 0));
-
-
-	// TODO!!: move fluid creation to function, retrieve values from property browser (how to retrieve -> QSet from manager->properties())
 	
 	createFluid();
 

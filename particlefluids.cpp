@@ -4,6 +4,8 @@
 #include "qtvariantproperty.h"
 #include <QtGroupBoxPropertyBrowser>
 #include <QtGroupPropertyManager>
+#include <QtTreePropertyBrowser>
+#include <QtButtonPropertyBrowser>
 #include <NxOgre.h>
 
 ParticleFluids::ParticleFluids(QWidget *parent, Qt::WFlags flags)
@@ -36,8 +38,11 @@ void ParticleFluids::setupPhysXGUI() {
 	QtVariantPropertyManager* variantManager = new QtVariantPropertyManager(this);
 	QtVariantEditorFactory *variantFactory = new QtVariantEditorFactory(this);
 	
-	QtGroupBoxPropertyBrowser* propertyEditor = new QtGroupBoxPropertyBrowser(ui.dockWidgetPhysX);
-    propertyEditor->setFactoryForManager(variantManager, variantFactory);
+	//QtGroupBoxPropertyBrowser* propertyEditor = new QtGroupBoxPropertyBrowser(ui.dockWidgetPhysX);
+	//QtTreePropertyBrowser* propertyEditor = new QtTreePropertyBrowser(ui.dockWidgetPhysX);
+	QtButtonPropertyBrowser* propertyEditor = new QtButtonPropertyBrowser(ui.dockWidgetPhysX);
+    
+	propertyEditor->setFactoryForManager(variantManager, variantFactory);
 
     ui.dockWidgetPhysX->setWidget(propertyEditor);
 
@@ -121,6 +126,7 @@ The value must not be higher than the product of packetSizeMultiplier and kernel
 	flags << "Hardware" << "CollisionTwoWay" << "DisableGravity";
 	property->setAttribute("flagNames", flags);
 	property->setValue(1); // TODO: set fluid flags properly?
+	property->setToolTip("NX_F_MIXED_MODE - alternates between SPH and simple mode (providing more performance than SPH alone, while maintaining some dense characteristics).");
 	group->addSubProperty(property);
 
 
@@ -128,15 +134,43 @@ The value must not be higher than the product of packetSizeMultiplier and kernel
 	propertyEditor->addProperty(group);
 
 	//mPose
-	//mParticleLifetime
-	//mRate
-	//mType
-	//...
 
-	group = groupManager->addProperty("General"); // Sim speed
+	property = variantManager->addProperty(QVariant::Double, "ParticleLifetime");
+	property->setValue(mOgreWidget->mEmitterDescription.mParticleLifetime);
+	property->setAttribute("decimals", 4);
+	property->setToolTip("in seconds. if 0: particle will live until collides with drain");
+	group->addSubProperty(property);
+
+	//mRate
+	property = variantManager->addProperty(QVariant::Double, "Rate");
+	property->setValue(mOgreWidget->mEmitterDescription.mRate);
+	property->setToolTip("The rate specifies how many particles are emitted per second.\nThe rate is only considered in the simulation if the type is set to NX_FE_CONSTANT_FLOW_RATE.");
+	group->addSubProperty(property);
+
+	// mType - FlowRate, Pressure
+	property = variantManager->addProperty(QtVariantPropertyManager::enumTypeId(), "Type");
+	enums = QStringList();
+	enums << "ConstantFlowRate" << "ConstantPressure";
+	property->setAttribute("enumNames", enums);
+	// TODO: set flag value properly from emitter description?
+	group->addSubProperty(property);
+
+	property = variantManager->addProperty(QVariant::Double, "FluidSpeed");
+	property->setValue(mOgreWidget->mEmitterDescription.mFluidSpeed);
+	property->setToolTip("The velocity magnitude of the emitted fluid particles. Default 1.0?");
+	group->addSubProperty(property);
+
+	// shape
+	// dimensionX, dimensionY 
+	// randomAngle 
+	// randomPos
+	// if frameShape used: flags NX_FEF_FORCE_ON_BODY, NX_FEF_ADD_BODY_VELOCITY
+
+	group = groupManager->addProperty("General"); // Sim speed, sim paused (speed = 0?)
 	propertyEditor->addProperty(group);
 
-	connect(variantManager, SIGNAL(valueChanged(QtProperty *, const QVariant &)), this, SLOT(propertyValueChanged(QtProperty *, const QVariant &)));
+	connect(variantManager, SIGNAL(valueChanged(QtProperty *, const QVariant &)), 
+		this, SLOT(propertyValueChanged(QtProperty *, const QVariant &)));
 }
 
 void ParticleFluids::propertyValueChanged(QtProperty* property, const QVariant & value) {
