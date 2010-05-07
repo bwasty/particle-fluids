@@ -91,13 +91,16 @@ private:
 	Critter::Renderable*		mVisualDebuggerRenderable;
 	Ogre::SceneNode*		mVisualDebuggerNode;
 
-	NxOgre::Fluid* mFluid;
-	NxOgre::FluidEmitter* mEmitter;
-
 	Ogre::Overlay* mDebugOverlay;
+
 public:
 	NxOgre::FluidDescription mFluidDescription;
 	NxOgre::FluidEmitterDescription mEmitterDescription;
+
+	NxOgre::Fluid* mFluid;
+	NxOgre::FluidEmitter* mEmitter;
+
+	float mSimulationSpeed;
 };
 
 #endif OGREWIDGET_H

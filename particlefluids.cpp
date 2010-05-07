@@ -24,10 +24,7 @@ ParticleFluids::ParticleFluids(QWidget *parent, Qt::WFlags flags)
 	setupPhysXGUI();
 
 	// TODO: show camera position in status bar
-
 }
-
-
 
 ParticleFluids::~ParticleFluids()
 {
@@ -48,12 +45,20 @@ void ParticleFluids::setupPhysXGUI() {
 
 	propertyEditor->show();
 
-	// TODO!!: get values from default fluid & emitter descriptions, catch signal valueChanged OR add "change"-Button
 	QtGroupPropertyManager* groupManager = new QtGroupPropertyManager(this);
+
+	//QtProperty *group = groupManager->addProperty("General"); // Sim speed, sim paused (speed = 0?)
+	//QtBrowserItem* generalGroupItem = propertyEditor->addProperty(group);
+
+	QtVariantProperty *property = variantManager->addProperty(QVariant::Double, "Simulation Speed");
+	property->setValue(1);
+	property->setToolTip("the time difference for the PhysX simulation step is multiplied by this factor");
+	propertyEditor->addProperty(property);
+
 	QtProperty *group = groupManager->addProperty("Fluid");
-	propertyEditor->addProperty(group);
+	QtBrowserItem* fluidGroupItem = propertyEditor->addProperty(group);
 	
-	QtVariantProperty *property = variantManager->addProperty(QVariant::Int, "MaxParticles");
+	property = variantManager->addProperty(QVariant::Int, "MaxParticles");
 	property->setAttribute("singleStep", 200);
 	property->setValue(mOgreWidget->mFluidDescription.mMaxParticles);
 	group->addSubProperty(property);
@@ -65,7 +70,6 @@ void ParticleFluids::setupPhysXGUI() {
 radius = KernelRadiusMultiplier / RestParticlesPerMeter. Should be set around 2.0 and definitely below 2.5 for optimal performance and simulation quality.");
 	group->addSubProperty(property);
 
-	//TODO!!!: add rest of fluid, emitter, general parameters
 	property = variantManager->addProperty(QVariant::Double, "RestParticlesPerMeter");
 	property->setValue(mOgreWidget->mFluidDescription.mRestParticlesPerMetre);
 	property->setAttribute("decimals", 4);
@@ -166,8 +170,8 @@ The value must not be higher than the product of packetSizeMultiplier and kernel
 	// randomPos
 	// if frameShape used: flags NX_FEF_FORCE_ON_BODY, NX_FEF_ADD_BODY_VELOCITY
 
-	group = groupManager->addProperty("General"); // Sim speed, sim paused (speed = 0?)
-	propertyEditor->addProperty(group);
+    propertyEditor->setExpanded(fluidGroupItem, true);
+	//propertyEditor->setExpanded(generalGroupItem, true);
 
 	connect(variantManager, SIGNAL(valueChanged(QtProperty *, const QVariant &)), 
 		this, SLOT(propertyValueChanged(QtProperty *, const QVariant &)));
@@ -176,14 +180,91 @@ The value must not be higher than the product of packetSizeMultiplier and kernel
 void ParticleFluids::propertyValueChanged(QtProperty* property, const QVariant & value) {
 	//static int t = 0;
 	//t++;
-	//ui.statusBar->showMessage(QString("%1").arg(t));
+	ui.statusBar->showMessage(QString("%1 %2").arg(property->propertyName()).arg(value.toString()));
 	//TODO!!: check property name, change according variable
-	//ui.statusBar->showMessage(property->propertyName());
+
+	bool shouldRecreate = false;
+
 	QString pName = property->propertyName();
-	if (pName == "") {
+	if (pName == "Simulation Speed") {
+		mOgreWidget->mSimulationSpeed = value.toFloat();
 	}
-	else if (pName == "") {
+	else if (pName == "MaxParticles") {
+		mOgreWidget->mFluidDescription.mMaxParticles = value.toUInt();
+		shouldRecreate = true;
+	}
+	else if (pName == "KernelRadiusMultiplier") {
+		mOgreWidget->mFluidDescription.mKernelRadiusMultiplier = value.toFloat();
+		shouldRecreate = true;
+	}
+	else if (pName == "RestParticlesPerMeter") {
+		mOgreWidget->mFluidDescription.mRestParticlesPerMetre = value.toFloat();
+		shouldRecreate = true;
+	}
+	else if (pName == "RestDensity") {
+		mOgreWidget->mFluidDescription.mRestDensity = value.toFloat();
+		shouldRecreate = true;
+	}
+	else if (pName == "Viscosity") {
+		mOgreWidget->mFluidDescription.mViscosity = value.toFloat();
+		mOgreWidget->mFluid->setViscosity(mOgreWidget->mFluidDescription.mViscosity);
+	}
+	else if (pName == "Stiffness") {
+		mOgreWidget->mFluidDescription.mStiffness = value.toFloat();
+		mOgreWidget->mFluid->setStiffness(mOgreWidget->mFluidDescription.mStiffness);
+	}
+	else if (pName == "Damping") {
+		mOgreWidget->mFluidDescription.mDamping = value.toFloat();
+		mOgreWidget->mFluid->setDamping(mOgreWidget->mFluidDescription.mDamping);
+	}
+	else if (pName == "SurfaceTension") {
+		mOgreWidget->mFluidDescription.mSurfaceTension = value.toFloat();
+		mOgreWidget->mFluid->setSurfaceTension(mOgreWidget->mFluidDescription.mSurfaceTension);
+	}
+	else if (pName == "MotionLimitMultiplier") {
+		mOgreWidget->mFluidDescription.mMotionLimitMultiplier = value.toFloat();
+		shouldRecreate = true;
+	}
+	else if (pName == "SimulationMethod") {
+		int e = value.toInt();
+		int converted;
+		if (e == 0)
+			converted = NxOgre::Enums::FluidSimulationMethod_SPH;
+		else if (e == 1)
+			converted = NxOgre::Enums::FluidSimulationMethod_NoParticleInteraction;
+		else if (e == 2)
+			converted = NxOgre::Enums::FluidSimulationMethod_MixedMode;
+
+		mOgreWidget->mFluidDescription.mSimulationMethod = converted;
+		mOgreWidget->mFluid->setSimulationMethod(converted);		
+	}
+	else if (pName == "Flags") { // TODO!: test flags
+		int f = value.toInt();
+		NxOgre::FluidDescription defaultDesc;
+		int converted=defaultDesc.mFlags;
+		if ((f&1) == 1)
+			converted |= NxOgre::Enums::FluidFlags_Hardware;
+		else
+			
+		if ((f&1) == 2)
+			converted |= NxOgre::Enums::FluidFlags_CollisionTwoWay;
+		if ((f&1) == 3)
+			converted |= NxOgre::Enums::FluidFlags_DisableGravity;
+
+		// TODO: how to retain unmentioned flags?? -> create new description...
+		
+		//converted
+	}
+	else if (pName == "ParticleLifetime") {
+	}
+	// Now Emitter parameters
+	else if (pName == "Rate") {
+	}
+	else if (pName == "Type") {
+	}
+	else if (pName == "FluidSpeed") {
 	}
 
-	mOgreWidget->createFluid();
+	if (shouldRecreate)
+		mOgreWidget->createFluid();
 }

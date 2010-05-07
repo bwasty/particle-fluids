@@ -14,7 +14,7 @@ const Ogre::Real OgreWidget::turboModifier(10);
 OgreWidget::OgreWidget(QWidget *parent)
 :QWidget(parent),
 mRoot(0), mSceneMgr(0), mRenderWindow(0), mViewport(0),
-mCamera(0), oldPos(invalidMousePoint), selectedNode(0), mFluid(0)
+mCamera(0), oldPos(invalidMousePoint), selectedNode(0), mFluid(0), mSimulationSpeed(1)
 {
     setAttribute(Qt::WA_OpaquePaintEvent);
     setAttribute(Qt::WA_PaintOnScreen);
@@ -259,7 +259,7 @@ void OgreWidget::paintEvent(QPaintEvent *e)
 }
 
 bool OgreWidget::frameRenderingQueued(const Ogre::FrameEvent &evt) {
-	mPhysicsTimeController->advance(evt.timeSinceLastFrame*12);//1.0f/60.0f);///evt.timeSinceLastFrame*mSimulationSpeed);//1.0f/60.0f);
+	mPhysicsTimeController->advance(evt.timeSinceLastFrame*mSimulationSpeed);//1.0f/60.0f);///evt.timeSinceLastFrame*mSimulationSpeed);//1.0f/60.0f);
 	mVisualDebugger->draw();
 	mVisualDebuggerNode->needUpdate();
 
