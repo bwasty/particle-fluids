@@ -238,31 +238,37 @@ void ParticleFluids::propertyValueChanged(QtProperty* property, const QVariant &
 		mOgreWidget->mFluidDescription.mSimulationMethod = converted;
 		mOgreWidget->mFluid->setSimulationMethod(converted);		
 	}
-	else if (pName == "Flags") { // TODO!: test flags
-		int f = value.toInt();
-		NxOgre::FluidDescription defaultDesc;
-		int converted=defaultDesc.mFlags;
-		if ((f&1) == 1)
-			converted |= NxOgre::Enums::FluidFlags_Hardware;
-		else
-			
-		if ((f&1) == 2)
-			converted |= NxOgre::Enums::FluidFlags_CollisionTwoWay;
-		if ((f&1) == 3)
-			converted |= NxOgre::Enums::FluidFlags_DisableGravity;
-
-		// TODO: how to retain unmentioned flags?? -> create new description...
-		
-		//converted
+	// Flags
+	else if (pName == "Hardware") { // TODO!: test flags
+		mOgreWidget->mFluidDescription.mFlags ^= NxOgre::Enums::FluidFlags_Hardware;
+		mOgreWidget->mFluid->setFlag(NxOgre::Enums::FluidFlags_Hardware, value.toBool());
+	}
+	else if (pName == "CollisionTwoWay") { // TODO!: test flags
+		mOgreWidget->mFluidDescription.mFlags ^= NxOgre::Enums::FluidFlags_CollisionTwoWay;
+		mOgreWidget->mFluid->setFlag(NxOgre::Enums::FluidFlags_CollisionTwoWay, value.toBool());
+	}
+	else if (pName == "DisableGravity") {
+		mOgreWidget->mFluidDescription.mFlags ^= NxOgre::Enums::FluidFlags_DisableGravity;
+		mOgreWidget->mFluid->setFlag(NxOgre::Enums::FluidFlags_DisableGravity, value.toBool());
 	}
 	else if (pName == "ParticleLifetime") {
+		mOgreWidget->mEmitterDescription.mParticleLifetime = value.toFloat();
+		mOgreWidget->mEmitter->setParticleLifetime(value.toFloat());
 	}
 	// Now Emitter parameters
 	else if (pName == "Rate") {
+		mOgreWidget->mEmitterDescription.mRate = value.toFloat();
+		mOgreWidget->mEmitter->setRate(value.toFloat());
 	}
 	else if (pName == "Type") {
+		if (value.toInt() == 0)
+			mOgreWidget->mEmitterDescription.mType = NxOgre::Enums::FluidEmitterType_FlowRate;
+		else if (value.toInt() == 1)
+			mOgreWidget->mEmitterDescription.mType = NxOgre::Enums::FluidEmitterType_Pressure;
 	}
 	else if (pName == "FluidSpeed") {
+		mOgreWidget->mEmitterDescription.mFluidSpeed = value.toFloat();
+		mOgreWidget->mEmitter->setFluidSpeed(value.toFloat());
 	}
 
 	if (shouldRecreate)
