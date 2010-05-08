@@ -205,7 +205,7 @@ void ParticleFluids::propertyValueChanged(QtProperty* property, const QVariant &
 		mOgreWidget->mFluidDescription.mRestDensity = value.toFloat();
 		shouldRecreate = true;
 	}
-	else if (pName == "Viscosity") {
+	else if (pName == "Viscosity") { // TODO: doesn't seem to work without reset
 		mOgreWidget->mFluidDescription.mViscosity = value.toFloat();
 		mOgreWidget->mFluid->setViscosity(mOgreWidget->mFluidDescription.mViscosity);
 	}
@@ -213,7 +213,7 @@ void ParticleFluids::propertyValueChanged(QtProperty* property, const QVariant &
 		mOgreWidget->mFluidDescription.mStiffness = value.toFloat();
 		mOgreWidget->mFluid->setStiffness(mOgreWidget->mFluidDescription.mStiffness);
 	}
-	else if (pName == "Damping") {
+	else if (pName == "Damping") { // TODO: force nonnegative
 		mOgreWidget->mFluidDescription.mDamping = value.toFloat();
 		mOgreWidget->mFluid->setDamping(mOgreWidget->mFluidDescription.mDamping);
 	}
@@ -256,7 +256,7 @@ void ParticleFluids::propertyValueChanged(QtProperty* property, const QVariant &
 		mOgreWidget->mEmitter->setParticleLifetime(value.toFloat());
 	}
 	// Now Emitter parameters
-	else if (pName == "Rate") {
+	else if (pName == "Rate") { // TODO: strange behaviour when setting...bug in description handling (nxogre?)
 		mOgreWidget->mEmitterDescription.mRate = value.toFloat();
 		mOgreWidget->mEmitter->setRate(value.toFloat());
 	}
@@ -265,6 +265,8 @@ void ParticleFluids::propertyValueChanged(QtProperty* property, const QVariant &
 			mOgreWidget->mEmitterDescription.mType = NxOgre::Enums::FluidEmitterType_FlowRate;
 		else if (value.toInt() == 1)
 			mOgreWidget->mEmitterDescription.mType = NxOgre::Enums::FluidEmitterType_Pressure;
+
+		shouldRecreate = true;
 	}
 	else if (pName == "FluidSpeed") {
 		mOgreWidget->mEmitterDescription.mFluidSpeed = value.toFloat();
