@@ -33,6 +33,7 @@ mCamera(0), oldPos(invalidMousePoint), selectedNode(0), mFluid(0), mSimulationSp
 	mFluidDescription.mCollisionDistanceMultiplier = 0.12f;
 	mFluidDescription.mSimulationMethod = NxOgre::Enums::FluidSimulationMethod_SPH;
 	mFluidDescription.mFlags |= NxOgre::Enums::FluidFlags_Hardware; // FluidFlags_CollisionTwoWay NxOgre::Enums::FluidFlags_DisableGravity
+	mFluidDescription.mFlags ^= NxOgre::Enums::FluidFlags_Visualisation;
 	//mFluidDescription.mExternalAcceleration.set(0,-9.81, 0);
 
 	mEmitterDescription.mPose.set(0, 8, 0);
@@ -436,11 +437,11 @@ void OgreWidget::createScene()
 	mPhysicsScene->createSceneGeometry(pdesc);
 
 	// box for surrounding the fluid
-	mPhysicsScene->createSceneGeometry(NxOgre::BoxDescription(16,16,1), NxOgre::Vec3(0,0,-4));
-	mPhysicsScene->createSceneGeometry(NxOgre::BoxDescription(16,16,1), NxOgre::Vec3(0,0, 4));
-	mPhysicsScene->createSceneGeometry(NxOgre::BoxDescription(1,16,16), NxOgre::Vec3(-4,0, 0));
-	mPhysicsScene->createSceneGeometry(NxOgre::BoxDescription(1,16,16), NxOgre::Vec3(4,0, 0));
-	mPhysicsScene->createSceneGeometry(NxOgre::BoxDescription(16,1,18), NxOgre::Vec3(0,4, 0));
+	mPhysicsScene->createSceneGeometry(NxOgre::BoxDescription(16,25,1), NxOgre::Vec3(0,0,-4));
+	mPhysicsScene->createSceneGeometry(NxOgre::BoxDescription(16,25,1), NxOgre::Vec3(0,0, 4));
+	mPhysicsScene->createSceneGeometry(NxOgre::BoxDescription(1,25,16), NxOgre::Vec3(-4,0, 0));
+	mPhysicsScene->createSceneGeometry(NxOgre::BoxDescription(1,25,16), NxOgre::Vec3(4,0, 0));
+	//mPhysicsScene->createSceneGeometry(NxOgre::BoxDescription(16,1,18), NxOgre::Vec3(0,4, 0));
 	
 	createFluid();
 
@@ -454,7 +455,8 @@ void OgreWidget::createFluid() {
 		mFluid = 0;
 	}
 
-	mFluid = mPhysicsRenderSystem->createFluid(mFluidDescription, "BaseWhiteNoLighting", Critter::Enums::FluidType_Position); //OGRE3DFluidType_Velocity OGRE3DFluidType_Position OGRE3DFluidType_OgreParticle
+	// TODO!!!: with Ogre Particle System particles disappear after a while
+	mFluid = mPhysicsRenderSystem->createFluid(mFluidDescription, "BaseWhiteNoLighting", Critter::Enums::FluidType_OgreParticle); //FluidType_Velocity FluidType_Position FluidType_OgreParticle
 	mEmitter = mFluid->createEmitter(mEmitterDescription);
 }
 

@@ -52,6 +52,7 @@ void ParticleFluids::setupPhysXGUI() {
 
 	QtVariantProperty *property = variantManager->addProperty(QVariant::Double, "Simulation Speed");
 	property->setValue(1);
+	property->setAttribute("minimum", 0);
 	property->setToolTip("the time difference for the PhysX simulation step is multiplied by this factor");
 	propertyEditor->addProperty(property);
 
@@ -60,38 +61,48 @@ void ParticleFluids::setupPhysXGUI() {
 	
 	property = variantManager->addProperty(QVariant::Int, "MaxParticles");
 	property->setAttribute("singleStep", 200);
+	property->setAttribute("minimum", 1);
+	property->setAttribute("maximum", 65535);
 	property->setValue(mOgreWidget->mFluidDescription.mMaxParticles);
 	group->addSubProperty(property);
 
 	property = variantManager->addProperty(QVariant::Double, "KernelRadiusMultiplier");
 	property->setValue(mOgreWidget->mFluidDescription.mKernelRadiusMultiplier);
-	property->setAttribute("decimals", 4);
+	//property->setAttribute("decimals", 4);
+	property->setAttribute("minimum", 1);
+	property->setAttribute("singleStep", 0.1);
 	property->setToolTip("along with restParticlesPerMeter, controls the radius of influence for each particle. \n\
 radius = KernelRadiusMultiplier / RestParticlesPerMeter. Should be set around 2.0 and definitely below 2.5 for optimal performance and simulation quality.");
 	group->addSubProperty(property);
 
 	property = variantManager->addProperty(QVariant::Double, "RestParticlesPerMeter");
 	property->setValue(mOgreWidget->mFluidDescription.mRestParticlesPerMetre);
-	property->setAttribute("decimals", 4);
+	//property->setAttribute("decimals", 4);
+	property->setAttribute("minimum", 0.01);
+	property->setAttribute("singleStep", 0.1);
 	property->setToolTip("The particle resolution given as particles per linear meter measured when the fluid is in its rest state (relaxed).\n\
 Even if the particle system is simulated without particle interactions, this parameter defines the emission density of the emitters.");
 	group->addSubProperty(property);
 
 	property = variantManager->addProperty(QVariant::Double, "RestDensity");
 	property->setValue(mOgreWidget->mFluidDescription.mRestDensity);
+	property->setAttribute("minimum", 0.01);
+	property->setAttribute("singleStep", 10);
 	property->setToolTip("Target density for the fluid (water is about 1000). mass = restDensity/(restParticlesPerMeter^3).\n\
 The particle mass has an impact on the repulsion effect on emitters and actors.");
 	group->addSubProperty(property);
 
 	property = variantManager->addProperty(QVariant::Double, "Viscosity");
 	property->setValue(mOgreWidget->mFluidDescription.mViscosity);
-	property->setAttribute("decimals", 4);
+	//property->setAttribute("decimals", 4);
+	property->setAttribute("minimum", 0.01);
 	property->setToolTip("Must be positive. Higher values will result in a honey-like behavior.\n Viscosity is an effect which depends on the relative velocity of neighboring particles; it reduces the magnitude of the relative velocity");
 	group->addSubProperty(property);
 
 	property = variantManager->addProperty(QVariant::Double, "Stiffness");
 	property->setValue(mOgreWidget->mFluidDescription.mStiffness);
-	property->setAttribute("decimals", 4);
+	//property->setAttribute("decimals", 4);
+	property->setAttribute("minimum", 0.01);
 	property->setToolTip("Must be positive. The stiffness of the particle interaction related to the pressure.\n\
 This factor linearly scales the force which acts on particles which are closer to each other than the rest spacing.\n\
 Setting this parameter appropriately is crucial for the simulation. The right value depends on many factors such as viscosity,\n\
@@ -101,22 +112,22 @@ whereas too low values will make the fluid appear \"springy\" (the fluid acts mo
 
 	property = variantManager->addProperty(QVariant::Double, "Damping");
 	property->setValue(mOgreWidget->mFluidDescription.mDamping);
-	property->setAttribute("decimals", 4);
+	//property->setAttribute("decimals", 4);
 	property->setAttribute("minimum", 0);
 	property->setToolTip("must be nonnegative. Reduces the velocity of the particles over time.\nSetting the damping to 0 will leave the particles unaffected.");
 	group->addSubProperty(property);
 
 	property = variantManager->addProperty(QVariant::Double, "SurfaceTension");
 	property->setValue(mOgreWidget->mFluidDescription.mSurfaceTension);
-	property->setAttribute("decimals", 4);
+	//property->setAttribute("decimals", 4);
 	property->setAttribute("minimum", 0);
 	property->setToolTip("Must be nonnegative. Defines an attractive force between particles. \nHigher values will result in smoother surfaces.");
 	group->addSubProperty(property);
 
 	property = variantManager->addProperty(QVariant::Double, "MotionLimitMultiplier");
 	property->setValue(mOgreWidget->mFluidDescription.mMotionLimitMultiplier);
-	property->setAttribute("decimals", 4);
-	property->setAttribute("minimum", 0);
+	//property->setAttribute("decimals", 4);
+	property->setAttribute("minimum", 1);
 	property->setToolTip("Maximal distance a particle is allowed to travel within one timestep. Default value is 3.6 (i.e., 3.0 * kernelRadiusMultiplier). \n\
 The value must not be higher than the product of packetSizeMultiplier and kernelRadiusMultiplier.");
 	group->addSubProperty(property);
@@ -152,6 +163,7 @@ The value must not be higher than the product of packetSizeMultiplier and kernel
 	//mRate
 	property = variantManager->addProperty(QVariant::Double, "Rate");
 	property->setValue(mOgreWidget->mEmitterDescription.mRate);
+	property->setAttribute("singleStep", 10);
 	property->setAttribute("minimum", 0);
 	property->setToolTip("The rate specifies how many particles are emitted per second.\nThe rate is only considered in the simulation if the type is set to NX_FE_CONSTANT_FLOW_RATE.");
 	group->addSubProperty(property);
