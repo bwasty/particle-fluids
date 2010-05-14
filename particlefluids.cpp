@@ -109,12 +109,14 @@ whereas too low values will make the fluid appear \"springy\" (the fluid acts mo
 	property = variantManager->addProperty(QVariant::Double, "SurfaceTension");
 	property->setValue(mOgreWidget->mFluidDescription.mSurfaceTension);
 	property->setAttribute("decimals", 4);
+	property->setAttribute("minimum", 0);
 	property->setToolTip("Must be nonnegative. Defines an attractive force between particles. \nHigher values will result in smoother surfaces.");
 	group->addSubProperty(property);
 
 	property = variantManager->addProperty(QVariant::Double, "MotionLimitMultiplier");
 	property->setValue(mOgreWidget->mFluidDescription.mMotionLimitMultiplier);
 	property->setAttribute("decimals", 4);
+	property->setAttribute("minimum", 0);
 	property->setToolTip("Maximal distance a particle is allowed to travel within one timestep. Default value is 3.6 (i.e., 3.0 * kernelRadiusMultiplier). \n\
 The value must not be higher than the product of packetSizeMultiplier and kernelRadiusMultiplier.");
 	group->addSubProperty(property);
@@ -143,12 +145,14 @@ The value must not be higher than the product of packetSizeMultiplier and kernel
 	property = variantManager->addProperty(QVariant::Double, "ParticleLifetime");
 	property->setValue(mOgreWidget->mEmitterDescription.mParticleLifetime);
 	property->setAttribute("decimals", 4);
+	property->setAttribute("minimum", 0);
 	property->setToolTip("in seconds. if 0: particle will live until collides with drain");
 	group->addSubProperty(property);
 
 	//mRate
 	property = variantManager->addProperty(QVariant::Double, "Rate");
 	property->setValue(mOgreWidget->mEmitterDescription.mRate);
+	property->setAttribute("minimum", 0);
 	property->setToolTip("The rate specifies how many particles are emitted per second.\nThe rate is only considered in the simulation if the type is set to NX_FE_CONSTANT_FLOW_RATE.");
 	group->addSubProperty(property);
 
@@ -162,6 +166,7 @@ The value must not be higher than the product of packetSizeMultiplier and kernel
 
 	property = variantManager->addProperty(QVariant::Double, "FluidSpeed");
 	property->setValue(mOgreWidget->mEmitterDescription.mFluidSpeed);
+	property->setAttribute("minimum", 0);
 	property->setToolTip("The velocity magnitude of the emitted fluid particles. Default 1.0?");
 	group->addSubProperty(property);
 
@@ -179,10 +184,7 @@ The value must not be higher than the product of packetSizeMultiplier and kernel
 }
 
 void ParticleFluids::propertyValueChanged(QtProperty* property, const QVariant & value) {
-	//static int t = 0;
-	//t++;
 	ui.statusBar->showMessage(QString("%1 %2").arg(property->propertyName()).arg(value.toString()));
-	//TODO!!: check property name, change according variable
 
 	bool shouldRecreate = false;
 
@@ -241,7 +243,7 @@ void ParticleFluids::propertyValueChanged(QtProperty* property, const QVariant &
 		mOgreWidget->mFluid->setSimulationMethod(converted);		
 	}
 	// Flags
-	else if (pName == "Hardware") { // TODO: Hardware flag needs recreation
+	else if (pName == "Hardware") {
 		mOgreWidget->mFluidDescription.mFlags ^= NxOgre::Enums::FluidFlags_Hardware;
 		//mOgreWidget->mFluid->setFlag(NxOgre::Enums::FluidFlags_Hardware, value.toBool()); // doesn't change anything in current fluid
 		shouldRecreate = true;
@@ -259,7 +261,7 @@ void ParticleFluids::propertyValueChanged(QtProperty* property, const QVariant &
 		mOgreWidget->mEmitter->setParticleLifetime(value.toFloat());
 	}
 	// Now Emitter parameters
-	else if (pName == "Rate") { // TODO: strange behaviour when setting...bug in description handling (nxogre?)
+	else if (pName == "Rate") {
 		mOgreWidget->mEmitterDescription.mRate = value.toFloat();
 		mOgreWidget->mEmitter->setRate(value.toFloat());
 	}

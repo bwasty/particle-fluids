@@ -1,9 +1,7 @@
-// from http://www.ogre3d.org/forums/viewtopic.php?p=367010&sid=5f3feeed878d9121b62dec0d82e7d19e#p367010 (orginally from Ogitor)
+// base OgreWidget functionality from http://www.ogre3d.org/forums/viewtopic.php?p=367010&sid=5f3feeed878d9121b62dec0d82e7d19e#p367010 (orginally from Ogitor)
 #include "stdafx.h"
 #include "ogrewidget.h"
 
-//#include <OGRE3DRenderSystem.h>
-//#include <OGRE3DRenderable.h>
 #include <Critter.h>
 
 using namespace Ogre;
@@ -21,8 +19,7 @@ mCamera(0), oldPos(invalidMousePoint), selectedNode(0), mFluid(0), mSimulationSp
     setMinimumSize(240,240);
         setFocusPolicy(Qt::ClickFocus);
 
-	// initial fluid parameters Fluid
-
+	// initial fluid parameters
 	mFluidDescription.mMaxParticles = 60000;
 	mFluidDescription.mKernelRadiusMultiplier = 2.0f;
 	mFluidDescription.mRestParticlesPerMetre = 7.0f;
@@ -38,19 +35,18 @@ mCamera(0), oldPos(invalidMousePoint), selectedNode(0), mFluid(0), mSimulationSp
 	mFluidDescription.mFlags |= NxOgre::Enums::FluidFlags_Hardware; // FluidFlags_CollisionTwoWay NxOgre::Enums::FluidFlags_DisableGravity
 	//mFluidDescription.mExternalAcceleration.set(0,-9.81, 0);
 
-	//NxOgre::FluidEmitterDescription edesc;
 	mEmitterDescription.mPose.set(0, 8, 0);
 	mEmitterDescription.mParticleLifetime = 0;
-	mEmitterDescription.mRate = 300;
-	mEmitterDescription.mFluidSpeed = 1;
+	mEmitterDescription.mRate = 180;
+	mEmitterDescription.mFluidSpeed = 3;
 	mEmitterDescription.mType = NxOgre::Enums::FluidEmitterType_FlowRate;// NxOgre::Enums::FluidEmitterType_FlowRate FluidEmitterType_Pressure
 	mEmitterDescription.mShape = NxOgre::Enums::FluidEmitterShape_Ellipse;
 	mEmitterDescription.mRandomAngle = 0.25f;
 	mEmitterDescription.mRandomPosition.set(0.25f, 0.25f, 0.25f);
 	mEmitterDescription.mReplusionCoefficient = 0.02f;
-	//	edesc.mReplusionCoefficient = 0.8f; --> from other code snippet
-//edesc.mDimensionX = 4.0f;
-//edesc.mDimensionY = 4.0f;
+	//edesc.mReplusionCoefficient = 0.8f; --> from other code snippet
+	//edesc.mDimensionX = 4.0f;
+	//edesc.mDimensionY = 4.0f;
 }
 
 OgreWidget::~OgreWidget()
