@@ -102,6 +102,7 @@ whereas too low values will make the fluid appear \"springy\" (the fluid acts mo
 	property = variantManager->addProperty(QVariant::Double, "Damping");
 	property->setValue(mOgreWidget->mFluidDescription.mDamping);
 	property->setAttribute("decimals", 4);
+	property->setAttribute("minimum", 0);
 	property->setToolTip("must be nonnegative. Reduces the velocity of the particles over time.\nSetting the damping to 0 will leave the particles unaffected.");
 	group->addSubProperty(property);
 
@@ -214,7 +215,7 @@ void ParticleFluids::propertyValueChanged(QtProperty* property, const QVariant &
 		mOgreWidget->mFluidDescription.mStiffness = value.toFloat();
 		mOgreWidget->mFluid->setStiffness(mOgreWidget->mFluidDescription.mStiffness);
 	}
-	else if (pName == "Damping") { // TODO: force nonnegative
+	else if (pName == "Damping") {
 		mOgreWidget->mFluidDescription.mDamping = value.toFloat();
 		mOgreWidget->mFluid->setDamping(mOgreWidget->mFluidDescription.mDamping);
 	}
@@ -242,7 +243,8 @@ void ParticleFluids::propertyValueChanged(QtProperty* property, const QVariant &
 	// Flags
 	else if (pName == "Hardware") { // TODO: Hardware flag needs recreation
 		mOgreWidget->mFluidDescription.mFlags ^= NxOgre::Enums::FluidFlags_Hardware;
-		mOgreWidget->mFluid->setFlag(NxOgre::Enums::FluidFlags_Hardware, value.toBool());
+		//mOgreWidget->mFluid->setFlag(NxOgre::Enums::FluidFlags_Hardware, value.toBool()); // doesn't change anything in current fluid
+		shouldRecreate = true;
 	}
 	else if (pName == "CollisionTwoWay") { // TODO!: test CollisionTwoWay flag
 		mOgreWidget->mFluidDescription.mFlags ^= NxOgre::Enums::FluidFlags_CollisionTwoWay;
