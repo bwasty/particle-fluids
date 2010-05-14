@@ -205,9 +205,10 @@ void ParticleFluids::propertyValueChanged(QtProperty* property, const QVariant &
 		mOgreWidget->mFluidDescription.mRestDensity = value.toFloat();
 		shouldRecreate = true;
 	}
-	else if (pName == "Viscosity") { // TODO: doesn't seem to work without reset
+	else if (pName == "Viscosity") {
 		mOgreWidget->mFluidDescription.mViscosity = value.toFloat();
-		mOgreWidget->mFluid->setViscosity(mOgreWidget->mFluidDescription.mViscosity);
+		//mOgreWidget->mFluid->setViscosity(mOgreWidget->mFluidDescription.mViscosity); // doesn't change anything in current fluid
+		shouldRecreate = true;
 	}
 	else if (pName == "Stiffness") {
 		mOgreWidget->mFluidDescription.mStiffness = value.toFloat();
@@ -231,19 +232,19 @@ void ParticleFluids::propertyValueChanged(QtProperty* property, const QVariant &
 		if (e == 0)
 			converted = NxOgre::Enums::FluidSimulationMethod_SPH;
 		else if (e == 1)
-			converted = NxOgre::Enums::FluidSimulationMethod_NoParticleInteraction;
-		else if (e == 2)
 			converted = NxOgre::Enums::FluidSimulationMethod_MixedMode;
+		else if (e == 2)
+			converted = NxOgre::Enums::FluidSimulationMethod_NoParticleInteraction;
 
 		mOgreWidget->mFluidDescription.mSimulationMethod = converted;
 		mOgreWidget->mFluid->setSimulationMethod(converted);		
 	}
 	// Flags
-	else if (pName == "Hardware") { // TODO!: test flags
+	else if (pName == "Hardware") { // TODO: Hardware flag needs recreation
 		mOgreWidget->mFluidDescription.mFlags ^= NxOgre::Enums::FluidFlags_Hardware;
 		mOgreWidget->mFluid->setFlag(NxOgre::Enums::FluidFlags_Hardware, value.toBool());
 	}
-	else if (pName == "CollisionTwoWay") { // TODO!: test flags
+	else if (pName == "CollisionTwoWay") { // TODO!: test CollisionTwoWay flag
 		mOgreWidget->mFluidDescription.mFlags ^= NxOgre::Enums::FluidFlags_CollisionTwoWay;
 		mOgreWidget->mFluid->setFlag(NxOgre::Enums::FluidFlags_CollisionTwoWay, value.toBool());
 	}

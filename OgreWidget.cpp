@@ -41,7 +41,7 @@ mCamera(0), oldPos(invalidMousePoint), selectedNode(0), mFluid(0), mSimulationSp
 	//NxOgre::FluidEmitterDescription edesc;
 	mEmitterDescription.mPose.set(0, 8, 0);
 	mEmitterDescription.mParticleLifetime = 0;
-	mEmitterDescription.mRate = 5000;
+	mEmitterDescription.mRate = 300;
 	mEmitterDescription.mFluidSpeed = 1;
 	mEmitterDescription.mType = NxOgre::Enums::FluidEmitterType_FlowRate;// NxOgre::Enums::FluidEmitterType_FlowRate FluidEmitterType_Pressure
 	mEmitterDescription.mShape = NxOgre::Enums::FluidEmitterShape_Ellipse;
