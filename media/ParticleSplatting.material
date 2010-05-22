@@ -1,0 +1,19 @@
+fragment_program SpherePointSprites cg
+{
+	source SpherePointSprites.cg
+	entry_point main
+	profiles fp20 fp30
+}
+
+material SpheresShaded
+{
+	technique
+	{
+		pass
+		{
+			fragment_program_ref SpherePointSprites
+			{
+			}
+		}
+	}
+}

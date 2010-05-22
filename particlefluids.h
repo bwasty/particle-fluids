@@ -25,6 +25,10 @@ public slots:
 private:
 	Ui::ParticleFluidsClass ui;
 	OgreWidget* mOgreWidget;
+
+public:
+	QLabel* mLabelParticleCount;
+	QLabel* mLabelCamPos;
 };
 
 #endif // PARTICLEFLUIDS_H

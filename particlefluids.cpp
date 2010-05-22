@@ -23,7 +23,9 @@ ParticleFluids::ParticleFluids(QWidget *parent, Qt::WFlags flags)
 
 	setupPhysXGUI();
 
-	// TODO: show camera position in status bar
+	// TODO!: show camera position and number of particles in status bar
+	mLabelParticleCount = new QLabel("Particle Count: 0");
+	statusBar()->addPermanentWidget(mLabelParticleCount);
 }
 
 ParticleFluids::~ParticleFluids()

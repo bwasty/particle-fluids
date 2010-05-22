@@ -1,8 +1,10 @@
 // base OgreWidget functionality from http://www.ogre3d.org/forums/viewtopic.php?p=367010&sid=5f3feeed878d9121b62dec0d82e7d19e#p367010 (orginally from Ogitor)
 #include "stdafx.h"
 #include "ogrewidget.h"
+#include "particlefluids.h"
 
 #include <Critter.h>
+//#include "NxOgreSharedPointer.h"
 
 using namespace Ogre;
 
@@ -455,8 +457,8 @@ void OgreWidget::createFluid() {
 		mFluid = 0;
 	}
 
-	// TODO!!!: with Ogre Particle System particles disappear after a while
-	mFluid = mPhysicsRenderSystem->createFluid(mFluidDescription, "BaseWhiteNoLighting", Critter::Enums::FluidType_OgreParticle); //FluidType_Velocity FluidType_Position FluidType_OgreParticle
+	// TODO!!!: with Ogre Particle System particles disappear after a while -> need display of current number of particles
+	mFluid = mPhysicsRenderSystem->createFluid(mFluidDescription, "SpheresShaded"/*"BaseWhiteNoLighting"*/, Critter::Enums::FluidType_OgreParticle); //FluidType_Velocity FluidType_Position FluidType_OgreParticle
 	mEmitter = mFluid->createEmitter(mEmitterDescription);
 }
 
@@ -494,4 +496,8 @@ void OgreWidget::updateFrameStats(void)
 		//guiDbg->setCaption(mDebugText);
 	}
 	catch(...) { /* ignore */ }
+
+	//int particleCount = *mFluid->getParticleData()->mNbParticles.get();
+	int particleCount = mFluid->getNbParticles();
+	((ParticleFluids*)parent())->mLabelParticleCount->setText(QString("Particle Count : %1").arg(particleCount));
 }
