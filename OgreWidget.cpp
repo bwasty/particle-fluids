@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "ogrewidget.h"
 #include "particlefluids.h"
+#include "ResourceGroupHelper.h"
 
 #include <Critter.h>
 //#include "NxOgreSharedPointer.h"
@@ -14,7 +15,7 @@ const Ogre::Real OgreWidget::turboModifier(10);
 OgreWidget::OgreWidget(QWidget *parent)
 :QWidget(parent),
 mRoot(0), mSceneMgr(0), mRenderWindow(0), mViewport(0),
-mCamera(0), oldPos(invalidMousePoint), selectedNode(0), mFluid(0), mSimulationSpeed(1)
+mCamera(0), oldPos(invalidMousePoint), selectedNode(0), mFluid(0), mSimulationSpeed(1), mResourceGroupHelper(new ResourceGroupHelper())
 {
     setAttribute(Qt::WA_OpaquePaintEvent);
     setAttribute(Qt::WA_PaintOnScreen);
@@ -270,7 +271,26 @@ bool OgreWidget::frameRenderingQueued(const Ogre::FrameEvent &evt) {
 
 
 bool OgreWidget::frameEnded(const Ogre::FrameEvent &evt) {
+	//reload changed ressources
 
+	// name of the resource group that we want to track
+    std::string resourceGroupName = "General1";
+
+    // to receive the error messages
+    //std::string errorMessages;
+
+    // look on the hdd the last modification time and try reload changes if needed
+	mResourceGroupHelper->checkTimeAndReloadIfNeeded(resourceGroupName, std::string(), false);
+
+    //if(errorMessages.size()>0)
+    //{
+    //   // you can display them in a message box, or in an overlay for example
+    //   // here I resend them to the log...
+    //   Ogre::LogManager& logMgr = Ogre::LogManager::getSingleton();
+    //   logMgr.logMessage("****************** HERE THE BAD MESSAGES : ");
+    //   logMgr.logMessage(errorMessages);
+    //   logMgr.logMessage("****************** END OF THE BAD MESSAGES *****");
+    //}
 
 	return true;
 }

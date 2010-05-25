@@ -183,6 +183,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ResourceGroupHelper.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\stdafx.cpp"
 				>
 				<FileConfiguration
@@ -208,10 +212,6 @@
 			Filter="h"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
-			<File
-				RelativePath=".\ModifiedParticleRenderer.h"
-				>
-			</File>
 			<File
 				RelativePath=".\OgreWidget.h"
 				>
@@ -266,6 +266,10 @@
 			</File>
 			<File
 				RelativePath=".\qdebugstream.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ResourceGroupHelper.h"
 				>
 			</File>
 			<File

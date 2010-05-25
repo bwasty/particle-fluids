@@ -23,6 +23,8 @@ namespace Critter {
 	class Renderable;
 }
 
+class ResourceGroupHelper;
+
 class OgreWidget : public QWidget, public Ogre::FrameListener
 {
     Q_OBJECT
@@ -92,6 +94,8 @@ private:
 	Ogre::SceneNode*		mVisualDebuggerNode;
 
 	Ogre::Overlay* mDebugOverlay;
+
+	ResourceGroupHelper* mResourceGroupHelper;
 
 public:
 	NxOgre::FluidDescription mFluidDescription;
