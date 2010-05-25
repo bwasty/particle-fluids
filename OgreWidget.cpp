@@ -271,26 +271,15 @@ bool OgreWidget::frameRenderingQueued(const Ogre::FrameEvent &evt) {
 
 
 bool OgreWidget::frameEnded(const Ogre::FrameEvent &evt) {
-	//reload changed ressources
+	static Real summedTime = 0;
+	summedTime += evt.timeSinceLastFrame;
+	if (summedTime >= 1) { // TODO: make toggle off button?
+		summedTime = 0;
 
-	// name of the resource group that we want to track
-    std::string resourceGroupName = "General1";
-
-    // to receive the error messages
-    //std::string errorMessages;
-
-    // look on the hdd the last modification time and try reload changes if needed
-	mResourceGroupHelper->checkTimeAndReloadIfNeeded(resourceGroupName, std::string(), false);
-
-    //if(errorMessages.size()>0)
-    //{
-    //   // you can display them in a message box, or in an overlay for example
-    //   // here I resend them to the log...
-    //   Ogre::LogManager& logMgr = Ogre::LogManager::getSingleton();
-    //   logMgr.logMessage("****************** HERE THE BAD MESSAGES : ");
-    //   logMgr.logMessage(errorMessages);
-    //   logMgr.logMessage("****************** END OF THE BAD MESSAGES *****");
-    //}
+		//reload changed ressources
+		// look on the hdd the last modification time and try reload changes if needed
+		mResourceGroupHelper->checkTimeAndReloadIfNeeded("General1", std::string(), false);
+	}
 
 	return true;
 }
@@ -480,7 +469,7 @@ void OgreWidget::createFluid() {
 		mFluid = 0;
 	}
 
-	mFluid = mPhysicsRenderSystem->createFluid(mFluidDescription, "SpheresShaded"/*"BaseWhiteNoLighting"*/, Critter::Enums::FluidType_Position); //FluidType_Velocity FluidType_Position FluidType_OgreParticle
+	mFluid = mPhysicsRenderSystem->createFluid(mFluidDescription, "SpheresShaded"/*"BaseWhiteNoLighting"*/, Critter::Enums::FluidType_OgreParticle); //FluidType_Velocity FluidType_Position FluidType_OgreParticle
 	mEmitter = mFluid->createEmitter(mEmitterDescription);
 }
 

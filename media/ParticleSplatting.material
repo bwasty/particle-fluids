@@ -14,6 +14,7 @@ material SpheresShaded
 			point_sprites on
 			point_size_attenuation off
 			point_size 1
+			//ambient 0.918 0.051 0.051
 			//fragment_program_ref SpherePointSprites
 			//{
 			//}
