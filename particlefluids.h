@@ -8,6 +8,7 @@ class OgreWidget;
 
 class QtProperty;
 class QVariant;
+class QDebugStream;
 
 class ParticleFluids : public QMainWindow
 {
@@ -25,6 +26,8 @@ public slots:
 private:
 	Ui::ParticleFluidsClass ui;
 	OgreWidget* mOgreWidget;
+	QDebugStream* mCout;
+	QDebugStream* mCerr;
 
 public:
 	QLabel* mLabelParticleCount;

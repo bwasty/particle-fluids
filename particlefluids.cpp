@@ -8,10 +8,19 @@
 #include <QtButtonPropertyBrowser>
 #include <NxOgre.h>
 
+#include "qdebugstream.h"
+
 ParticleFluids::ParticleFluids(QWidget *parent, Qt::WFlags flags)
 	: QMainWindow(parent, flags)
 {
 	ui.setupUi(this);
+	QPlainTextEdit* consoleOutput = new QPlainTextEdit();
+	consoleOutput->setReadOnly(true);
+	ui.dockWidgetConsole->setWidget(consoleOutput);
+
+	mCout = new QDebugStream(std::cout, consoleOutput);
+	mCerr = new QDebugStream(std::cerr, consoleOutput);
+
 	mOgreWidget = new OgreWidget(this);
 	setCentralWidget(mOgreWidget);
 
@@ -23,14 +32,15 @@ ParticleFluids::ParticleFluids(QWidget *parent, Qt::WFlags flags)
 
 	setupPhysXGUI();
 
-	// TODO!: show camera position and number of particles in status bar
+	// TODO!: show camera position in status bar
 	mLabelParticleCount = new QLabel("Particle Count: 0");
 	statusBar()->addPermanentWidget(mLabelParticleCount);
 }
 
 ParticleFluids::~ParticleFluids()
 {
-
+	delete mCout;
+	delete mCerr;
 }
 
 void ParticleFluids::setupPhysXGUI() {

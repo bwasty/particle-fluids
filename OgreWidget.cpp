@@ -454,7 +454,7 @@ void OgreWidget::createScene()
 
 void OgreWidget::createFluid() {
 	if (mFluid) {
-		// TODO!!!!: unstable physx: Fluid::destroyEmitter not linking
+		// TODO!: unstable physx: Fluid::destroyEmitter not linking
 		//mFluid->destroyEmitter(mEmitter);
 		mPhysicsRenderSystem->destroyFluid(mFluid);
 		mFluid = 0;
