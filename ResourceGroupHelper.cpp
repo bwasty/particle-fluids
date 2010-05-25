@@ -370,7 +370,7 @@ bool ResourceGroupHelper::checkTimeAndReloadIfNeeded(const std::string& pResourc
          // update the value
          iterInfoTime->second = lastModificationTime;
          
-         Ogre::LogManager::getSingleton().logMessage("Reloading materials because file has changed");
+         Ogre::LogManager::getSingleton().logMessage("----- Reloading materials -----");
          // use log if needed
          if(useLog)
          {

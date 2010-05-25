@@ -1,8 +1,8 @@
 fragment_program SpherePointSprites cg
 {
 	source SpherePointSprites.cg
-	entry_point main
-	profiles fp20 fp30
+	entry_point particleSpherePS
+	profiles arbfp1 fp20 fp30
 }
 
 material SpheresShaded
@@ -11,13 +11,15 @@ material SpheresShaded
 	{
 		pass
 		{
-			point_sprites on
-			point_size_attenuation off
-			point_size 1
+			//point_sprites on
+			//point_size_attenuation off
+			//point_size 1
 			//ambient 0.918 0.051 0.051
-			//fragment_program_ref SpherePointSprites
-			//{
-			//}
+			fragment_program_ref SpherePointSprites
+			{
+				param_named_auto ProjectionMatrix projection_matrix
+				param_named_auto lightDir light_direction 0
+			}
 		}
 	}
 }

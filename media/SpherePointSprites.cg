@@ -1,8 +1,10 @@
 struct PSOutput {
-	float fragDepth : DEPTH
-	float4 fragColor : COLOR
-}
+	float fragDepth : DEPTH;
+	float4 fragColor : COLOR;
+};
 
+uniform float4x4 ProjectionMatrix;
+uniform float3 lightDir;
 
 PSOutput particleSpherePS(
 	float2 texCoord : TEXCOORD0,
@@ -22,6 +24,8 @@ PSOutput particleSpherePS(
 	float4 clipSpacePos = mul(pixelPos, ProjectionMatrix);
 	OUT.fragDepth = clipSpacePos.z / clipSpacePos.w;
 	float diffuse = max(0.0, dot(N, lightDir));
-	OUT.fragColor = diffuse * color;
+
+	//TODO: tmp...
+	OUT.fragColor = diffuse * color + float4(1,0,0,1);
 	return OUT;
 }
