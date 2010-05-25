@@ -258,7 +258,8 @@ void OgreWidget::paintEvent(QPaintEvent *e)
 }
 
 bool OgreWidget::frameRenderingQueued(const Ogre::FrameEvent &evt) {
-	mPhysicsTimeController->advance(evt.timeSinceLastFrame*mSimulationSpeed);//1.0f/60.0f);///evt.timeSinceLastFrame*mSimulationSpeed);//1.0f/60.0f);
+	//mPhysicsTimeController->advance(evt.timeSinceLastFrame*mSimulationSpeed);//1.0f/60.0f);///evt.timeSinceLastFrame*mSimulationSpeed);//1.0f/60.0f);
+	mPhysicsWorld->advance(evt.timeSinceLastFrame*mSimulationSpeed);
 	mVisualDebugger->draw();
 	mVisualDebuggerNode->needUpdate();
 
@@ -335,6 +336,7 @@ void OgreWidget::initOgreSystem()
     Ogre::String widgetHandle;
     widgetHandle = Ogre::StringConverter::toString((size_t)((HWND)winId()));
     viewConfig["externalWindowHandle"] = widgetHandle;
+	//viewConfig["useNVPerfHUD"] = "true";
     mRenderWindow = mRoot->createRenderWindow("Ogre rendering window",
                 width(), height(), false, &viewConfig);
 
@@ -394,7 +396,7 @@ void OgreWidget::setupNxOgre() {
 	mPhysicsScene->setGravity(NxOgre::Vec3(0.0f,-9.81f,0.0f));
 	mPhysicsRenderSystem = new Critter::RenderSystem(mPhysicsScene);
 	
-	mPhysicsTimeController = NxOgre::TimeController::getSingleton();
+	//mPhysicsTimeController = NxOgre::TimeController::getSingleton();
 
 	mVisualDebugger = mPhysicsWorld->getVisualDebugger();
 	mVisualDebuggerRenderable = new Critter::Renderable(NxOgre::Enums::RenderableType_VisualDebugger);
@@ -452,13 +454,13 @@ void OgreWidget::createScene()
 
 void OgreWidget::createFluid() {
 	if (mFluid) {
-		mFluid->destroyEmitter(mEmitter);
+		// TODO!!!!: unstable physx: Fluid::destroyEmitter not linking
+		//mFluid->destroyEmitter(mEmitter);
 		mPhysicsRenderSystem->destroyFluid(mFluid);
 		mFluid = 0;
 	}
 
-	// TODO!!!: with Ogre Particle System particles disappear after a while -> need display of current number of particles
-	mFluid = mPhysicsRenderSystem->createFluid(mFluidDescription, "SpheresShaded"/*"BaseWhiteNoLighting"*/, Critter::Enums::FluidType_OgreParticle); //FluidType_Velocity FluidType_Position FluidType_OgreParticle
+	mFluid = mPhysicsRenderSystem->createFluid(mFluidDescription, "SpheresShaded"/*"BaseWhiteNoLighting"*/, Critter::Enums::FluidType_Position); //FluidType_Velocity FluidType_Position FluidType_OgreParticle
 	mEmitter = mFluid->createEmitter(mEmitterDescription);
 }
 

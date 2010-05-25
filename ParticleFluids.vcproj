@@ -265,6 +265,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\qdebugstream.h"
+				>
+			</File>
+			<File
 				RelativePath=".\stdafx.h"
 				>
 			</File>

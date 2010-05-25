@@ -11,9 +11,12 @@ material SpheresShaded
 	{
 		pass
 		{
-			fragment_program_ref SpherePointSprites
-			{
-			}
+			point_sprites on
+			point_size_attenuation off
+			point_size 4
+			//fragment_program_ref SpherePointSprites
+			//{
+			//}
 		}
 	}
 }

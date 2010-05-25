@@ -1,3 +1,9 @@
+struct PSOutput {
+	float fragDepth : DEPTH
+	float4 fragColor : COLOR
+}
+
+
 PSOutput particleSpherePS(
 	float2 texCoord : TEXCOORD0,
 	float3 eyeSpacePos : TEXCOORD1,
