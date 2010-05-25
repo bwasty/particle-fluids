@@ -511,4 +511,11 @@ void OgreWidget::updateFrameStats(void)
 	//int particleCount = *mFluid->getParticleData()->mNbParticles.get();
 	int particleCount = mFluid->getNbParticles();
 	((ParticleFluids*)parent())->mLabelParticleCount->setText(QString("Particle Count : %1").arg(particleCount));
+
+	static Vector3 oldPos = Vector3();
+	Vector3 curPos = mCamera->getPosition();
+	if (mCamera->getPosition() != oldPos) {
+		((ParticleFluids*)parent())->mLabelCamPos->setText(QString("Camera Position : %1")
+			.arg(StringConverter::toString(mCamera->getPosition()).c_str()));
+	}
 }
