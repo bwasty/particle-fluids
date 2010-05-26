@@ -3,6 +3,7 @@ fragment_program SpherePointSprites cg
 	source SpherePointSprites.cg
 	entry_point particleSpherePS
 	profiles arbfp1 fp20 fp30
+	//compiler_arguments -debuglast
 }
 
 material SpheresShaded
