@@ -14,7 +14,7 @@ VSOutput particleSphereVS(
 	
 	float4 eyeSpacePos = mul(modelViewMatrix, position);
 	OUT.position = mul(projectionMatrix, eyeSpacePos);
-	OUT.eyeSpacePos = eyeSpacePos;
+	OUT.eyeSpacePos = eyeSpacePos.xyz;
 	OUT.texCoord = texCoord;
 	
 	return OUT;
@@ -33,28 +33,34 @@ PSOutput particleSpherePS(
 	uniform float sphereRadius, // TODO!: sync with PhysX params...
 	//float4 color : COLOR0, // TODO later: use for density?
 	uniform float4x4 projectionMatrix,
-	uniform float3 lightDir) 
+	uniform float3 lightDir,
+	uniform float ambient) 
 {
+	float4 color = float4(0,0,1,1); 
+	
 	PSOutput OUT;
 	//debug(float4(0,0,1,1)); --> doesn't work - why?
 	
-	// TODO!: with commented block nothing is shown -> because of missing eyeSpacePos and sphereRadius?
 	// calculate eye-space sphere normal from texture coordinates
 	float3 N;
 	N.xy = texCoord*2.0-1.0;
 	float r2 = dot(N.xy, N.xy);
 	if (r2 > 1.0) discard; // kill pixels outside circle
 	N.z = -sqrt(1.0 -r2);
+	//N = -N;
 	
 	// calculate depth
-	float4 pixelPos = float4(eyeSpacePos + N*sphereRadius, 1.0);
+	float4 pixelPos = float4(eyeSpacePos + (-N)*sphereRadius, 1.0);
 	float4 clipSpacePos = mul(pixelPos, projectionMatrix);
-	OUT.fragDepth = clipSpacePos.z / clipSpacePos.w;
+	float mydepth = clipSpacePos.z / clipSpacePos.w;
+	//if (mydepth <= OUT.fragDepth) // TODO: set near far clip for better depth range...
+	//	discard;
+	OUT.fragDepth = mydepth;
 	float diffuse = max(0.0, dot(N, lightDir));
 
-	OUT.fragColor = diffuse * color;
+	OUT.fragColor = diffuse * color + ambient * color;
 	
-	//OUT.fragColor = float4(1,0,0,1);
+	OUT.fragColor = OUT.fragDepth;//float4(1,0,0,1);
 	
 	return OUT;
 }

@@ -115,7 +115,7 @@ void OgreWidget::keyPressEvent(QKeyEvent *e)
     {
             //const Ogre::Vector3 &actualCamPos = mCamera->getPosition();
             //setCameraPosition(actualCamPos + keyPressed.value());
-			mCamera->moveRelative(keyPressed.value() * 3);
+			mCamera->moveRelative(keyPressed.value() * 0.3);
 
             e->accept();
     }
@@ -350,15 +350,16 @@ void OgreWidget::initOgreSystem()
                 width(), height(), false, &viewConfig);
 
     mCamera = mSceneMgr->createCamera("Camera");
-    Ogre::Vector3 camPos(0, 10,30);
+    Ogre::Vector3 camPos(8.5, 6, 11.5);
         mCamera->setPosition(camPos);
-        mCamera->lookAt(0,0,0);
+        mCamera->lookAt(0,3,0);
     //emit cameraPositionChanged(camPos);
 
     mViewport = mRenderWindow->addViewport(mCamera);
     mViewport->setBackgroundColour(Ogre::ColourValue(0,0,0));
     mCamera->setAspectRatio(Ogre::Real(width()) / Ogre::Real(height()));
-	mCamera->setNearClipDistance(1.0);
+	mCamera->setNearClipDistance(0.5);
+	mCamera->setFarClipDistance(40);
 
     setupResources();
 	setupNxOgre();
@@ -420,8 +421,7 @@ void OgreWidget::setupNxOgre() {
 
 void OgreWidget::createScene()
 {
-    mSceneMgr->setAmbientLight(Ogre::ColourValue(0.5,0.5,0.5));
-
+    mSceneMgr->setAmbientLight(Ogre::ColourValue(0.3,0.3,0.3));
 
 	Light *light = mSceneMgr->createLight("SunLight");
 	light->setType(Light::LT_DIRECTIONAL);
