@@ -1,9 +1,16 @@
-fragment_program SpherePointSprites cg
+vertex_program SpherePointSpritesVS cg
+{
+	source SpherePointSprites.cg
+	entry_point particleSpheresVS
+	profiles arbfp1 fp20 fp30
+}
+
+fragment_program SpherePointSpritesPS cg
 {
 	source SpherePointSprites.cg
 	entry_point particleSpherePS
 	profiles arbfp1 fp20 fp30
-	//compiler_arguments -debuglast
+	//compiler_arguments debug
 }
 
 material SpheresShaded
@@ -16,10 +23,18 @@ material SpheresShaded
 			//point_size_attenuation off
 			//point_size 1
 			//ambient 0.918 0.051 0.051
-			fragment_program_ref SpherePointSprites
+			
+			vertex_program_ref SpherePointSpritesVS
+			{
+				param_named_auto modelViewMatrix worldview_matrix
+				param_named_auto projectionMatrix projection_matrix
+			}
+			
+			fragment_program_ref SpherePointSpritesPS 
 			{
 				param_named_auto ProjectionMatrix projection_matrix
 				param_named_auto lightDir light_direction 0
+				param_named sphereRadius float 1.0
 			}
 		}
 	}

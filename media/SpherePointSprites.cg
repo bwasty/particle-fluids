@@ -1,16 +1,20 @@
 struct VSOutput {
 	float4 position : POSITION;
 	float2 texCoord : TEXCOORD0;
+	float3 eyeSpacePos : TEXCOORD1;
 };
 
 VSOutput particleSphereVS(
 	float4 position : POSITION,
 	float2 texCoord : TEXCOORD0,
-	uniform float4x4 modelViewProjectionMatrix) // TODO: pass in ogre script
-	// TODO: eyeSpacePos needed?
+	uniform float4x4 modelViewMatrix,
+	uniform float4x4 projectionMatrix)
 {
 	VSOutput OUT;
-	OUT.position = mul(modelViewProjectionMatrix, position);
+	
+	float4 eyeSpacePos = mul(modelViewMatrix, position);
+	OUT.position = mul(projectionMatrix, eyeSpacePos);
+	OUT.eyeSpacePos = eyeSpacePos;
 	OUT.texCoord = texCoord;
 	
 	return OUT;
@@ -24,30 +28,33 @@ struct PSOutput {
 };
 
 PSOutput particleSpherePS(
-	float2 texCoord : TEXCOORD0, // TODO: check if correct
-	float3 eyeSpacePos : TEXCOORD1, // TODO: make uniform or compute in VS
-	float sphereRadius : TEXCOORD2, // TODO: make uniform, control from script, later from c++
-	float4 color : COLOR0,
-	uniform float4x4 ProjectionMatrix,
-	uniform float3 lightDir) // TODO: comment out, later: use for density?
+	float2 texCoord : TEXCOORD0, // TODO: check if correct value
+	float3 eyeSpacePos : TEXCOORD1,
+	uniform float sphereRadius, // TODO!: sync with PhysX params...
+	//float4 color : COLOR0, // TODO later: use for density?
+	uniform float4x4 projectionMatrix,
+	uniform float3 lightDir) 
 {
 	PSOutput OUT;
+	//debug(float4(0,0,1,1)); --> doesn't work - why?
 	
-	//// calculate eye-space sphere normal from texture coordinates
-	//float3 N;
-	//N.xy = texCoord*2.0-1.0;
-	//float r2 = dot(N.xy, N.xy);
-	//if (r2 > 1.0) discard; // kill pixels outside circle
-	//N.z = -sqrt(1.0 -r2);
-	//
-	//// calculate depth
-	//float4 pixelPos = float4(eyeSpacePos + N*sphereRadius, 1.0);
-	//float4 clipSpacePos = mul(pixelPos, ProjectionMatrix);
-	//OUT.fragDepth = clipSpacePos.z / clipSpacePos.w;
-	//float diffuse = max(0.0, dot(N, lightDir));
-//
-	//OUT.fragColor = diffuse * color + float4(1,0,0,1); // TODO: last term temporary...
+	// TODO!: with commented block nothing is shown -> because of missing eyeSpacePos and sphereRadius?
+	// calculate eye-space sphere normal from texture coordinates
+	float3 N;
+	N.xy = texCoord*2.0-1.0;
+	float r2 = dot(N.xy, N.xy);
+	if (r2 > 1.0) discard; // kill pixels outside circle
+	N.z = -sqrt(1.0 -r2);
 	
-	OUT.fragColor = float4(1,0,0,1);
+	// calculate depth
+	float4 pixelPos = float4(eyeSpacePos + N*sphereRadius, 1.0);
+	float4 clipSpacePos = mul(pixelPos, projectionMatrix);
+	OUT.fragDepth = clipSpacePos.z / clipSpacePos.w;
+	float diffuse = max(0.0, dot(N, lightDir));
+
+	OUT.fragColor = diffuse * color;
+	
+	//OUT.fragColor = float4(1,0,0,1);
+	
 	return OUT;
 }
