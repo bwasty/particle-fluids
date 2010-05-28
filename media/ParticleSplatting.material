@@ -1,14 +1,14 @@
 vertex_program SpherePointSpritesVS cg
 {
-	source SpherePointSprites.cg
+	source SpherePointSpritesDiffuse.cg
 	entry_point particleSphereVS
 	profiles gp4vp glslv arbvp1 vp20 vp30
 }
 
 fragment_program SpherePointSpritesPS cg
 {
-	source SpherePointSprites.cg
-	entry_point particleSpherePS
+	source SpherePointSpritesDiffuse.cg
+	entry_point particleSphereDiffusePS
 	profiles gp4fp glslf arbfp1 fp20 fp30
 	//compiler_arguments debug
 }

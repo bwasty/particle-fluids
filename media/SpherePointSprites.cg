@@ -29,7 +29,7 @@ struct PSOutput {
 	float4 fragColor : COLOR;
 };
 
-PSOutput particleSpherePS(
+PSOutput particleSphereDiffusePS(
 	float2 texCoord : TEXCOORD0,
 	float3 eyeSpacePos : TEXCOORD1,
 	uniform float sphereRadius, // TODO!: sync with PhysX params...
@@ -45,8 +45,8 @@ PSOutput particleSpherePS(
 	float3 N;
 	OUT.fragDepth = computeSphereDepth(texCoord, eyeSpacePos, sphereRadius, projectionMatrix, N);
 	
+	// simple diffuse and ambient shading
 	float diffuse = max(0.0, dot(N, lightDir));
-
 	OUT.fragColor = diffuse * color + ambient * color;
 	
 	//OUT.fragColor = float4(N, 1);//OUT.fragDepth;//float4(1,0,0,1);

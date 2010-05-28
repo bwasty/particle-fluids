@@ -441,7 +441,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\media\SpherePointSprites.cg"
+				RelativePath=".\media\SpherePointSpritesDiffuse.cg"
 				>
 			</File>
 		</Filter>
