@@ -1,7 +1,7 @@
 void shadeFluidSurfacePS(
 	float2 texCoord : TEXCOORD0,
-	uniform sampler2D samplerDepth,
+	uniform sampler2D samplerDepth, // TODO: texture is black...how to solve?
 	out float4 fragColor : COLOR)
 {
-	fragColor = tex2D(samplerDepth, texCoord).x;
+	fragColor = tex2D(samplerDepth, texCoord).x; //float4(0,1,0,1);//
 }
