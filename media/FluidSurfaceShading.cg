@@ -1,0 +1,7 @@
+void shadeFluidSurfacePS(
+	float2 texCoord : TEXCOORD0,
+	uniform sampler2D samplerDepth,
+	out float4 fragColor : COLOR)
+{
+	fragColor = tex2D(samplerDepth, texCoord).x;
+}

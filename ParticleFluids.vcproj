@@ -437,11 +437,15 @@
 			Name="Shaders"
 			>
 			<File
+				RelativePath=".\media\FluidSurfaceShading.cg"
+				>
+			</File>
+			<File
 				RelativePath=".\media\SphereDepth.cg"
 				>
 			</File>
 			<File
-				RelativePath=".\media\SpherePointSpritesDiffuse.cg"
+				RelativePath=".\media\SpherePointSprites.cg"
 				>
 			</File>
 		</Filter>

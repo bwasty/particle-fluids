@@ -459,6 +459,10 @@ void OgreWidget::createScene()
 	createFluid();
 
 	//mPhysicsScene->createActor(NxOgre::BoxDescription(1,1,1), NxOgre::Vec3(0,10,0));
+
+	// compositor for fluid
+	CompositorManager::getSingleton().addCompositor(mViewport, "ScreenSpaceParticleFluid");
+	CompositorManager::getSingleton().setCompositorEnabled(mViewport, "ScreenSpaceParticleFluid", true);
 }
 
 void OgreWidget::createFluid() {
@@ -469,7 +473,7 @@ void OgreWidget::createFluid() {
 		mFluid = 0;
 	}
 
-	mFluid = mPhysicsRenderSystem->createFluid(mFluidDescription, "SpheresShaded"/*"BaseWhiteNoLighting"*/, Critter::Enums::FluidType_OgreParticle); //FluidType_Velocity FluidType_Position FluidType_OgreParticle
+	mFluid = mPhysicsRenderSystem->createFluid(mFluidDescription, "SpherePointSprites"/*"BaseWhiteNoLighting"*/, Critter::Enums::FluidType_OgreParticle); //FluidType_Velocity FluidType_Position FluidType_OgreParticle
 	mEmitter = mFluid->createEmitter(mEmitterDescription);
 }
 

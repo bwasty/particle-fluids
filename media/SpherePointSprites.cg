@@ -53,3 +53,16 @@ PSOutput particleSphereDiffusePS(
 	
 	return OUT;
 }
+
+void particleSphereDepthPS(
+	float2 texCoord : TEXCOORD0,
+	float3 eyeSpacePos : TEXCOORD1,
+	uniform float sphereRadius, // TODO!: sync with PhysX params...
+	uniform float4x4 projectionMatrix,
+	out float fragDepth : DEPTH/*,
+	out float4 fragColor : COLOR*/)
+{
+	float3 N;
+	fragDepth = computeSphereDepth(texCoord, eyeSpacePos, sphereRadius, projectionMatrix, N);
+	//fragColor = fragDepth;
+}
