@@ -437,6 +437,10 @@
 			Name="Shaders"
 			>
 			<File
+				RelativePath=".\media\SphereDepth.cg"
+				>
+			</File>
+			<File
 				RelativePath=".\media\SpherePointSprites.cg"
 				>
 			</File>

@@ -1,3 +1,5 @@
+#include "SphereDepth.cg"
+
 struct VSOutput {
 	float4 position : POSITION;
 	float2 texCoord : TEXCOORD0;
@@ -28,7 +30,7 @@ struct PSOutput {
 };
 
 PSOutput particleSpherePS(
-	float2 texCoord : TEXCOORD0, // TODO: check if correct value
+	float2 texCoord : TEXCOORD0,
 	float3 eyeSpacePos : TEXCOORD1,
 	uniform float sphereRadius, // TODO!: sync with PhysX params...
 	//float4 color : COLOR0, // TODO later: use for density?
@@ -39,28 +41,15 @@ PSOutput particleSpherePS(
 	float4 color = float4(0,0,1,1); 
 	
 	PSOutput OUT;
-	//debug(float4(0,0,1,1)); --> doesn't work - why?
 	
-	// calculate eye-space sphere normal from texture coordinates
 	float3 N;
-	N.xy = texCoord*2.0-1.0;
-	float r2 = dot(N.xy, N.xy);
-	if (r2 > 1.0) discard; // kill pixels outside circle
-	N.z = -sqrt(1.0 -r2);
-	//N = -N;
+	OUT.fragDepth = computeSphereDepth(texCoord, eyeSpacePos, sphereRadius, projectionMatrix, N);
 	
-	// calculate depth
-	float4 pixelPos = float4(eyeSpacePos + (-N)*sphereRadius, 1.0);
-	float4 clipSpacePos = mul(pixelPos, projectionMatrix);
-	float mydepth = clipSpacePos.z / clipSpacePos.w;
-	//if (mydepth <= OUT.fragDepth) // TODO: set near far clip for better depth range...
-	//	discard;
-	OUT.fragDepth = mydepth;
 	float diffuse = max(0.0, dot(N, lightDir));
 
 	OUT.fragColor = diffuse * color + ambient * color;
 	
-	OUT.fragColor = OUT.fragDepth;//float4(1,0,0,1);
+	//OUT.fragColor = float4(N, 1);//OUT.fragDepth;//float4(1,0,0,1);
 	
 	return OUT;
 }
