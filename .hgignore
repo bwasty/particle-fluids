@@ -5,3 +5,5 @@ glob:Dependencies/
 glob:GeneratedFiles/
 glob:bin/
 glob:obj/
+syntax: glob
+*.sdf
