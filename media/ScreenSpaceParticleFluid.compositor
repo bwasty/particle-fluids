@@ -1,0 +1,30 @@
+compositor ScreenSpaceParticleFluid
+{
+	technique
+	{
+		texture SphereDepth target_width target_height PF_FLOAT32_R
+		
+		target SphereDepth
+		{
+			input none
+			
+			pass render_scene
+			{
+				//first_render_queue 50
+				//last_render_queue 60
+				material ParticleSplatting
+			}
+		}
+		
+		target_output
+		{
+			input none
+			
+			pass render_quad
+			{
+				input 0 SphereDepth
+				material FluidSurfaceShading
+			}
+		}
+	}
+}
