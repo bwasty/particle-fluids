@@ -39,7 +39,7 @@ material SpherePointSprites
 				param_named_auto projectionMatrix projection_matrix
 			}
 			
-			fragment_program_ref SpherePointSpritesDepthPS 
+			fragment_program_ref SpherePointSpritesDiffusePS 
 			{
 				param_named sphereRadius float 0.4
 				param_named_auto projectionMatrix projection_matrix
