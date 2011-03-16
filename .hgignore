@@ -7,3 +7,6 @@ glob:bin/
 glob:obj/
 syntax: glob
 *.sdf
+*.bak
+*.orig
+*.old
