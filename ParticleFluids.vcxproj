@@ -66,7 +66,7 @@
       </DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>qtmain.lib;QtCore4.lib;QtGui4.lib;OgreMain.lib;OIS.lib;NxOgreFinal.lib;CritterFinalStatic.lib;QtSolutions_PropertyBrowser-2.5.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>qtmain.lib;QtCore4.lib;QtGui4.lib;OgreMain.lib;OIS.lib;NxOgre.lib;CritterStatic.lib;QtSolutions_PropertyBrowser-2.5.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>bin\$(Configuration)\$(ProjectName).exe</OutputFile>
       <AdditionalLibraryDirectories>$(QTDIR)\lib;$(OGRE_SRC)\lib\release;$(OGRE_SRC)\Dependencies\lib\Release;.\Dependencies\NxOgre\sdk;.\Dependencies\NxOgre-Critter\sdk;.\Dependencies\qtpropertybrowser-2.5_1-opensource\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>

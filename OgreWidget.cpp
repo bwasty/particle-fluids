@@ -121,12 +121,13 @@ void OgreWidget::keyPressEvent(QKeyEvent *e)
     }
 	else if (e->key() == Qt::Key_P) {
 		// TODO: visual debugger: Button in Toolbar
-		static bool visualDebuggerOn = false;
-		if (!visualDebuggerOn)
-			mVisualDebugger->setVisualisationMode(NxOgre::Enums::VisualDebugger_ShowAll);
-		else
-			mVisualDebugger->setVisualisationMode(NxOgre::Enums::VisualDebugger_ShowNone);
-		visualDebuggerOn = !visualDebuggerOn;
+        // TODO!!!: VisualDebugger API changed...code doesn't work anymore
+		//static bool visualDebuggerOn = false;
+		//if (!visualDebuggerOn)
+		//	mVisualDebugger->setVisualisationMode(NxOgre::Enums::VisualDebugger_ShowAll);
+		//else
+		//	mVisualDebugger->setVisualisationMode(NxOgre::Enums::VisualDebugger_ShowNone);
+		//visualDebuggerOn = !visualDebuggerOn;
 	}
     else
     {
@@ -413,7 +414,8 @@ void OgreWidget::setupNxOgre() {
 	mVisualDebugger->setRenderable(mVisualDebuggerRenderable);
 	mVisualDebuggerNode = mSceneMgr->getRootSceneNode()->createChildSceneNode();
 	mVisualDebuggerNode->attachObject(mVisualDebuggerRenderable);
-	mVisualDebugger->setVisualisationMode(NxOgre::Enums::VisualDebugger_ShowNone);
+    // TODO!!!: VisualDebugger API changed...code doesn't work anymore
+	//mVisualDebugger->setVisualisationMode(NxOgre::Enums::VisualDebugger_ShowNone);
 
 	// Remote Debugger
 	mPhysicsWorld->getRemoteDebugger()->connect();
