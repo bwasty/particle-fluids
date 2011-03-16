@@ -83,7 +83,8 @@
 
                     //log_window->scrollToBottom();
 
-					log_window->appendPlainText(QString("%1: %2").arg(QTime::currentTime().toString()).arg(QString::fromStdString(str)));
+                    // TODO!!!: error here - seems to be called from different thread...
+					//log_window->appendPlainText(QString("%1: %2").arg(QTime::currentTime().toString()).arg(QString::fromStdString(str)));
                 }
             }
         	

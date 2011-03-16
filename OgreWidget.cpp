@@ -262,8 +262,10 @@ void OgreWidget::paintEvent(QPaintEvent *e)
 bool OgreWidget::frameRenderingQueued(const Ogre::FrameEvent &evt) {
 	//mPhysicsTimeController->advance(evt.timeSinceLastFrame*mSimulationSpeed);//1.0f/60.0f);///evt.timeSinceLastFrame*mSimulationSpeed);//1.0f/60.0f);
 	mPhysicsWorld->advance(evt.timeSinceLastFrame*mSimulationSpeed);
-	mVisualDebugger->draw();
-	mVisualDebuggerNode->needUpdate();
+
+    // TODO!!!: error in Critter in connection with VisualDebugger
+	//mVisualDebugger->draw();
+	//mVisualDebuggerNode->needUpdate();
 
 	updateFrameStats();
 
