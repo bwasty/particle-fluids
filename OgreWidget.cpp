@@ -405,18 +405,24 @@ void OgreWidget::setupResources()
 
 void OgreWidget::setupNxOgre() {
 	mPhysicsWorld = NxOgre::World::createWorld();
+    mPhysicsWorld->getRemoteDebugger()->connect();
+
 	mPhysicsScene = mPhysicsWorld->createScene();
 	mPhysicsScene->setGravity(NxOgre::Vec3(0.0f,-9.81f,0.0f));
 	mPhysicsRenderSystem = new Critter::RenderSystem(mPhysicsScene);
 	
 	//mPhysicsTimeController = NxOgre::TimeController::getSingleton();
 
-	mVisualDebugger = mPhysicsWorld->getVisualDebugger();
-	mVisualDebuggerRenderable = new Critter::Renderable(NxOgre::Enums::RenderableType_VisualDebugger);
-	mVisualDebugger->setRenderable(mVisualDebuggerRenderable);
-	mVisualDebuggerNode = mSceneMgr->getRootSceneNode()->createChildSceneNode();
-	mVisualDebuggerNode->attachObject(mVisualDebuggerRenderable);
-    // TODO!!!: VisualDebugger API changed...code doesn't work anymore
+    // TODO!!!!: new visualdebugger code
+    //mVisualDebugger = mPhysicsRenderSystem->createVisualDebugger();
+    //mVisualDebugger->
+
+	//mVisualDebugger = mPhysicsWorld->getVisualDebugger();
+	//mVisualDebuggerRenderable = new Critter::Renderable(NxOgre::Enums::RenderableType_VisualDebugger);
+	//mVisualDebugger->setRenderable(mVisualDebuggerRenderable);
+	//mVisualDebuggerNode = mSceneMgr->getRootSceneNode()->createChildSceneNode();
+	//mVisualDebuggerNode->attachObject(mVisualDebuggerRenderable);
+    // TODO!!: VisualDebugger API changed...code doesn't work anymore
 	//mVisualDebugger->setVisualisationMode(NxOgre::Enums::VisualDebugger_ShowNone);
 
 	// Remote Debugger
