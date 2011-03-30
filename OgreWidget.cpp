@@ -471,13 +471,13 @@ void OgreWidget::createScene()
 
 void OgreWidget::createFluid() {
 	if (mFluid) {
-		// TODO!: unstable physx: Fluid::destroyEmitter not linking
+		//TODO!!!: unstable physx: Fluid::destroyEmitter not linking
 		//mFluid->destroyEmitter(mEmitter);
 		mPhysicsRenderSystem->destroyFluid(mFluid);
 		mFluid = 0;
 	}
 
-	mFluid = mPhysicsRenderSystem->createFluid(mFluidDescription, "SpherePointSprites"/*"BaseWhiteNoLighting"*/, Critter::Enums::FluidType_OgreParticle); //FluidType_Velocity FluidType_Position FluidType_OgreParticle
+    mFluid = mPhysicsRenderSystem->createFluid(mFluidDescription, "SpherePointSprites"/*"BaseWhiteNoLighting"*/, Critter::Enums::FluidType_OgreParticle); //FluidType_Velocity FluidType_Position FluidType_OgreParticle
 	mEmitter = mFluid->createEmitter(mEmitterDescription);
 }
 
