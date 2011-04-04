@@ -5,7 +5,6 @@
 #include "ResourceGroupHelper.h"
 
 #include <Critter.h>
-//#include "NxOgreSharedPointer.h"
 
 using namespace Ogre;
 
@@ -259,12 +258,7 @@ void OgreWidget::paintEvent(QPaintEvent *e)
 }
 
 bool OgreWidget::frameRenderingQueued(const Ogre::FrameEvent &evt) {
-	//mPhysicsTimeController->advance(evt.timeSinceLastFrame*mSimulationSpeed);//1.0f/60.0f);///evt.timeSinceLastFrame*mSimulationSpeed);//1.0f/60.0f);
 	mPhysicsWorld->advance(evt.timeSinceLastFrame*mSimulationSpeed);
-
-    // TODO: VisualDebugger -> draw() not need anymore!?
-	//mVisualDebugger->draw();
-	//mVisualDebuggerNode->needUpdate();
 
 	updateFrameStats();
 
@@ -464,7 +458,7 @@ void OgreWidget::createScene()
 
 void OgreWidget::createFluid() {
 	if (mFluid) {
-		//TODO!!!: unstable physx: Fluid::destroyEmitter not linking
+		//TODO?: unstable physx: Fluid::destroyEmitter not linking -> not implemented, but was empty before anyway
 		//mFluid->destroyEmitter(mEmitter);
 		mPhysicsRenderSystem->destroyFluid(mFluid);
 		mFluid = 0;
