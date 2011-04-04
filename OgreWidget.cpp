@@ -121,13 +121,12 @@ void OgreWidget::keyPressEvent(QKeyEvent *e)
     }
 	else if (e->key() == Qt::Key_P) {
 		// TODO: visual debugger: Button in Toolbar
-        // TODO!!!: VisualDebugger API changed...code doesn't work anymore
-		//static bool visualDebuggerOn = false;
-		//if (!visualDebuggerOn)
-		//	mVisualDebugger->setVisualisationMode(NxOgre::Enums::VisualDebugger_ShowAll);
-		//else
-		//	mVisualDebugger->setVisualisationMode(NxOgre::Enums::VisualDebugger_ShowNone);
-		//visualDebuggerOn = !visualDebuggerOn;
+		static bool visualDebuggerOn = false;
+		if (!visualDebuggerOn)
+			mVisualDebugger->enable();
+		else
+			mVisualDebugger->disable();
+		visualDebuggerOn = !visualDebuggerOn;
 	}
     else
     {
@@ -263,7 +262,7 @@ bool OgreWidget::frameRenderingQueued(const Ogre::FrameEvent &evt) {
 	//mPhysicsTimeController->advance(evt.timeSinceLastFrame*mSimulationSpeed);//1.0f/60.0f);///evt.timeSinceLastFrame*mSimulationSpeed);//1.0f/60.0f);
 	mPhysicsWorld->advance(evt.timeSinceLastFrame*mSimulationSpeed);
 
-    // TODO!!!: error in Critter in connection with VisualDebugger
+    // TODO: VisualDebugger -> draw() not need anymore!?
 	//mVisualDebugger->draw();
 	//mVisualDebuggerNode->needUpdate();
 
@@ -411,22 +410,10 @@ void OgreWidget::setupNxOgre() {
 	mPhysicsScene->setGravity(NxOgre::Vec3(0.0f,-9.81f,0.0f));
 	mPhysicsRenderSystem = new Critter::RenderSystem(mPhysicsScene);
 	
-	//mPhysicsTimeController = NxOgre::TimeController::getSingleton();
-
-    // TODO!!!!: new visualdebugger code
-    //mVisualDebugger = mPhysicsRenderSystem->createVisualDebugger();
-    //mVisualDebugger->
-
-	//mVisualDebugger = mPhysicsWorld->getVisualDebugger();
-	//mVisualDebuggerRenderable = new Critter::Renderable(NxOgre::Enums::RenderableType_VisualDebugger);
-	//mVisualDebugger->setRenderable(mVisualDebuggerRenderable);
-	//mVisualDebuggerNode = mSceneMgr->getRootSceneNode()->createChildSceneNode();
-	//mVisualDebuggerNode->attachObject(mVisualDebuggerRenderable);
-    // TODO!!: VisualDebugger API changed...code doesn't work anymore
-	//mVisualDebugger->setVisualisationMode(NxOgre::Enums::VisualDebugger_ShowNone);
-
-	// Remote Debugger
-	mPhysicsWorld->getRemoteDebugger()->connect();
+     NxOgre::VisualDebuggerDescription desc;
+     desc.showAll();
+     mVisualDebugger = mPhysicsRenderSystem->createVisualDebugger();
+     mVisualDebugger->disable();
 }
 
 void OgreWidget::createScene()
