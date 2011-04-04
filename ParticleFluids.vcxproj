@@ -188,6 +188,7 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\qrc_%(Filename).cpp;%(Outputs)</Outputs>
     </CustomBuild>
     <None Include="media\FluidSurfaceShading.cg" />
+    <None Include="media\PointToQuadGS.cg" />
     <None Include="media\SphereDepth.cg" />
     <None Include="media\SpherePointSprites.cg" />
   </ItemGroup>

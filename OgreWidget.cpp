@@ -22,7 +22,7 @@ mCamera(0), oldPos(invalidMousePoint), selectedNode(0), mFluid(0), mSimulationSp
         setFocusPolicy(Qt::ClickFocus);
 
 	// initial fluid parameters
-	mFluidDescription.mMaxParticles = 60000;
+	mFluidDescription.mMaxParticles = 32000;
 	mFluidDescription.mKernelRadiusMultiplier = 2.0f;
 	mFluidDescription.mRestParticlesPerMetre = 7.0f;
 	mFluidDescription.mRestDensity = 1000.0f;

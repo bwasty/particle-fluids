@@ -5,6 +5,22 @@ vertex_program SpherePointSpritesVS cg
 	profiles gp4vp glslv arbvp1 vp20 vp30
 }
 
+geometry_program ParticleGS cg
+{
+	source PointToQuadGS.cg
+	entry_point passthru_gp
+	input_operation_type point_list
+	output_operation_type triangle_strip
+	max_output_vertices 4 //  example uses 5, reason?
+	profiles gp4gp glslg
+	
+	default_params
+	{
+		param_named width float 1.0
+		param_named height float 1.0
+	}
+}
+
 fragment_program SpherePointSpritesDiffusePS cg
 {
 	source SpherePointSprites.cg
@@ -39,6 +55,10 @@ material SpherePointSprites
 				param_named_auto projectionMatrix projection_matrix
 			}
 			
+			//geometry_program_ref ParticleGS
+			//{
+			//}
+			
 			fragment_program_ref SpherePointSpritesDiffusePS 
 			{
 				param_named sphereRadius float 0.4
@@ -50,6 +70,20 @@ material SpherePointSprites
 		}
 	}
 }
+
+//material SpherePointSpritesWithGS : SpherePointSprites
+//{
+//	technique
+//	{
+//		pass
+//		{
+//			geometry_program_ref ParticleGS 
+//			{
+//			}
+//		}
+//	}
+//}
+
 
 fragment_program FluidSurfaceShadingPS cg
 {
