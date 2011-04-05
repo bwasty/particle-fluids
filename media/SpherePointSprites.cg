@@ -17,7 +17,7 @@ VSOutput particleSphereVS(
 	float4 eyeSpacePos = mul(modelViewMatrix, position);
 	OUT.position = mul(projectionMatrix, eyeSpacePos);
 	OUT.eyeSpacePos = eyeSpacePos.xyz;
-	OUT.texCoord = texCoord;
+	OUT.texCoord = texCoord; 
 	
 	return OUT;
 }

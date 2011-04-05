@@ -9,16 +9,13 @@ geometry_program ParticleGS cg
 {
 	source PointToQuadGS.cg
 	entry_point passthru_gp
-	input_operation_type point_list
-	output_operation_type triangle_strip
-	max_output_vertices 4 //  example uses 5, reason?
-	profiles gp4gp glslg
+	profiles gp4gp gpu_gp
 	
-	default_params
-	{
-		param_named width float 1.0
-		param_named height float 1.0
-	}
+	//default_params
+	//{
+		//param_named width float 1.0
+		//param_named height float 1.0
+	//}
 }
 
 fragment_program SpherePointSpritesDiffusePS cg
@@ -35,7 +32,7 @@ fragment_program SpherePointSpritesDepthPS cg
 	entry_point particleSphereDepthPS
 	profiles gp4fp glslf arbfp1 fp20 fp30
 }
-
+ 
 material SpherePointSprites
 {
 	technique
@@ -55,9 +52,9 @@ material SpherePointSprites
 				param_named_auto projectionMatrix projection_matrix
 			}
 			
-			//geometry_program_ref ParticleGS
-			//{
-			//}
+			geometry_program_ref ParticleGS
+			{
+			}
 			
 			fragment_program_ref SpherePointSpritesDiffusePS 
 			{
