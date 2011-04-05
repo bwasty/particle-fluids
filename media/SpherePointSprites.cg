@@ -6,6 +6,16 @@ struct VSOutput {
 	float3 eyeSpacePos : TEXCOORD1;
 };
 
+VSOutput passThroughVS(
+	float4 position : POSITION)
+{
+    VSOutput OUT;
+
+    OUT.position = position;
+
+    return OUT;
+}
+
 VSOutput particleSphereVS(
 	float4 position : POSITION,
 	float2 texCoord : TEXCOORD0,
@@ -24,10 +34,20 @@ VSOutput particleSphereVS(
 
 // ----------------------------------
 
+
+
+
 struct PSOutput {
 	float fragDepth : DEPTH;
 	float4 fragColor : COLOR;
 };
+
+PSOutput simplestPS() {
+    PSOutput OUT;
+    OUT.fragColor = float4(0.0, 0.0, 1.0, 1.0);
+
+    return OUT;
+}
 
 PSOutput particleSphereDiffusePS(
 	float2 texCoord : TEXCOORD0,
