@@ -6,13 +6,17 @@ compositor ScreenSpaceParticleFluid
 		
 		target SphereDepth
 		{
-			input none
+			input none 
+			// also possible: input previous ?
 			
 			pass render_scene
 			{
 				//first_render_queue 50
 				//last_render_queue 60
-				material ParticleSplatting
+				
+				// TODO:material only works for render quad?! -> use material_scheme or render_custom?
+				//material ParticleSplatting 
+				
 			}
 		}
 		
@@ -23,7 +27,7 @@ compositor ScreenSpaceParticleFluid
 			pass render_quad
 			{
 				input 0 SphereDepth
-				material FluidSurfaceShading
+				//material FluidSurfaceShading
 			}
 		}
 	}
