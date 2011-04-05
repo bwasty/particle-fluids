@@ -15,7 +15,8 @@ TRIANGLE_OUT
 void pointToQuad(AttribArray<float4> position : POSITION,
                  uniform float quadSize,
                  uniform float4x4 modelViewMatrix,
-	             uniform float4x4 projectionMatrix)
+	             uniform float4x4 projectionMatrix,
+                 uniform float4x4 inverseViewMatrix)
 {
     float2 halfSize = float2(quadSize, quadSize) * 0.5;
     
@@ -27,15 +28,18 @@ void pointToQuad(AttribArray<float4> position : POSITION,
     quadCorners[3] = float2(+1.0, -1.0);
 
     for(int i=0; i<4; ++i) {
-        float4 positionOut = position[0];
+        float4 positionOut = mul(modelViewMatrix, position[0]);
         positionOut.xy += quadCorners[i] * halfSize;
-        float4 eyeSpacePos =  mul(modelViewMatrix, positionOut);
-        positionOut = mul(projectionMatrix, eyeSpacePos);
+
+        float3 eyeSpacePos = positionOut.xyz;
+
+        positionOut = mul(projectionMatrix, positionOut);
 
         emitVertex(positionOut : POSITION,
                    quadCorners[i] : TEXCOORD0,
                    eyeSpacePos.xyz : TEXCOORD1);
     }
+    //restartStrip();
 
     //emitVertex(position[0]);
 

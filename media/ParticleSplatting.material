@@ -81,10 +81,6 @@ material SpherePointSprites
 			{
 			}
 			
-			//geometry_program_ref ParticleGS
-			//{
-			//}
-			
 			fragment_program_ref SpherePointSpritesDiffusePS 
 			{
 			}
