@@ -1,10 +1,12 @@
 void shadeFluidSurfacePS(
 	float2 texCoord : TEXCOORD0,
-	uniform sampler2D samplerDepth : register(s0), // TODO: texture is black...how to solve?
+	uniform sampler2D samplerDepth : register(s0), // TODO!: samplerRECT??
+    //uniform sampler2D samplerBackground : register(s1),
 	out float4 fragColor : COLOR)
 {
-	float depth = tex2D(samplerDepth, texCoord);
-    fragColor = float4(depth, depth, depth, 1.0);
+	float fluidDepth = tex2D(samplerDepth, texCoord);
+    fragColor = float4(fluidDepth, fluidDepth, fluidDepth, 1.0);
+
     //fragColor.st = texCoord;
     //fragColor = float4(tex2D(samplerDepth, texCoord).rrr, 1.0);
     
