@@ -8,23 +8,13 @@ compositor ScreenSpaceParticleFluid
 		
 		target SphereDepth
 		{
-			input previous 
-			// also possible: input previous ?
+			input none
 			
-			//pass clear
-			//{
-			//	colour_value 0.820 0.612 0.612 1.0
-			//}
-			
-			//pass render_scene
-			//{
-				//first_render_queue 50
-				//last_render_queue 60
-				
-				// TODO:material only works for render quad?! -> set simple shader on fluid + use visibility mask / render_queue
-				//material ParticleSplatting 
-				
-			//}
+			pass clear {
+			}
+			pass render_scene   {   
+		         	}
+					
 		}
 		
 		// TODO: target SmoothedDepth 
