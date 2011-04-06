@@ -454,8 +454,8 @@ void OgreWidget::createScene()
 	//mPhysicsScene->createActor(NxOgre::BoxDescription(1,1,1), NxOgre::Vec3(0,10,0));
 
 	// compositor for fluid
-	//CompositorManager::getSingleton().addCompositor(mViewport, "ScreenSpaceParticleFluid");
-	//CompositorManager::getSingleton().setCompositorEnabled(mViewport, "ScreenSpaceParticleFluid", true);
+	CompositorManager::getSingleton().addCompositor(mViewport, "ScreenSpaceParticleFluid");
+	CompositorManager::getSingleton().setCompositorEnabled(mViewport, "ScreenSpaceParticleFluid", true);
 }
 
 void OgreWidget::createFluid() {

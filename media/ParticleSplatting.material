@@ -124,14 +124,18 @@ material FluidSurfaceShading
 	{
 		pass
 		{
-			texture_unit samplerDepth
-			{
-				content_type compositor ScreenSpaceParticleFluid SphereDepth
-			}
+            //lighting off
+            //depth_check off
 			
 			fragment_program_ref FluidSurfaceShadingPS
 			{
-			}				
+			}	
+
+            texture_unit samplerDepth
+			{
+                //texture ogretext.png 2d
+				//content_type compositor ScreenSpaceParticleFluid SphereDepth
+			}
 		}
 	}
 }

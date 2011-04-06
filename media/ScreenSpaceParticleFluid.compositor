@@ -2,31 +2,37 @@ compositor ScreenSpaceParticleFluid
 {
 	technique
 	{
-		texture SphereDepth target_width target_height PF_FLOAT32_R
+		texture SphereDepth target_width target_height PF_R8G8B8
+				 // PF_FLOAT32_R
 		// TODO: make MRT -> depth + thickness; make "pong" depth texture "SmoothedDepth"
 		
 		target SphereDepth
 		{
-			input none 
+			input previous 
 			// also possible: input previous ?
 			
-			pass render_scene
-			{
+			//pass clear
+			//{
+			//	colour_value 0.820 0.612 0.612 1.0
+			//}
+			
+			//pass render_scene
+			//{
 				//first_render_queue 50
 				//last_render_queue 60
 				
 				// TODO:material only works for render quad?! -> set simple shader on fluid + use visibility mask / render_queue
 				//material ParticleSplatting 
 				
-			}
+			//}
 		}
 		
 		// TODO: target SmoothedDepth 
 		
-		target BackgroundScene
-		{
+		//target BackgroundScene
+		//{
 			// TODO: define target texture, pass  render_scene with visibility mask / render_queue
-		}
+		//}
 		
 		target_output
 		{
@@ -34,8 +40,8 @@ compositor ScreenSpaceParticleFluid
 			
 			pass render_quad
 			{
+				material FluidSurfaceShading
 				input 0 SphereDepth
-				//material FluidSurfaceShading
 			}
 		}
 	}
