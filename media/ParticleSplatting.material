@@ -1,138 +1,102 @@
-vertex_program SpherePointSpritesVS cg
-{
+vertex_program SpherePointSpritesVS cg {
 	source SpherePointSprites.cg
 	entry_point particleSphereVS
 	profiles gp4vp glslv arbvp1 vp20 vp30
 
-    default_params
-    {
+    default_params  {
         param_named_auto modelViewMatrix worldview_matrix
 		param_named_auto projectionMatrix projection_matrix
     }
 }
 
-vertex_program PassThroughVS cg
-{
+vertex_program PassThroughVS cg {
     source SpherePointSprites.cg
 	entry_point passThroughVS
 	profiles gp4vp glslv arbvp1 vp20 vp30
 }
 
-geometry_program ParticleGS cg
-{
+geometry_program ParticleGS cg {
 	source PointToQuadGS.cg
 	entry_point pointToQuad
 	profiles gp4gp gpu_gp
 	
-	default_params
-	{
+	default_params {
 		param_named quadSize float 0.2
         param_named_auto modelViewMatrix worldview_matrix
 		param_named_auto projectionMatrix projection_matrix
 	}
 }
 
-fragment_program SimplestPS cg
-{
+fragment_program SimplestPS cg {
     source SpherePointSprites.cg
 	entry_point simplestPS
 	profiles gp4fp glslf arbfp1 fp20 fp30
 }
 
-fragment_program SpherePointSpritesDiffusePS cg
-{
+fragment_program SpherePointSpritesDiffusePS cg {
 	source SpherePointSprites.cg
 	entry_point particleSphereDiffusePS
 	profiles gp4fp glslf arbfp1 fp20 fp30
 	//compiler_arguments debug
-	default_params
-	{
+	default_params {
 		param_named sphereRadius float 1.0
 		param_named_auto projectionMatrix projection_matrix
-		param_named_auto lightDir light_direction 0
+        param_named_auto lightDir light_direction 0
 		param_named_auto ambient ambient_light_colour
 		//param_named lightDir float4 0.0 1.0 0.0 0.0
 	}
 }
 
-fragment_program SpherePointSpritesDepthPS cg
-{
+fragment_program SpherePointSpritesDepthPS cg {
 	source SpherePointSprites.cg
 	entry_point particleSphereDepthPS
 	profiles gp4fp glslf arbfp1 fp20 fp30
+
+    default_params {
+		param_named sphereRadius float 1.0
+		param_named_auto projectionMatrix projection_matrix
+
+	}
 }
 
-
- 
-material SpherePointSprites
-{
-	technique
-	{
-		pass
-		{
-			//point_sprites on
-			//point_size_attenuation off
-			//point_size 1
-			//ambient 0.918 0.051 0.051
-			//depth_func not_equal
-			depth_check on
+material SpherePointSprites {
+	technique {
+		pass {
+			vertex_program_ref SpherePointSpritesVS {}
 			
-			vertex_program_ref SpherePointSpritesVS
-			{
-			}
-			
-			fragment_program_ref SpherePointSpritesDiffusePS 
-			{
-			}
+			fragment_program_ref SpherePointSpritesDiffusePS {}
 		}
 	}
 }
 
-material SpherePointSpritesWithGS
-{
-	technique
-	{
-		pass
-		{
-	
-            vertex_program_ref PassThroughVS
-            {
-            } 
+material SpherePointSpritesWithGS {
+	technique {
+		pass {
+            vertex_program_ref PassThroughVS {} 
 
-			geometry_program_ref ParticleGS 
-			{
-			}
+			geometry_program_ref ParticleGS {}
 
-            fragment_program_ref SpherePointSpritesDiffusePS 
-			{
-			}
+            fragment_program_ref SpherePointSpritesDepthPS {} // SpherePointSpritesDiffusePS
 		}
 	}
 }
 
-
-fragment_program FluidSurfaceShadingPS cg
-{
+fragment_program FluidSurfaceShadingPS cg {
 	source FluidSurfaceShading.cg
 	entry_point shadeFluidSurfacePS
 	profiles gp4fp glslf arbfp1 fp20 fp30
 }	
 
-material FluidSurfaceShading
-{
-	technique
-	{
-		pass
-		{
+
+material FluidSurfaceShading {
+	technique {
+		pass {
             //lighting off
             //depth_check off
 			
-			fragment_program_ref FluidSurfaceShadingPS
-			{
-			}	
+			fragment_program_ref FluidSurfaceShadingPS {}	
 
-            texture_unit samplerDepth
-			{
+            texture_unit samplerDepth {
                 //texture ogretext.png 2d
 				//content_type compositor ScreenSpaceParticleFluid SphereDepth
 			}

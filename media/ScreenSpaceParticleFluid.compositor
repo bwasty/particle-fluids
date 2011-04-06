@@ -2,8 +2,8 @@ compositor ScreenSpaceParticleFluid
 {
 	technique
 	{
-		texture SphereDepth target_width target_height PF_R8G8B8
-				 // PF_FLOAT32_R
+		texture SphereDepth target_width target_height  PF_FLOAT32_R
+						 // PF_FLOAT32_R R8G8B8
 		// TODO: make MRT -> depth + thickness; make "pong" depth texture "SmoothedDepth"
 		
 		target SphereDepth
@@ -12,7 +12,10 @@ compositor ScreenSpaceParticleFluid
 			
 			pass clear {
 			}
-			pass render_scene   {   
+			
+			pass render_scene   {  
+				first_render_queue 90
+				last_render_queue 90 
 		         	}
 					
 		}

@@ -467,7 +467,12 @@ void OgreWidget::createFluid() {
 	}
 
     mFluid = mPhysicsRenderSystem->createFluid(mFluidDescription, "SpherePointSpritesWithGS"/*"BaseWhiteNoLighting"*/, Critter::Enums::FluidType_Position); //FluidType_Velocity FluidType_Position FluidType_OgreParticle
-	mEmitter = mFluid->createEmitter(mEmitterDescription);
+    dynamic_cast<Critter::Renderable*>(mFluid->getRenderable())->setRenderQueueGroup(RENDER_QUEUE_9);
+
+
+
+
+    mEmitter = mFluid->createEmitter(mEmitterDescription);
 }
 
 void OgreWidget::updateFrameStats(void)

@@ -3,7 +3,7 @@ float computeSphereDepth(
 	float3 eyeSpacePos,
 	float sphereRadius,
 	float4x4 projectionMatrix,
-	out float3 N)
+	out float3 N) // N really needed as parameter
 {
 	// calculate eye-space sphere normal from texture coordinates
 	//float3 N;
