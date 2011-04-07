@@ -1,11 +1,16 @@
 void shadeFluidSurfacePS(
 	float2 texCoord : TEXCOORD0,
-	uniform sampler2D samplerDepth : register(s0), // TODO!: samplerRECT??
-    //uniform sampler2D samplerBackground : register(s1),
+	uniform sampler2D samplerDepth : register(s0),
+    uniform sampler2D samplerBackground : register(s1),
 	out float4 fragColor : COLOR)
 {
+    float4 backgroundColor = tex2D(samplerBackground, texCoord);
+    fragColor = backgroundColor;
+
 	float fluidDepth = tex2D(samplerDepth, texCoord);
-    fragColor = float4(fluidDepth, fluidDepth, fluidDepth, 1.0);
+
+    if(fluidDepth > 0)
+        fragColor = float4(fluidDepth, fluidDepth, fluidDepth, 1.0);
 
     //fragColor.st = texCoord;
     //fragColor = float4(tex2D(samplerDepth, texCoord).rrr, 1.0);

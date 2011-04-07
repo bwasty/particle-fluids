@@ -38,10 +38,12 @@ mCamera(0), oldPos(invalidMousePoint), selectedNode(0), mFluid(0), mSimulationSp
 	mFluidDescription.mFlags ^= NxOgre::Enums::FluidFlags_Visualisation;
 	//mFluidDescription.mExternalAcceleration.set(0,-9.81, 0);
 
-	mEmitterDescription.mPose.set(0, 8, 0);
+	mEmitterDescription.mPose.set(0, 8, -3);
+    mEmitterDescription.mDimensionX = 0.6; // TODO: make  mEmitterDescription.mDimensionX/Y GUI-accessible?
+    mEmitterDescription.mDimensionY = 0.6;
 	mEmitterDescription.mParticleLifetime = 0;
-	mEmitterDescription.mRate = 180;
-	mEmitterDescription.mFluidSpeed = 3;
+	mEmitterDescription.mRate = 500;
+	mEmitterDescription.mFluidSpeed = 3.5;
 	mEmitterDescription.mType = NxOgre::Enums::FluidEmitterType_FlowRate;// NxOgre::Enums::FluidEmitterType_FlowRate FluidEmitterType_Pressure
 	mEmitterDescription.mShape = NxOgre::Enums::FluidEmitterShape_Ellipse;
 	mEmitterDescription.mRandomAngle = 0.25f;
@@ -479,9 +481,6 @@ void OgreWidget::createFluid() {
 
     mFluid = mPhysicsRenderSystem->createFluid(mFluidDescription, "SpherePointSpritesWithGS"/*"BaseWhiteNoLighting"*/, Critter::Enums::FluidType_Position); //FluidType_Velocity FluidType_Position FluidType_OgreParticle
     dynamic_cast<Critter::Renderable*>(mFluid->getRenderable())->setRenderQueueGroup(RENDER_QUEUE_9);
-
-
-
 
     mEmitter = mFluid->createEmitter(mEmitterDescription);
 }
