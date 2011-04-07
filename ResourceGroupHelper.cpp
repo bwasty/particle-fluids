@@ -65,7 +65,7 @@ void ResourceGroupHelper::UpdateMaterialRenderableVisitor::visit(
       }
    }else{
       // was there for debug...
-      // Ogre::LogManager::getSingleton().logMessage("material of renderable is null!");
+       //Ogre::LogManager::getSingleton().logMessage("material of renderable is null!");
    }
 }
 
@@ -354,6 +354,16 @@ time_t ResourceGroupHelper::getLatestModificationTime(const std::string& pResour
    }
    return result;
 }
+
+//bool ResourceGroupHelper::filesChanged(const std::string& pResourceGroupName) {
+//   time_t lastModificationTime = getLatestModificationTime(pResourceGroupName);
+//
+//   std::map<std::string, time_t >::iterator iterInfoTime = mRessourceGroupModificationTimes.find(pResourceGroupName);
+//   if(iterInfoTime!=mRessourceGroupModificationTimes.end() && (iterInfoTime->second < lastModificationTime))
+//       return true;
+//
+//   return false;
+//}
 
 bool ResourceGroupHelper::checkTimeAndReloadIfNeeded(const std::string& pResourceGroupName, std::string &pOutLoggedMessages, bool useLog)
 {

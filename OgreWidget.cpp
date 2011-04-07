@@ -271,12 +271,23 @@ bool OgreWidget::frameRenderingQueued(const Ogre::FrameEvent &evt) {
 bool OgreWidget::frameEnded(const Ogre::FrameEvent &evt) {
 	static Real summedTime = 0;
 	summedTime += evt.timeSinceLastFrame;
-	if (summedTime >= 1) { // TODO: make toggle off button?
+	if (summedTime >= 1) { // TODO!: checkTimeAndReloadIfNeeded every x seconds: make toggle off button? for performance?
 		summedTime = 0;
 
-		//reload changed ressources
-		// look on the hdd the last modification time and try reload changes if needed
-		mResourceGroupHelper->checkTimeAndReloadIfNeeded("General1", std::string(), false);
+        //if (mResourceGroupHelper->filesChanged("General1")) { // TODO!: bit hackish and redundant...
+	        //reload changed ressources
+            //SimpleRenderable* fluidRenderable = dynamic_cast<Ogre::SimpleRenderable*>(mFluid->getRenderable());
+            //String fluidMaterialName = fluidRenderable->getMaterial()->getName();
+            CompositorManager::getSingleton().removeCompositor(mViewport, "ScreenSpaceParticleFluid");
+	        if (mResourceGroupHelper->checkTimeAndReloadIfNeeded("General1", std::string(), false)) {
+                //fluidRenderable->setMaterial("BaseWhite");
+                //fluidRenderable->setMaterial(fluidMaterialName);
+
+            }
+            CompositorManager::getSingleton().addCompositor(mViewport, "ScreenSpaceParticleFluid");
+	        CompositorManager::getSingleton().setCompositorEnabled(mViewport, "ScreenSpaceParticleFluid", true);
+        //}
+
 	}
 
 	return true;

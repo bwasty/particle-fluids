@@ -57,7 +57,8 @@ PSOutput particleSphereDiffusePS(
 	PSOutput OUT;
 	
 	float3 N;
-	OUT.fragDepth = computeSphereDepth(texCoord, eyeSpacePos, sphereRadius, projectionMatrix, N);
+    float4 pixelPos;
+	OUT.fragDepth = computeSphereDepth(texCoord, eyeSpacePos, sphereRadius, projectionMatrix, N, pixelPos);
 	
 	// simple diffuse and ambient shading
 	float diffuse = max(0.0, dot(N, lightDir));
@@ -77,8 +78,24 @@ void particleSphereDepthPS(
 	out float fragColor : COLOR)
 {
 	float3 N;
-	float depth = computeSphereDepth(texCoord, eyeSpacePos, sphereRadius, projectionMatrix, N);
+    float4 pixelPos;
+	float depth = computeSphereDepth(texCoord, eyeSpacePos, sphereRadius, projectionMatrix, N, pixelPos);
     fragColor = depth;
 	//fragColor = fragDepth;
 }
 
+void particleSphereThicknessPS(
+	float2 texCoord : TEXCOORD0,
+	float3 eyeSpacePos : TEXCOORD1,
+	uniform float sphereRadius,
+	uniform float4x4 projectionMatrix,
+	out float fragColor : COLOR)
+{
+    float3 N;
+    float4 pixelPos;
+	computeSphereDepth(texCoord, eyeSpacePos, sphereRadius, projectionMatrix, N, pixelPos);
+//
+    //fragColor = mul(distance(float4(eyeSpacePos, 0.0), pixelPos), projectionMatrix).length();
+
+    fragColor = 0.015;
+}

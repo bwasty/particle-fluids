@@ -111,6 +111,7 @@ public:
    /// \warning time-costly! because access the HDD!
    time_t getLatestModificationTime(const std::string& pResourceGroupName);
 
+   //bool filesChanged(const std::string& pResourceGroupName);
 
    /// \brief test latest modification time.
    /// if it did change since the latest call to this function,

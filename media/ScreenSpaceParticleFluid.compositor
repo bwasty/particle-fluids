@@ -3,9 +3,10 @@ compositor ScreenSpaceParticleFluid {
 		texture SphereDepth target_width target_height PF_FLOAT32_R 
 		// PF_FLOAT32_R R8G8B8
 		texture SceneBackground target_width target_height PF_R8G8B8A8
+        texture Thickness target_width target_height PF_FLOAT16_R
 		
 						 
-		// TODO: make MRT -> depth + thickness; make "pong" depth texture "SmoothedDepth"
+		// TODO: pass thickness; make "pong" depth texture "SmoothedDepth"
 		
 		target SphereDepth {
 			input none
@@ -17,6 +18,19 @@ compositor ScreenSpaceParticleFluid {
 				last_render_queue 90 
 		    }		
 		}
+
+        // TODO!: blur thickness
+        target Thickness {
+            input none
+
+            pass clear{}
+
+			pass render_scene {  
+                material_scheme Thickness
+				first_render_queue 90
+				last_render_queue 90 
+		    }	
+        }
 		
 		// TODO: target SmoothedDepth 
 		
@@ -42,6 +56,7 @@ compositor ScreenSpaceParticleFluid {
 				material FluidSurfaceShading
 				input 0 SphereDepth
 				input 1 SceneBackground
+                input 2 Thickness
 			}
 		}
 	}

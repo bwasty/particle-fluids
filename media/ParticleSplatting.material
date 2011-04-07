@@ -59,6 +59,17 @@ fragment_program SpherePointSpritesDepthPS cg {
 	}
 }
 
+fragment_program SpherePointSpritesThicknessPS cg {
+	source SpherePointSprites.cg
+	entry_point particleSphereThicknessPS
+	profiles gp4fp glslf arbfp1 fp20 fp30
+
+    default_params {
+		param_named sphereRadius float 1.0
+		//param_named_auto projectionMatrix projection_matrix
+	}
+}
+
 material SpherePointSprites {
 	technique {
 		pass {
@@ -79,6 +90,21 @@ material SpherePointSpritesWithGS {
             fragment_program_ref SpherePointSpritesDepthPS {} // SpherePointSpritesDiffusePS
 		}
 	}
+
+    technique {
+        scheme Thickness
+
+        pass {
+            scene_blend add
+            depth_check off
+
+            vertex_program_ref PassThroughVS {} 
+
+			geometry_program_ref ParticleGS {}
+
+            fragment_program_ref SpherePointSpritesThicknessPS {}
+        }
+    }
 }
 
 fragment_program FluidSurfaceShadingPS cg {
@@ -103,6 +129,7 @@ material FluidSurfaceShading {
 
             texture_unit {} 
 
+            texture_unit {}
 
 		}
 	}
