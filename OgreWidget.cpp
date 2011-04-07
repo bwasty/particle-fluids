@@ -297,6 +297,17 @@ void OgreWidget::resizeEvent(QResizeEvent *e)
             Ogre::Real aspectRatio = Ogre::Real(newSize.width()) / Ogre::Real(newSize.height());
             mCamera->setAspectRatio(aspectRatio);
         }
+
+        if(mViewport && CompositorManager::getSingleton().hasCompositorChain(mViewport))
+        {
+            CompositorChain* chain = CompositorManager::getSingleton().getCompositorChain(mViewport);
+            unsigned int length = chain->getNumCompositors();
+            for(unsigned int i = 0; i < length; i++)
+            {
+               chain->setCompositorEnabled(i, false);
+               chain->setCompositorEnabled(i, true);
+            }
+        }
     }
 }
 
