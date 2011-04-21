@@ -9,9 +9,9 @@ float computeSphereDepth(
     // TODO!: quad size obviously not matching...
 	// calculate eye-space sphere normal from texture coordinates
 	//float3 N;
-	N.xy = -texCoord*2.0-1.0;
+	N.xy = texCoord;
 	float r2 = dot(N.xy, N.xy);
-	if (r2 > 1.0) return 0.5;//discard; // kill pixels outside circle
+	if (r2 > 1.0) discard; // kill pixels outside circle
 	N.z = -sqrt(1.0 - r2);
 	
 	// calculate depth

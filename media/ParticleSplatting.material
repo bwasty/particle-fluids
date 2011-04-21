@@ -21,7 +21,7 @@ geometry_program ParticleGS cg {
 	profiles gp4gp gpu_gp
 	
 	default_params {
-		param_named quadSize float 0.3
+		param_named quadSize float 0.2
         param_named_auto modelViewMatrix worldview_matrix
 		param_named_auto projectionMatrix projection_matrix
 	}
