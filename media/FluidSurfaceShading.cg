@@ -1,6 +1,20 @@
+float3 uvToEye(float2 texCoord, float depth, float4x4 invProjectionMatrix) {
+	float4 clipPos = float4(texCoord * 2.0 - 1.0, depth, 1.0);
+
+	float4 viewPos = mul(clipPos, invProjectionMatrix);
+	return viewPos.xyz / viewPos.w;
+}
+
+float3 getEyePos(sampler2D samplerDepth, float2 texCoord, float4x4 invProjectionMatrix) {
+	return uvToEye(texCoord, tex2D(samplerDepth, texCoord).r, invProjectionMatrix);
+} 
+
+
 void shadeFluidSurfacePS(
 	float2 texCoord : TEXCOORD0,
+	float4x4 invProjectionMatrix,
 	uniform sampler2D samplerDepth : register(s0),
+	uniform float4 packedTextureSize, // float4(width, height, 1 / width, 1 / height) - Ogre auto param
     uniform sampler2D samplerBackground : register(s1),
     uniform sampler2D samplerThickness : register(s2),
 	out float4 fragColor : COLOR)
@@ -8,22 +22,32 @@ void shadeFluidSurfacePS(
     float4 backgroundColor = tex2D(samplerBackground, texCoord);
     fragColor = backgroundColor;
 
-	float fluidDepth = tex2D(samplerDepth, texCoord);
-    if(fluidDepth > 0)
-        fragColor = float4(fluidDepth, fluidDepth, fluidDepth, 1.0);
+	float fluidDepth = tex2D(samplerDepth, texCoord).r;
+    if(fluidDepth > 0) {
+        //fragColor = float4(fluidDepth, fluidDepth, fluidDepth, 1.0);
+
+		float3 eyePos = uvToEye(texCoord, fluidDepth, invProjectionMatrix);
+
+		// calculate differences
+		float3 ddx = getEyePos(samplerDepth, texCoord + float2(packedTextureSize[2], 0), invProjectionMatrix) - eyePos;
+		float3 ddx2 = eyePos - getEyePos(samplerDepth, texCoord + vec2(-packedTextureSize[2], 0), invProjectionMatrix);
+		if (abs(ddx.z) > abs(ddx2.z)) {
+			ddx = ddx2;
+		}
+
+		float3 ddy = getEyePos(samplerDepth, texCoord[0] + vec2(0, packedTextureSize[3]), invProjectionMatrix) - eyePos;
+		float3 ddy2 = eyePos - getEyePos(samplerDepth, texCoord + vec2(0, -packedTextureSize[3]), invProjectionMatrix);
+		if (abs(ddy2.z) < abs(ddy.z)) {
+			ddy = ddy2;
+		}
+		// calculate normal
+		vec3 n = cross(ddx, ddy);
+		n = normalize(n);
+
+		fragColor = vec4(n, 1.0);
+	}
 
     //float fluidThickness = tex2D(samplerThickness, texCoord);
     //if (fluidThickness > 0)
         //fragColor = float4(fluidThickness, fluidThickness, fluidThickness, 1.0);
-//
-    ////fragColor.st = texCoord;
-    //fragColor = float4(tex2D(samplerDepth, texCoord).rrr, 1.0);
-    
-    //fragColor = float4(0,1,0,1);//
-    //if (texCoord.x < 0.5 && texCoord.y < 0.5)
-        //fragColor = float4(0,1,0,1);
 }
-
-//void displayDepthPS(float depth : DEPTH, out float4 fragColor : COLOR) {
-    //fragColor = float4(depth, depth, depth, 1.0);
-//}

@@ -111,6 +111,11 @@ fragment_program FluidSurfaceShadingPS cg {
 	source FluidSurfaceShading.cg
 	entry_point shadeFluidSurfacePS
 	profiles gp4fp glslf arbfp1 fp20 fp30
+	default_params
+	{
+		param_named_auto invProjectionMatrix inverse_projection_matrix
+		param_named_auto packedTextureSize packed_texture_size 0
+	}
 }	
 
 
