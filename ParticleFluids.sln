@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ParticleFluids", "ParticleFluids.vcxproj", "{52813862-2D9D-4556-8E97-53445EF3051B}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "ParticleFluidRendererPortable", "ParticleFluidRendererPortable\ParticleFluidRendererPortable.vdproj", "{F7D77F66-2F35-4390-B620-22A653D87DF2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -13,6 +15,10 @@ Global
 		{52813862-2D9D-4556-8E97-53445EF3051B}.Debug|Win32.Build.0 = Debug|Win32
 		{52813862-2D9D-4556-8E97-53445EF3051B}.Release|Win32.ActiveCfg = Release|Win32
 		{52813862-2D9D-4556-8E97-53445EF3051B}.Release|Win32.Build.0 = Release|Win32
+		{F7D77F66-2F35-4390-B620-22A653D87DF2}.Debug|Win32.ActiveCfg = Debug
+		{F7D77F66-2F35-4390-B620-22A653D87DF2}.Debug|Win32.Build.0 = Debug
+		{F7D77F66-2F35-4390-B620-22A653D87DF2}.Release|Win32.ActiveCfg = Release
+		{F7D77F66-2F35-4390-B620-22A653D87DF2}.Release|Win32.Build.0 = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

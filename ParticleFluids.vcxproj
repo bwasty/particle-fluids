@@ -158,6 +158,7 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(Configuration)\moc_%(Filename).cpp;%(Outputs)</Outputs>
     </CustomBuild>
     <ClInclude Include="qdebugstream.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="ResourceGroupHelper.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="GeneratedFiles\ui_particlefluids.h" />
@@ -188,9 +189,16 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\qrc_%(Filename).cpp;%(Outputs)</Outputs>
     </CustomBuild>
     <None Include="media\FluidSurfaceShading.cg" />
+    <None Include="media\Ground.material" />
+    <None Include="media\packs\OgreCore.zip" />
+    <None Include="media\ParticleSplatting.material" />
     <None Include="media\PointToQuadGS.cg" />
+    <None Include="media\ScreenSpaceParticleFluid.compositor" />
     <None Include="media\SphereDepth.cg" />
     <None Include="media\SpherePointSprites.cg" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ParticleFluids.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

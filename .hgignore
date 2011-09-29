@@ -10,3 +10,4 @@ syntax: glob
 *.bak
 *.orig
 *.old
+ParticleFluidRendererPortable/Release/

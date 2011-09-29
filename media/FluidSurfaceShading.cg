@@ -45,7 +45,7 @@ void shadeFluidSurfacePS(
 		vec3 n = cross(ddx, ddy);
 		n = normalize(n);
 
-		//fragColor = vec4(n, 1.0);
+		fragColor = vec4(n, 1.0);
 	}
 
     //float fluidThickness = tex2D(samplerThickness, texCoord);
