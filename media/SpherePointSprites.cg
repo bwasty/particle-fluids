@@ -74,14 +74,15 @@ void particleSphereDepthPS(
 	float3 eyeSpacePos : TEXCOORD1,
 	uniform float sphereRadius, // TODO!: sync with PhysX params...
 	uniform float4x4 projectionMatrix,
-	/*out float fragDepth : DEPTH,*/
+	out float fragDepth : DEPTH,
 	out float fragColor : COLOR)
 {
 	float3 N;
     float4 pixelPos;
 	float depth = computeSphereDepth(texCoord, eyeSpacePos, sphereRadius, projectionMatrix, N, pixelPos);
     fragColor = depth;
-	//fragColor = fragDepth;
+    //fragColor = eyeSpacePos;
+	fragDepth = depth;
 }
 
 void particleSphereThicknessPS(
@@ -93,7 +94,8 @@ void particleSphereThicknessPS(
 {
     float3 N;
     float4 pixelPos;
-	computeSphereDepth(texCoord, eyeSpacePos, sphereRadius, projectionMatrix, N, pixelPos);
+    // TODO!!: gets optimized away -> no discard at sphere border...
+	computeSphereDepth(texCoord, eyeSpacePos, sphereRadius, projectionMatrix, N, pixelPos); 
 //
     //fragColor = mul(distance(float4(eyeSpacePos, 0.0), pixelPos), projectionMatrix).length();
 

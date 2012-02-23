@@ -114,9 +114,10 @@ void OgreWidget::keyPressEvent(QKeyEvent *e)
             keyCoordModificationMapping.find(e->key());
     if(keyPressed != keyCoordModificationMapping.end() && mCamera)
     {
+			float scale = (e->modifiers() & Qt::ShiftModifier) ? 0.05 : 0.25;
             //const Ogre::Vector3 &actualCamPos = mCamera->getPosition();
             //setCameraPosition(actualCamPos + keyPressed.value());
-			mCamera->moveRelative(keyPressed.value() * 0.3);
+			mCamera->moveRelative(keyPressed.value() * scale);
 
             e->accept();
     }
@@ -262,6 +263,9 @@ void OgreWidget::paintEvent(QPaintEvent *e)
 bool OgreWidget::frameRenderingQueued(const Ogre::FrameEvent &evt) {
 	mPhysicsWorld->advance(evt.timeSinceLastFrame*mSimulationSpeed);
 
+	mOgreBaseAnim->addTime(evt.timeSinceLastFrame);
+	mOgreTopAnim->addTime(evt.timeSinceLastFrame);
+
 	updateFrameStats();
 
 	return true;
@@ -371,15 +375,15 @@ void OgreWidget::initOgreSystem()
 
     mCamera = mSceneMgr->createCamera("Camera");
     Ogre::Vector3 camPos(8.5, 6, 11.5);
-        mCamera->setPosition(camPos);
-        mCamera->lookAt(0,3,0);
+    mCamera->setPosition(camPos);
+    mCamera->lookAt(0,3,0);
     //emit cameraPositionChanged(camPos);
 
     mViewport = mRenderWindow->addViewport(mCamera);
     mViewport->setBackgroundColour(Ogre::ColourValue(0,0,0));
     mCamera->setAspectRatio(Ogre::Real(width()) / Ogre::Real(height()));
-	mCamera->setNearClipDistance(0.5);
-	mCamera->setFarClipDistance(40);
+	mCamera->setNearClipDistance(0.1);
+	mCamera->setFarClipDistance(30);
 
     setupResources();
 	setupNxOgre();
@@ -480,6 +484,33 @@ void OgreWidget::createScene()
 	// compositor for fluid
 	CompositorManager::getSingleton().addCompositor(mViewport, "ScreenSpaceParticleFluid");
 	CompositorManager::getSingleton().setCompositorEnabled(mViewport, "ScreenSpaceParticleFluid", true);
+
+	// add Ogre model for comparing shading of fluid and normal meshes
+	SceneNode* ogreNode = mSceneMgr->getRootSceneNode()->createChildSceneNode();
+	Entity* ogreEnt = mSceneMgr->createEntity("Sinbad", "Sinbad.mesh");
+	ogreNode->attachObject(ogreEnt);
+	float scale = 0.3;
+	ogreNode->setScale(Vector3(scale));
+	ogreNode->setPosition(5, ogreEnt->getBoundingBox().getHalfSize().y*scale, 0);
+ 
+	// Set animation blend mode to additive / cumulative.
+	ogreEnt->getSkeleton()->setBlendMode(ANIMBLEND_CUMULATIVE);
+ 
+	// Get the two halves of the idle animation.
+	mOgreBaseAnim = ogreEnt->getAnimationState("IdleBase");
+	mOgreTopAnim = ogreEnt->getAnimationState("IdleTop");
+ 
+	// Enable both of them and set them to loop.
+	mOgreBaseAnim->setLoop(true);
+	mOgreTopAnim->setLoop(true);
+	mOgreBaseAnim->setEnabled(true);
+	mOgreTopAnim->setEnabled(true);
+
+	ogreEnt->setMaterialName("normals");
+
+	// TODO!!!: Ogre model: renderqueue switch to render as background / part of fluid
+	//ogreEnt->setRenderQueueGroup(RENDER_QUEUE_9);
+
 }
 
 void OgreWidget::createFluid() {

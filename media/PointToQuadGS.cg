@@ -27,11 +27,15 @@ void pointToQuad(AttribArray<float4> position : POSITION,
     quadCorners[2] = float2(+1.0, +1.0);
     quadCorners[3] = float2(+1.0, -1.0);
 
-    for(int i=0; i<4; ++i) {
-        float4 positionOut = mul(modelViewMatrix, position[0]);
-        positionOut.xy += quadCorners[i] * halfSize;
+    float4 positionEyeSpace = mul(modelViewMatrix, position[0]);
 
-        float3 eyeSpacePos = positionOut.xyz;
+    // TEST: make eyeSpacePos always the actual particle position
+    float3 eyeSpacePos = positionEyeSpace.xyz;
+
+    for(int i=0; i<4; ++i) {
+        float4 positionOut = positionEyeSpace;
+
+        positionOut.xy += quadCorners[i] * halfSize;
 
         positionOut = mul(projectionMatrix, positionOut);
 

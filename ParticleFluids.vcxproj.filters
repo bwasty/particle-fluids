@@ -114,6 +114,12 @@
     <None Include="media\ScreenSpaceParticleFluid.compositor">
       <Filter>Ogre Scripts</Filter>
     </None>
+    <None Include="media\normals.cg">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="media\normals.material">
+      <Filter>Ogre Scripts</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="OgreWidget.h">

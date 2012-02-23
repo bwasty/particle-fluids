@@ -190,6 +190,8 @@
     </CustomBuild>
     <None Include="media\FluidSurfaceShading.cg" />
     <None Include="media\Ground.material" />
+    <None Include="media\normals.cg" />
+    <None Include="media\normals.material" />
     <None Include="media\packs\OgreCore.zip" />
     <None Include="media\ParticleSplatting.material" />
     <None Include="media\PointToQuadGS.cg" />

@@ -12,11 +12,12 @@ float computeSphereDepth(
 	N.xy = texCoord;
 	float r2 = dot(N.xy, N.xy);
 	if (r2 > 1.0) discard; // kill pixels outside circle
-	N.z = -sqrt(1.0 - r2);
+	N.z = sqrt(1.0 - r2);
 	
 	// calculate depth
-	pixelPos = float4(eyeSpacePos + (-N)*sphereRadius, 1.0);
-	float4 clipSpacePos = mul(pixelPos, projectionMatrix);
+	pixelPos = float4(eyeSpacePos + (N)*sphereRadius, 1.0);
+
+	float4 clipSpacePos = mul(projectionMatrix, pixelPos);
 	
 	return clipSpacePos.z / clipSpacePos.w;
 }

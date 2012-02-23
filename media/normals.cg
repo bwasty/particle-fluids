@@ -1,0 +1,20 @@
+struct VSOut {
+	float4 pos : POSITION;
+	float3 normal : TEXCOORD0;
+    float depth : TEXCOORD1;
+};
+
+void normalsPassthrough(in float4 pos : POSITION,
+						in float3 n : NORMAL,
+						out VSOut o,
+                        uniform float4x4 worldViewProj) {
+	o.pos = mul(worldViewProj, pos);
+    o.normal = n;
+    o.depth = o.pos.z / o.pos.w;
+}
+
+void shade(in VSOut i, out float4 fragColor : COLOR) {
+	fragColor = float4(i.normal, 1.0);
+    //fragColor = float4(i.depth, i.depth, i.depth, 1.0);
+    //fragColor = (1,0,0,1);
+}

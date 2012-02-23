@@ -97,6 +97,9 @@ private:
 
 	ResourceGroupHelper* mResourceGroupHelper;
 
+	Ogre::AnimationState* mOgreBaseAnim;
+	Ogre::AnimationState* mOgreTopAnim;
+
 public:
 	NxOgre::FluidDescription mFluidDescription;
 	NxOgre::FluidEmitterDescription mEmitterDescription;

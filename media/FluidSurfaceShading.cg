@@ -12,7 +12,7 @@ float3 getEyePos(sampler2D samplerDepth, float2 texCoord, float4x4 invProjection
 
 void shadeFluidSurfacePS(
 	float2 texCoord : TEXCOORD0,
-	float4x4 invProjectionMatrix,
+	uniform float4x4 invProjectionMatrix,
 	uniform sampler2D samplerDepth : register(s0),
 	uniform float4 packedTextureSize, // float4(width, height, 1 / width, 1 / height) - Ogre auto param
     uniform sampler2D samplerBackground : register(s1),
@@ -23,30 +23,35 @@ void shadeFluidSurfacePS(
     fragColor = backgroundColor;
 
 	float fluidDepth = tex2D(samplerDepth, texCoord).r;
+    float depthThreshold = 0.1;
     if(fluidDepth > 0) {
-        fragColor = float4(fluidDepth, fluidDepth, fluidDepth, 1.0);
-
-		float3 eyePos = uvToEye(texCoord, fluidDepth, invProjectionMatrix);
-		//fragColor = vec4(eyePos, 1.0);
+    	float3 eyePos = uvToEye(texCoord, fluidDepth, invProjectionMatrix);
+		//fragColor = float4(eyePos, 1.0);
 
 		// calculate differences
 		float3 ddx = getEyePos(samplerDepth, texCoord + float2(packedTextureSize[2], 0), invProjectionMatrix) - eyePos;
-		float3 ddx2 = eyePos - getEyePos(samplerDepth, texCoord + vec2(-packedTextureSize[2], 0), invProjectionMatrix);
-		if (abs(ddx.z) > abs(ddx2.z)) {
+		float3 ddx2 = eyePos - getEyePos(samplerDepth, texCoord + float2(-packedTextureSize[2], 0), invProjectionMatrix);
+		if (abs(ddx.z) > depthThreshold /*abs(ddx2.z)*/){ 
 			ddx = ddx2;
 		}
 
-		float3 ddy = getEyePos(samplerDepth, texCoord[0] + vec2(0, packedTextureSize[3]), invProjectionMatrix) - eyePos;
-		float3 ddy2 = eyePos - getEyePos(samplerDepth, texCoord + vec2(0, -packedTextureSize[3]), invProjectionMatrix);
-		if (abs(ddy2.z) < abs(ddy.z)) {
+		float3 ddy = getEyePos(samplerDepth, texCoord[0] + float2(0, packedTextureSize[3]), invProjectionMatrix) - eyePos;
+		float3 ddy2 = eyePos - getEyePos(samplerDepth, texCoord + float2(0, -packedTextureSize[3]), invProjectionMatrix);
+		if (abs(ddy2.z) < depthThreshold /*abs(ddy.z)*/) {
 			ddy = ddy2;
 		}
 		// calculate normal
-		vec3 n = cross(ddx, ddy);
+		float3 n = cross(ddx, ddy);
 		n = normalize(n);
 
-		fragColor = vec4(n, 1.0);
+		fragColor = float4(n, 1.0);
+
+		//fragColor = float4(fluidDepth, fluidDepth, fluidDepth, 1.0);
+
+        // TODO: lighting
+
 	}
+
 
     //float fluidThickness = tex2D(samplerThickness, texCoord);
     //if (fluidThickness > 0)

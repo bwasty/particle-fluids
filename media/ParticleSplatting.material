@@ -39,7 +39,7 @@ fragment_program SpherePointSpritesDiffusePS cg {
 	profiles gp4fp glslf arbfp1 fp20 fp30
 	//compiler_arguments debug
 	default_params {
-		param_named sphereRadius float 1.0
+		param_named sphereRadius float 0.2
 		param_named_auto projectionMatrix projection_matrix
         param_named_auto lightDir light_direction 0
 		param_named_auto ambient ambient_light_colour
@@ -53,20 +53,20 @@ fragment_program SpherePointSpritesDepthPS cg {
 	profiles gp4fp glslf arbfp1 fp20 fp30
 
     default_params {
-		param_named sphereRadius float 1.0
+		param_named sphereRadius float 0.2
 		param_named_auto projectionMatrix projection_matrix
 
 	}
 }
 
-fragment_program SpherePointSpritesThicknessPS cg {
+fragment_program SpherePointSpritesThicknessPS cg { 
 	source SpherePointSprites.cg
 	entry_point particleSphereThicknessPS
 	profiles gp4fp glslf arbfp1 fp20 fp30
 
     default_params {
-		param_named sphereRadius float 1.0
-		//param_named_auto projectionMatrix projection_matrix
+		param_named sphereRadius float 0.2
+		param_named_auto projectionMatrix projection_matrix
 	}
 }
 

@@ -1,0 +1,35 @@
+vertex_program normals_VS cg  {
+    source normals.cg
+    entry_point normalsPassthrough
+    profiles gp4vp glslv arbvp1 vp20 vp30
+	
+	default_params  {
+		param_named_auto worldViewProj worldviewproj_matrix
+		//param_indexed_auto 0 worldviewproj_matrix
+	}
+}
+
+
+fragment_program normals_PS cg {
+    source normals.cg
+    entry_point shade
+    profiles gp4fp glslf arbfp1 fp20 fp30
+}
+
+
+material normals 
+{
+	technique
+	{
+		pass
+		{
+			vertex_program_ref normals_VS 
+			{
+			}
+			
+			fragment_program_ref normals_PS
+			{
+			}
+		}
+	}
+}

@@ -15,26 +15,20 @@
     {
         "Entry"
         {
-        "MsmKey" = "8:_018A4380EE2F4EA7AA4D7215B3159C73"
-        "OwnerKey" = "8:_061CBB1BEE184E27A2688D2A0D1CC7B4"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_02D81B4869C648C7919539EF49922110"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_061CBB1BEE184E27A2688D2A0D1CC7B4"
-        "OwnerKey" = "8:_UNDEFINED"
+        "MsmKey" = "8:_0436A0ED44FC4091AE0E5D061A8981DF"
+        "OwnerKey" = "8:_061CBB1BEE184E27A2688D2A0D1CC7B4"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_06327B93B9374C988DB30CA8C1BCF78A"
-        "OwnerKey" = "8:_C92531347CEF4A189EAF46B897B93810"
+        "MsmKey" = "8:_061CBB1BEE184E27A2688D2A0D1CC7B4"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -58,6 +52,12 @@
         "Entry"
         {
         "MsmKey" = "8:_0AD94B239DDA40AFB094B18654B4DCA1"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_0EFC5EC8D31B40FD94E2FEACC671BD0F"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -219,6 +219,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_EAFDF9BDF05742DEA1DB88803B55683D"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_EDEC3BDD5E7D4F24888A9D045CB9D235"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -233,6 +239,12 @@
         {
         "MsmKey" = "8:_F8A4C69168B74F2898F8BC814476D7FC"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F8E0B896B1A24FFBB93AC687E9E95548"
+        "OwnerKey" = "8:_C92531347CEF4A189EAF46B897B93810"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -428,6 +440,26 @@
             {
             "SourcePath" = "8:..\\bin\\debug\\Plugin_OctreeSceneManager_d.dll"
             "TargetName" = "8:Plugin_OctreeSceneManager_d.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_D2F2738CB2FE4D959EC9D93689FF310D"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_0EFC5EC8D31B40FD94E2FEACC671BD0F"
+            {
+            "SourcePath" = "8:..\\bin\\debug\\cudart32_30_9.dll"
+            "TargetName" = "8:cudart32_30_9.dll"
             "Tag" = "8:"
             "Folder" = "8:_D2F2738CB2FE4D959EC9D93689FF310D"
             "Condition" = "8:"
@@ -944,6 +976,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_EAFDF9BDF05742DEA1DB88803B55683D"
+            {
+            "SourcePath" = "8:..\\bin\\release\\cudart32_30_9.dll"
+            "TargetName" = "8:cudart32_30_9.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_5A931263F510476DA50B3AB9533F5019"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_EDEC3BDD5E7D4F24888A9D045CB9D235"
             {
             "SourcePath" = "8:..\\bin\\debug\\RenderSystem_GL_d.dll"
@@ -1145,7 +1197,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:ParticleFluidRenderer"
         "ProductCode" = "8:{EC99C1E7-13AD-487D-8289-21DA65958E10}"
-        "PackageCode" = "8:{A867B9A5-F27D-4802-955F-0B273A160A00}"
+        "PackageCode" = "8:{8884F6D4-B5BD-45C4-9D5E-4A11CDF1F589}"
         "UpgradeCode" = "8:{EBD28368-2DA3-488E-9DCF-15AE8E409477}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -1661,7 +1713,7 @@
         }
         "MergeModule"
         {
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_018A4380EE2F4EA7AA4D7215B3159C73"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_0436A0ED44FC4091AE0E5D061A8981DF"
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:TRUE"
@@ -1675,7 +1727,7 @@
             "Feature" = "8:"
             "IsolateTo" = "8:"
             }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_06327B93B9374C988DB30CA8C1BCF78A"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_F8E0B896B1A24FFBB93AC687E9E95548"
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:TRUE"
