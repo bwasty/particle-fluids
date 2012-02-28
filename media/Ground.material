@@ -10,3 +10,15 @@ material Ground
 		}
 	}
 }
+
+material marbleTexture {
+	technique {
+		pass {
+		
+			texture_unit {
+				texture LightSwirlMarble.jpg
+				tex_address_mode wrap
+			}
+		}
+	}
+}

@@ -466,7 +466,7 @@ void OgreWidget::createScene()
 
 	Entity* groundEnt = mSceneMgr->createEntity("GroundEntity", "ground");
 	mSceneMgr->getRootSceneNode()->createChildSceneNode()->attachObject(groundEnt);
-	groundEnt->setMaterialName("Ground");
+	groundEnt->setMaterialName("marbleTexture");
 	groundEnt->setCastShadows(false);
 
 	// physical ground plane
