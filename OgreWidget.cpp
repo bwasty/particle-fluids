@@ -211,6 +211,9 @@ void OgreWidget::mousePressEvent(QMouseEvent *e)
         oldPos = e->pos();
         e->accept();
     }
+	else if (e->buttons().testFlag(Qt::RightButton)) {
+		mPhysicsScene->setGravity(-mPhysicsScene->getGravity());
+	}
     else
     {
         e->ignore();
@@ -223,7 +226,7 @@ void OgreWidget::mouseReleaseEvent(QMouseEvent *e)
     {
         oldPos = QPoint(invalidMousePoint);
         e->accept();
-    }
+	}
     else
     {
         e->ignore();

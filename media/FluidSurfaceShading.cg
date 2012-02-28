@@ -28,13 +28,12 @@ void shadeFluidSurfacePS(
 	out float4 fragColor : COLOR)
 {
     float4 backgroundColor = tex2D(samplerBackground, texCoord);
-    fragColor = backgroundColor;
 
 	float fluidDepth = tex2D(samplerDepth, texCoord).r;
     float depthThreshold = 0.1;
     if(fluidDepth > 0) {
         float fovx = fovy * packedTextureSize.x / packedTextureSize.y;
-        float invFocalLen = float2(tan(fovx/2), tan(fovy/2));
+        float2 invFocalLen = float2(tan(fovx/2), tan(fovy/2));
 
     	float3 eyePos = uvToEye(texCoord, fluidDepth, invFocalLen);
 		//fragColor = float4(eyePos, 1.0);
@@ -55,12 +54,20 @@ void shadeFluidSurfacePS(
 		float3 n = cross(ddx, ddy);
 		n = normalize(n);
 
-		fragColor = float4(n, 1.0);
+		//fragColor = float4(n, 1.0);
 
 		//fragColor = float4(fluidDepth, fluidDepth, fluidDepth, 1.0);
 
+        float thickness = tex2D(samplerThickness, texCoord).r;
+
         // TODO: lighting
-        float4 fluidColor = float4(0.25, 0.35, 1.0, 1.0);
+        float4 fluidColor = float4(0.25, 0.35, 1.0, 1.0); //float4(0.25, 0.35, 1.0, 1.0);
+        float4 colorFalloff = float4(2.0, 1.0, 0.5, 1.0);
+        float falloffScale = 0.3;
+
+        //attenuate fluid colour
+        fluidColor = fluidColor * exp(-thickness*falloffScale*colorFalloff);
+
         float shininess = 50.0;
         float diffuse = max(0.0, dot(n, lightDir));
         float ambient = 0.3;
@@ -71,13 +78,14 @@ void shadeFluidSurfacePS(
         //float3 r = reflect(-v, n);
         //r = r * normalMatrix
 
-        fragColor = fluidColor * diffuse + fluidColor * ambient + specular * float4(1.0,1.0,1.0,1.0);
+        float4 fluid_diffspec = fluidColor * diffuse + fluidColor * ambient + specular * float4(1.0,1.0,1.0,1.0);
 
-        //fragColor = float4(abs(lightDir.x), abs(lightDir.y), abs(lightDir.z), 1.0);
+        fragColor = lerp(fluid_diffspec, backgroundColor, exp(-thickness)); // TODO: colorFalloff?
+        //if (thickness > 0)
+            //fragColor = float4(thickness, thickness, thickness, thickness);
+
 	}
-
-
-    //float fluidThickness = tex2D(samplerThickness, texCoord);
-    //if (fluidThickness > 0)
-        //fragColor = float4(fluidThickness, fluidThickness, fluidThickness, 1.0);
+    else {
+        fragColor = backgroundColor;
+    }
 }

@@ -95,10 +95,9 @@ void particleSphereThicknessPS(
 {
     float3 N;
     float4 pixelPos;
-    // TODO!!: gets optimized away -> no discard at sphere border...
 	computeSphereDepth(texCoord, eyeSpacePos, sphereRadius, projectionMatrix, N, pixelPos); 
 //
     //fragColor = mul(distance(float4(eyeSpacePos, 0.0), pixelPos), projectionMatrix).length();
 
-    fragColor = 0.015;
+    fragColor = 0.1 * N.z;
 }
