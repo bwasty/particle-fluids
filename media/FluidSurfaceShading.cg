@@ -1,22 +1,30 @@
-float3 uvToEye(float2 texCoord, float depth, float4x4 invProjectionMatrix) {
-	float4 clipPos = float4(texCoord * 2.0 - 1.0, depth, 1.0);
+float3 uvToEye(float2 texCoord, float depth, float2 invFocalLen) {
+    texCoord = texCoord * 2.0 - 1.0;
+    texCoord = texCoord * invFocalLen * depth;
+
+    return float3(texCoord * invFocalLen * depth, depth);
+
+	//float4 clipPos = float4((texCoord * 2.0 - 1.0) * invFocalLen * depth, depth, 1.0);
+    //float4 clipPos = float4((texCoord * 2.0 - 1.0) * invFocalLen * depth, depth, 1.0);
 
 	//float4 viewPos = mul(clipPos, invProjectionMatrix);
-	return clipPos.xyz;// viewPos.xyz / viewPos.w;
+	//return clipPos.xyz;// viewPos.xyz / viewPos.w;
 }
 
-float3 getEyePos(sampler2D samplerDepth, float2 texCoord, float4x4 invProjectionMatrix) {
-	return uvToEye(texCoord, tex2D(samplerDepth, texCoord).r, invProjectionMatrix);
+float3 getEyePos(sampler2D samplerDepth, float2 texCoord, float2 invFocalLen) {
+	return uvToEye(texCoord, tex2D(samplerDepth, texCoord).r, invFocalLen);
 } 
 
 
 void shadeFluidSurfacePS(
 	float2 texCoord : TEXCOORD0,
-	uniform float4x4 invProjectionMatrix,
+	uniform float4x4 invProjectionMatrix, // TODO: obsolete?
+    uniform float fovy,
 	uniform sampler2D samplerDepth : register(s0),
 	uniform float4 packedTextureSize, // float4(width, height, 1 / width, 1 / height) - Ogre auto param
     uniform sampler2D samplerBackground : register(s1),
     uniform sampler2D samplerThickness : register(s2),
+    uniform float3 lightDir,
 	out float4 fragColor : COLOR)
 {
     float4 backgroundColor = tex2D(samplerBackground, texCoord);
@@ -25,18 +33,21 @@ void shadeFluidSurfacePS(
 	float fluidDepth = tex2D(samplerDepth, texCoord).r;
     float depthThreshold = 0.1;
     if(fluidDepth > 0) {
-    	float3 eyePos = uvToEye(texCoord, fluidDepth, invProjectionMatrix);
+        float fovx = fovy * packedTextureSize.x / packedTextureSize.y;
+        float invFocalLen = float2(tan(fovx/2), tan(fovy/2));
+
+    	float3 eyePos = uvToEye(texCoord, fluidDepth, invFocalLen);
 		//fragColor = float4(eyePos, 1.0);
 
 		// calculate differences
-		float3 ddx = getEyePos(samplerDepth, texCoord + float2(packedTextureSize[2], 0), invProjectionMatrix) - eyePos;
-		float3 ddx2 = eyePos - getEyePos(samplerDepth, texCoord + float2(-packedTextureSize[2], 0), invProjectionMatrix);
+		float3 ddx = getEyePos(samplerDepth, texCoord + float2(packedTextureSize[2], 0), invFocalLen) - eyePos;
+		float3 ddx2 = eyePos - getEyePos(samplerDepth, texCoord + float2(-packedTextureSize[2], 0), invFocalLen);
 		if (abs(ddx.z) > depthThreshold /*abs(ddx2.z)*/){ 
 			ddx = ddx2;
 		}
 
-		float3 ddy = getEyePos(samplerDepth, texCoord[0] + float2(0, packedTextureSize[3]), invProjectionMatrix) - eyePos;
-		float3 ddy2 = eyePos - getEyePos(samplerDepth, texCoord + float2(0, -packedTextureSize[3]), invProjectionMatrix);
+		float3 ddy = getEyePos(samplerDepth, texCoord[0] + float2(0, packedTextureSize[3]), invFocalLen) - eyePos;
+		float3 ddy2 = eyePos - getEyePos(samplerDepth, texCoord + float2(0, -packedTextureSize[3]), invFocalLen);
 		if (abs(ddy2.z) < depthThreshold /*abs(ddy.z)*/) {
 			ddy = ddy2;
 		}
@@ -49,7 +60,20 @@ void shadeFluidSurfacePS(
 		//fragColor = float4(fluidDepth, fluidDepth, fluidDepth, 1.0);
 
         // TODO: lighting
+        float4 fluidColor = float4(0.25, 0.35, 1.0, 1.0);
+        float shininess = 50.0;
+        float diffuse = max(0.0, dot(n, lightDir));
+        float ambient = 0.3;
+        float3 v = normalize(eyePos);
+        float3 h = normalize(lightDir + v);
+        float specular = pow(max(0.0, dot(n, h)), shininess);
+        //float fresnel = 0.2 + 0.8*pow(1.0 - max(0.0, dot(n, v)), 2.0);
+        //float3 r = reflect(-v, n);
+        //r = r * normalMatrix
 
+        fragColor = fluidColor * diffuse + fluidColor * ambient + specular * float4(1.0,1.0,1.0,1.0);
+
+        //fragColor = float4(abs(lightDir.x), abs(lightDir.y), abs(lightDir.z), 1.0);
 	}
 
 

@@ -1,4 +1,4 @@
-float computeSphereDepth(
+float2 computeSphereDepth(
 	float2 texCoord,
 	float3 eyeSpacePos,
 	float sphereRadius,
@@ -19,5 +19,5 @@ float computeSphereDepth(
 
 	float4 clipSpacePos = mul(projectionMatrix, pixelPos);
 	
-	return clipSpacePos.z / clipSpacePos.w;
+	return float2(clipSpacePos.z, clipSpacePos.z / clipSpacePos.w);
 }

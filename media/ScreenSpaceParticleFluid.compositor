@@ -8,10 +8,23 @@ compositor ScreenSpaceParticleFluid {
 						 
 		// TODO: pass thickness; make "pong" depth texture "SmoothedDepth"
 		
+		target SceneBackground {
+			pass clear {}
+			
+			pass render_scene {
+				first_render_queue 1
+				last_render_queue 89
+			}
+		}
+
 		target SphereDepth {
 			input none
 			
-            pass clear {}
+            pass clear {
+                clear {
+                    buffers colour
+                }
+			}
 			
 			pass render_scene {  
 				first_render_queue 90
@@ -34,21 +47,14 @@ compositor ScreenSpaceParticleFluid {
 		
 		// TODO: target SmoothedDepth 
 		
-		target SceneBackground {
-			pass clear {}
-			
-			pass render_scene {
-				first_render_queue 1
-				last_render_queue 89
-			}
-		}
+
 		
 		target_output {
 			input none
 
             pass clear {
                 clear {
-                    buffers colour
+                    buffers colour depth
                 }
             }
 			

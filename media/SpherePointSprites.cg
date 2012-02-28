@@ -79,10 +79,10 @@ void particleSphereDepthPS(
 {
 	float3 N;
     float4 pixelPos;
-	float depth = computeSphereDepth(texCoord, eyeSpacePos, sphereRadius, projectionMatrix, N, pixelPos);
-    fragColor = depth;
-    //fragColor = eyeSpacePos;
-	fragDepth = depth;
+	float2 depth = computeSphereDepth(texCoord, eyeSpacePos, sphereRadius, projectionMatrix, N, pixelPos);
+    fragColor = depth[1];
+    //fragColor = eyeSpacePos; 
+	fragDepth = depth[1];
 }
 
 void particleSphereThicknessPS(
@@ -91,6 +91,7 @@ void particleSphereThicknessPS(
 	uniform float sphereRadius,
 	uniform float4x4 projectionMatrix,
 	out float fragColor : COLOR)
+    // TODO!: write depth as well?
 {
     float3 N;
     float4 pixelPos;

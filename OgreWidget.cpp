@@ -506,7 +506,7 @@ void OgreWidget::createScene()
 	mOgreBaseAnim->setEnabled(true);
 	mOgreTopAnim->setEnabled(true);
 
-	ogreEnt->setMaterialName("normals");
+	//ogreEnt->setMaterialName("normals");
 
 	// TODO!!!: Ogre model: renderqueue switch to render as background / part of fluid
 	//ogreEnt->setRenderQueueGroup(RENDER_QUEUE_9);
