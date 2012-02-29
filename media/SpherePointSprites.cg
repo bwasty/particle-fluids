@@ -71,7 +71,7 @@ PSOutput particleSphereDiffusePS(
 
 void particleSphereDepthPS(
 	float2 texCoord : TEXCOORD0,
-	float3 eyeSpacePos : TEXCOORD1,
+	float3 eyeSpacePosParticle : TEXCOORD1,
 	uniform float sphereRadius, // TODO!: sync with PhysX params...
 	uniform float4x4 projectionMatrix,
 	out float fragDepth : DEPTH,
@@ -79,15 +79,15 @@ void particleSphereDepthPS(
 {
 	float3 N;
     float4 pixelPos;
-	float2 depth = computeSphereDepth(texCoord, eyeSpacePos, sphereRadius, projectionMatrix, N, pixelPos);
-    fragColor = depth[1];
+	float2 depth = computeSphereDepth(texCoord, eyeSpacePosParticle, sphereRadius, projectionMatrix, N, pixelPos);
+    fragColor = depth[0];
     //fragColor = eyeSpacePos; 
 	fragDepth = depth[1];
 }
 
 void particleSphereThicknessPS(
 	float2 texCoord : TEXCOORD0,
-	float3 eyeSpacePos : TEXCOORD1,
+	float3 eyeSpacePosParticle : TEXCOORD1,
 	uniform float sphereRadius,
 	uniform float4x4 projectionMatrix,
 	out float fragColor : COLOR)
@@ -95,9 +95,9 @@ void particleSphereThicknessPS(
 {
     float3 N;
     float4 pixelPos;
-	computeSphereDepth(texCoord, eyeSpacePos, sphereRadius, projectionMatrix, N, pixelPos); 
+	computeSphereDepth(texCoord, eyeSpacePosParticle, sphereRadius, projectionMatrix, N, pixelPos); 
 //
     //fragColor = mul(distance(float4(eyeSpacePos, 0.0), pixelPos), projectionMatrix).length();
 
-    fragColor = 0.1 * N.z;
+    fragColor = 0.2 * N.z;
 }

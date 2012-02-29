@@ -54,10 +54,7 @@ void shadeFluidSurfacePS(
 		float3 n = cross(ddx, ddy);
 		n = normalize(n);
 
-		//fragColor = float4(n, 1.0);
-
-		//fragColor = float4(fluidDepth, fluidDepth, fluidDepth, 1.0);
-
+		
         float thickness = tex2D(samplerThickness, texCoord).r;
 
         // TODO: lighting
@@ -81,8 +78,13 @@ void shadeFluidSurfacePS(
         float4 fluid_diffspec = fluidColor * diffuse + fluidColor * ambient + specular * float4(1.0,1.0,1.0,1.0);
 
         fragColor = lerp(fluid_diffspec, backgroundColor, exp(-thickness)); // TODO: colorFalloff?
+        //fragColor = fluid_diffspec;
         //if (thickness > 0)
             //fragColor = float4(thickness, thickness, thickness, thickness);
+
+        //fragColor = float4(fluidDepth, (fluidDepth - 2)/2, (fluidDepth - 4)/4, 1.0);
+        //fragColor = float4(n, 1.0);
+        //fragColor = float4(thickness.xxx, 1.0);
 
 	}
     else {

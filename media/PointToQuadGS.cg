@@ -30,7 +30,7 @@ void pointToQuad(AttribArray<float4> position : POSITION,
     float4 positionEyeSpace = mul(modelViewMatrix, position[0]);
 
     // TEST: make eyeSpacePos always the actual particle position
-    float3 eyeSpacePos = positionEyeSpace.xyz;
+    float3 eyeSpacePosParticle = positionEyeSpace.xyz;
 
     for(int i=0; i<4; ++i) {
         float4 positionOut = positionEyeSpace;
@@ -41,7 +41,7 @@ void pointToQuad(AttribArray<float4> position : POSITION,
 
         emitVertex(positionOut : POSITION,
                    quadCorners[i] : TEXCOORD0,
-                   eyeSpacePos.xyz : TEXCOORD1);
+                   eyeSpacePosParticle.xyz : TEXCOORD1);
     }
     //restartStrip();
 

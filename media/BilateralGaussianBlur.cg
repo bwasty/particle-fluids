@@ -1,0 +1,39 @@
+void bilateralGaussianSeparated(
+    float2 texCoord : TEXCOORD0,
+    uniform sampler2D samplerDepth : register(s0),
+    uniform float4 texelSize,
+    uniform float2 blurDir,
+    // TODO: texture size?
+    out float fragColor : COLOR)
+{
+    float filterRadius = 10.0;
+    float blurDepthFalloff = 2.0;
+    float blurScale = 2.0 / filterRadius;
+
+    float depth = tex2D(samplerDepth, texCoord).x;
+    if  (depth == 0)
+        discard;
+
+    float sum = 0;
+    float wsum = 0;
+    for(float x=-filterRadius; x<=filterRadius; x+=1.0) {
+        float sample = tex2D(samplerDepth, texCoord + x*blurDir*texelSize).x;
+        // spatial domain
+        float r = x * blurScale;
+        float w = exp(-r*r);
+        // range domain
+        float r2 = (sample - depth) * blurDepthFalloff;
+        float g = exp(-r2*r2);
+        sum += sample * w * g;
+        wsum += w * g;
+    }
+
+    if (wsum > 0.0) {
+        sum /= wsum;
+    }
+
+    fragColor = sum;
+    //fragColor = 0.5;
+    //fragColor = depth;
+    //fragColor = 60*abs(tex2D(samplerDepth, texCoord + blurDir*texelSize).x - depth);
+}

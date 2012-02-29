@@ -65,8 +65,8 @@ fragment_program SpherePointSpritesThicknessPS cg {
 	profiles gp4fp glslf arbfp1 fp20 fp30
 
     default_params {
-		param_named sphereRadius float 0.15
-		param_named_auto projectionMatrix projection_matrix
+		//param_named sphereRadius float 0.15
+		//param_named_auto projectionMatrix projection_matrix
 	}
 }
 
@@ -113,7 +113,6 @@ fragment_program FluidSurfaceShadingPS cg {
 	profiles gp4fp glslf arbfp1 fp20 fp30
 	default_params
 	{
-		param_named_auto invProjectionMatrix inverse_projection_matrix
 		param_named_auto fovy fov
 		param_named_auto packedTextureSize packed_texture_size 0
 		param_named_auto lightDir light_position_view_space 0

@@ -1,0 +1,40 @@
+fragment_program bilateralGaussianSeparated cg {
+	source BilateralGaussianBlur.cg
+	entry_point bilateralGaussianSeparated
+	profiles gp4fp fp40 glslf arbfp1 fp20 fp30 fp40
+
+	default_params {
+		param_named_auto texelSize inverse_texture_size 0
+	}
+}
+
+material BilateralGaussianX
+{
+	technique 
+	{
+		pass 
+		{
+			fragment_program_ref bilateralGaussianSeparated
+			{
+				param_named blurDir float2 1.0 0.0
+			}
+			
+			texture_unit samplerDepth {}
+		}
+	}
+}
+
+material BilateralGaussianY : BilateralGaussianX 
+{
+	technique 
+	{
+		pass 
+		{
+			fragment_program_ref bilateralGaussianSeparated
+			{
+				param_named blurDir float2 0.0 1.0
+			}
+		}
+	}
+}
+	

@@ -1,6 +1,6 @@
 float2 computeSphereDepth(
 	float2 texCoord,
-	float3 eyeSpacePos,
+	float3 eyeSpacePosParticle,
 	float sphereRadius,
 	float4x4 projectionMatrix,
 	out float3 N, // TODO: N really needed as parameter?
@@ -15,7 +15,7 @@ float2 computeSphereDepth(
 	N.z = sqrt(1.0 - r2);
 	
 	// calculate depth
-	pixelPos = float4(eyeSpacePos + (N)*sphereRadius, 1.0);
+	pixelPos = float4(eyeSpacePosParticle + (N)*sphereRadius, 1.0);
 
 	float4 clipSpacePos = mul(projectionMatrix, pixelPos);
 	
