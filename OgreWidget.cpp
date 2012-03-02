@@ -397,7 +397,7 @@ void OgreWidget::initOgreSystem()
     mViewport->setBackgroundColour(Ogre::ColourValue(0,0,0));
     mCamera->setAspectRatio(Ogre::Real(width()) / Ogre::Real(height()));
 	mCamera->setNearClipDistance(0.1);
-	mCamera->setFarClipDistance(30);
+	mCamera->setFarClipDistance(100);
 
     setupResources();
 	setupNxOgre();
@@ -480,6 +480,8 @@ void OgreWidget::createScene()
 	mSceneMgr->getRootSceneNode()->createChildSceneNode()->attachObject(groundEnt);
 	groundEnt->setMaterialName("marbleTexture");
 	groundEnt->setCastShadows(false);
+
+	mSceneMgr->setSkyBox(true, "Examples/CloudyNoonSkyBox", 50);
 
 	// physical ground plane
 	NxOgre::PlaneGeometryDescription pdesc;

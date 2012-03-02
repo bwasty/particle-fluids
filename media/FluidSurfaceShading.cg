@@ -24,6 +24,7 @@ void shadeFluidSurfacePS(
 	uniform float4 packedTextureSize, // float4(width, height, 1 / width, 1 / height) - Ogre auto param
     uniform sampler2D samplerBackground : register(s1),
     uniform sampler2D samplerThickness : register(s2),
+    uniform samplerCUBE samplerEnvCube : register(s3),
     uniform float3 lightDir_view_space,
     /*uniform float4 lightDirViewSpaceTest,*/
 	out float4 fragColor : COLOR)
@@ -80,10 +81,9 @@ void shadeFluidSurfacePS(
         float4 fluid_diffspec = fluidColor * diffuse + fluidColor * ambient + specular * float4(1.0,1.0,1.0,1.0);
 
         fragColor = lerp(fluid_diffspec, backgroundColor, exp(-thickness)); // TODO: colorFalloff?
-        //fragColor = fluid_diffspec;
-        //if (thickness > 0)
-            //fragColor = float4(thickness, thickness, thickness, thickness);
 
+
+        // debug outputs
         //fragColor = float4(fluidDepth, (fluidDepth - 2)/2, (fluidDepth - 4)/4, 1.0);
         //fragColor = float4(n, 1.0);
         //fragColor = float4(thickness.xxx, 1.0);
@@ -91,6 +91,7 @@ void shadeFluidSurfacePS(
         //fragColor = vec4(abs(lightDirViewSpaceTest.x), abs(lightDirViewSpaceTest.y), abs(lightDirViewSpaceTest.z), 1.0);
         //eyePos /= 10;
         //fragColor = vec4(abs(eyePos.x), abs(eyePos.y), abs(eyePos.z), 1.0);
+        //fragColor = texCUBE(samplerEnvCube, n);
 	}
     else {
         fragColor = backgroundColor;
