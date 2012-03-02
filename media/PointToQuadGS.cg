@@ -15,8 +15,8 @@ TRIANGLE_OUT
 void pointToQuad(AttribArray<float4> position : POSITION,
                  uniform float quadSize,
                  uniform float4x4 modelViewMatrix,
-	             uniform float4x4 projectionMatrix,
-                 uniform float4x4 inverseViewMatrix)
+	             uniform float4x4 projectionMatrix
+                 /*uniform float4x4 inverseViewMatrix*/)
 {
     float2 halfSize = float2(quadSize, quadSize) * 0.5;
     

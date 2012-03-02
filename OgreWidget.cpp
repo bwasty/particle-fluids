@@ -263,6 +263,17 @@ void OgreWidget::paintEvent(QPaintEvent *e)
     e->accept();
 }
 
+bool OgreWidget::frameStarted(const Ogre::FrameEvent &evt) {
+	// set view space light direction as shader parameter (because auto params not properly available in Compositor render_quad pass...)
+	Matrix3 normalMatrix;
+	mCamera->getViewMatrix().inverseAffine().transpose().extract3x3Matrix(normalMatrix);
+	Vector3 lightDir_view_space = -normalMatrix * mSceneMgr->getLight("SunLight")->getDirection();
+	GpuProgramManager::getSingleton().getSharedParameters("lightDir_view_space")->setNamedConstant("lightDir_view_space", lightDir_view_space);
+
+	return true;
+}
+
+
 bool OgreWidget::frameRenderingQueued(const Ogre::FrameEvent &evt) {
 	mPhysicsWorld->advance(evt.timeSinceLastFrame*mSimulationSpeed);
 
@@ -452,6 +463,7 @@ void OgreWidget::createScene()
 	light->setDirection(-Vector3::UNIT_Y+Vector3::UNIT_X*0.2);
 	light->setDiffuseColour(0.5, 0.5, 0.5);
 	light->setSpecularColour(1.0, 1.0, 1.0);
+
 
     //Ogre::Entity *entity = mSceneMgr->createEntity("Axes", "axes.mesh");
     //Ogre::SceneNode *node = mSceneMgr->getRootSceneNode()->createChildSceneNode("node");

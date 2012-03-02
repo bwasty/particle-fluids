@@ -107,15 +107,27 @@ material SpherePointSpritesWithGS {
     }
 }
 
+shared_params lightDir_view_space
+{
+	shared_param_named lightDir_view_space float3 1.0 1.0 1.0
+}
+
 fragment_program FluidSurfaceShadingPS cg {
 	source FluidSurfaceShading.cg
 	entry_point shadeFluidSurfacePS
 	profiles gp4fp glslf arbfp1 fp20 fp30
 	default_params
 	{
+		// doesn't work in render_quad pass
+		//param_named_auto invTransWorldview inverse_transpose_worldview_matrix
+
 		param_named_auto fovy fov
 		param_named_auto packedTextureSize packed_texture_size 0
-		param_named_auto lightDir light_position_view_space 0
+
+		// doesn't work in render_quad pass
+		//param_named_auto lightDir light_position_view_space 0
+		shared_params_ref lightDir_view_space
+		param_named_auto lightDirViewSpaceTest light_position_view_space 0
 	}
 }	
 

@@ -18,13 +18,14 @@ float3 getEyePos(sampler2D samplerDepth, float2 texCoord, float2 invFocalLen) {
 
 void shadeFluidSurfacePS(
 	float2 texCoord : TEXCOORD0,
-	uniform float4x4 invProjectionMatrix, // TODO: obsolete?
+	uniform float4x4 invTransWorldview,
     uniform float fovy,
 	uniform sampler2D samplerDepth : register(s0),
 	uniform float4 packedTextureSize, // float4(width, height, 1 / width, 1 / height) - Ogre auto param
     uniform sampler2D samplerBackground : register(s1),
     uniform sampler2D samplerThickness : register(s2),
-    uniform float3 lightDir,
+    uniform float3 lightDir_view_space,
+    /*uniform float4 lightDirViewSpaceTest,*/
 	out float4 fragColor : COLOR)
 {
     float4 backgroundColor = tex2D(samplerBackground, texCoord);
@@ -66,10 +67,11 @@ void shadeFluidSurfacePS(
         fluidColor = fluidColor * exp(-thickness*falloffScale*colorFalloff);
 
         float shininess = 50.0;
-        float diffuse = max(0.0, dot(n, lightDir));
+        float diffuse = max(0.0, dot(n, lightDir_view_space));
         float ambient = 0.3;
-        float3 v = normalize(eyePos);
-        float3 h = normalize(lightDir + v);
+        //yeyePos = float3(0); // TEST!!!!!!!!!!!!!!!!!!!!
+        float3 v = normalize(eyePos); // TODO!!!: actual problem?
+        float3 h = normalize(lightDir_view_space + v);
         float specular = pow(max(0.0, dot(n, h)), shininess);
         //float fresnel = 0.2 + 0.8*pow(1.0 - max(0.0, dot(n, v)), 2.0);
         //float3 r = reflect(-v, n);
@@ -85,7 +87,10 @@ void shadeFluidSurfacePS(
         //fragColor = float4(fluidDepth, (fluidDepth - 2)/2, (fluidDepth - 4)/4, 1.0);
         //fragColor = float4(n, 1.0);
         //fragColor = float4(thickness.xxx, 1.0);
-
+        //fragColor = vec4(abs(lightDir_view_space.x), abs(lightDir_view_space.y), abs(lightDir_view_space.z), 1.0);
+        //fragColor = vec4(abs(lightDirViewSpaceTest.x), abs(lightDirViewSpaceTest.y), abs(lightDirViewSpaceTest.z), 1.0);
+        //eyePos /= 10;
+        //fragColor = vec4(abs(eyePos.x), abs(eyePos.y), abs(eyePos.z), 1.0);
 	}
     else {
         fragColor = backgroundColor;
