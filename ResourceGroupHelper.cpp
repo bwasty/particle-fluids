@@ -14,6 +14,7 @@
 #include "OgreOverlay.h"
 #include "OgreOverlayManager.h"
 #include "OgreOverlayContainer.h"
+#include "OgreException.h"
 
 ResourceGroupHelper::UpdateMaterialRenderableVisitor::UpdateMaterialRenderableVisitor():
 Ogre::Renderable::Visitor()
@@ -216,14 +217,20 @@ bool ResourceGroupHelper::reloadAResourceGroup(const std::string& pResourceGroup
 
 bool ResourceGroupHelper::reloadAResourceGroupWithoutDestroyingIt(const std::string& pResourceGroupName)
 {
-   if(!resourceGroupExist(pResourceGroupName))
-   {
-      // not present. something wrong.
-      return false;
-   }
-   Ogre::ResourceGroupManager& resGroupMgr = Ogre::ResourceGroupManager::getSingleton();
-   resGroupMgr.clearResourceGroup(pResourceGroupName);
-   resGroupMgr.initialiseResourceGroup(pResourceGroupName);
+   //try {
+	   if(!resourceGroupExist(pResourceGroupName))
+	   {
+		  // not present. something wrong.
+		  return false;
+	   }
+	   Ogre::ResourceGroupManager& resGroupMgr = Ogre::ResourceGroupManager::getSingleton();
+	   resGroupMgr.clearResourceGroup(pResourceGroupName);
+	   resGroupMgr.initialiseResourceGroup(pResourceGroupName);
+   //}
+   //catch (Ogre::InvalidParametersException e) {
+	  // std::cout << e.getDescription();
+   //}
+
    return true;
 }
 

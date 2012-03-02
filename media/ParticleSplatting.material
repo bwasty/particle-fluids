@@ -107,8 +107,9 @@ material SpherePointSpritesWithGS {
     }
 }
 
-shared_params lightDir_view_space
+shared_params lighting_params
 {
+	shared_param_named normalMatrix matrix3x3
 	shared_param_named lightDir_view_space float3 1.0 1.0 1.0
 }
 
@@ -123,6 +124,8 @@ fragment_program FluidSurfaceShadingPS cg {
 
 		param_named_auto fovy fov
 		param_named_auto packedTextureSize packed_texture_size 0
+
+		param_named_auto lightDir light_position_view_space
 
 		// doesn't work in render_quad pass
 		//param_named_auto lightDir light_position_view_space 0

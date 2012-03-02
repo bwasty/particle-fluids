@@ -25,6 +25,8 @@ void shadeFluidSurfacePS(
     uniform sampler2D samplerBackground : register(s1),
     uniform sampler2D samplerThickness : register(s2),
     uniform samplerCUBE samplerEnvCube : register(s3),
+    uniform float3 lightDir,
+    uniform float3x3 normalMatrix,
     uniform float3 lightDir_view_space,
     /*uniform float4 lightDirViewSpaceTest,*/
 	out float4 fragColor : COLOR)
@@ -33,67 +35,83 @@ void shadeFluidSurfacePS(
 
 	float fluidDepth = tex2D(samplerDepth, texCoord).r;
     float depthThreshold = 0.1;
-    if(fluidDepth > 0) {
-        float fovx = fovy * packedTextureSize.x / packedTextureSize.y;
-        float2 invFocalLen = float2(tan(fovx/2), tan(fovy/2));
+    if(fluidDepth == 0) {
+        fragColor = backgroundColor;
+        return;
+    }
 
-    	float3 eyePos = uvToEye(texCoord, fluidDepth, invFocalLen);
-		//fragColor = float4(eyePos, 1.0);
+    float fovx = fovy * packedTextureSize.x / packedTextureSize.y;
+    float2 invFocalLen = float2(tan(fovx/2), tan(fovy/2));
 
-		// calculate differences
-		float3 ddx = getEyePos(samplerDepth, texCoord + float2(packedTextureSize[2], 0), invFocalLen) - eyePos;
-		float3 ddx2 = eyePos - getEyePos(samplerDepth, texCoord + float2(-packedTextureSize[2], 0), invFocalLen);
-		if (abs(ddx.z) > depthThreshold /*abs(ddx2.z)*/){ 
-			ddx = ddx2;
-		}
+    float3 eyePos = uvToEye(texCoord, fluidDepth, invFocalLen);
+	//fragColor = float4(eyePos, 1.0);
 
-		float3 ddy = getEyePos(samplerDepth, texCoord[0] + float2(0, packedTextureSize[3]), invFocalLen) - eyePos;
-		float3 ddy2 = eyePos - getEyePos(samplerDepth, texCoord + float2(0, -packedTextureSize[3]), invFocalLen);
-		if (abs(ddy2.z) < depthThreshold /*abs(ddy.z)*/) {
-			ddy = ddy2;
-		}
-		// calculate normal
-		float3 n = cross(ddx, ddy);
-		n = normalize(n);
+	// calculate differences
+	float3 ddx = getEyePos(samplerDepth, texCoord + float2(packedTextureSize[2], 0), invFocalLen) - eyePos;
+	float3 ddx2 = eyePos - getEyePos(samplerDepth, texCoord + float2(-packedTextureSize[2], 0), invFocalLen);
+	if (abs(ddx.z) > depthThreshold /*abs(ddx2.z)*/){ 
+		ddx = ddx2;
+	}
+
+	float3 ddy = getEyePos(samplerDepth, texCoord[0] + float2(0, packedTextureSize[3]), invFocalLen) - eyePos;
+	float3 ddy2 = eyePos - getEyePos(samplerDepth, texCoord + float2(0, -packedTextureSize[3]), invFocalLen);
+	if (abs(ddy2.z) < depthThreshold /*abs(ddy.z)*/) {
+		ddy = ddy2;
+	}
+	// calculate normal
+	float3 n = cross(ddx, ddy);
+	n = normalize(n);
 
 		
-        float thickness = tex2D(samplerThickness, texCoord).r;
+    // lighting
+    float4 fluidColor = float4(0.25, 0.35, 1.0, 1.0); //float4(0.25, 0.35, 1.0, 1.0);
+    float4 colorFalloff = float4(2.0, 1.0, 0.5, 1.0);
+    float falloffScale = 0.3;
+    float3 thicknessRefraction = float3(2.0, 2.3, 2.6);
+    float fresnelBias = 0.1;
+    float fresnelScale = 0.4;
+    float fresnelPower = 2.0;
 
-        // TODO: lighting
-        float4 fluidColor = float4(0.25, 0.35, 1.0, 1.0); //float4(0.25, 0.35, 1.0, 1.0);
-        float4 colorFalloff = float4(2.0, 1.0, 0.5, 1.0);
-        float falloffScale = 0.3;
+    float shininess = 50.0;
+    float ambient = 0.3;
 
-        //attenuate fluid colour
-        fluidColor = fluidColor * exp(-thickness*falloffScale*colorFalloff);
+    float diffuse = max(0.0, dot(n, lightDir));
 
-        float shininess = 50.0;
-        float diffuse = max(0.0, dot(n, lightDir_view_space));
-        float ambient = 0.3;
-        //yeyePos = float3(0); // TEST!!!!!!!!!!!!!!!!!!!!
-        float3 v = normalize(eyePos); // TODO!!!: actual problem?
-        float3 h = normalize(lightDir_view_space + v);
-        float specular = pow(max(0.0, dot(n, h)), shininess);
-        //float fresnel = 0.2 + 0.8*pow(1.0 - max(0.0, dot(n, v)), 2.0);
-        //float3 r = reflect(-v, n);
-        //r = r * normalMatrix
+    float3 v = normalize(eyePos);
+    float3 h = normalize(lightDir + v);
+    float specular = pow(max(0.0, dot(n, h)), shininess);
 
-        float4 fluid_diffspec = fluidColor * diffuse + fluidColor * ambient + specular * float4(1.0,1.0,1.0,1.0);
+    //WIP
+    float fresnel = 0.2 + 0.8*pow(1.0 - max(0.0, dot(n, v)), 2.0);
+    float3 r = reflect(-v, n);
+    r = mul(normalMatrix, r);
+    float4 reflectColor = texCUBE(samplerEnvCube, r);
+    float thickness = tex2D(samplerThickness, texCoord).r;
 
-        fragColor = lerp(fluid_diffspec, backgroundColor, exp(-thickness)); // TODO: colorFalloff?
+    //attenuate fluid colour
+    fluidColor = fluidColor * exp(-thickness*falloffScale*colorFalloff);
+
+    float refraction = thickness*thicknessRefraction.x;
+    float4 sceneColor = tex2D(samplerBackground, texCoord + n.xy + refraction);
+    float4 finalColor = float4(fluidColor.xyz + reflectColor.xyz*fresnel + specular * float3(1,1,1), 1.0);
+    float alpha = saturate(fluidColor.w);
+    
+    fragColor = lerp(finalColor, sceneColor, alpha);
+  
+
+    //float4 fluid_diffspec = fluidColor * diffuse + fluidColor * ambient + specular * float4(1.0,1.0,1.0,1.0);
+
+    //fragColor = lerp(fluid_diffspec, backgroundColor, exp(-thickness));
 
 
-        // debug outputs
-        //fragColor = float4(fluidDepth, (fluidDepth - 2)/2, (fluidDepth - 4)/4, 1.0);
-        //fragColor = float4(n, 1.0);
-        //fragColor = float4(thickness.xxx, 1.0);
-        //fragColor = vec4(abs(lightDir_view_space.x), abs(lightDir_view_space.y), abs(lightDir_view_space.z), 1.0);
-        //fragColor = vec4(abs(lightDirViewSpaceTest.x), abs(lightDirViewSpaceTest.y), abs(lightDirViewSpaceTest.z), 1.0);
-        //eyePos /= 10;
-        //fragColor = vec4(abs(eyePos.x), abs(eyePos.y), abs(eyePos.z), 1.0);
-        //fragColor = texCUBE(samplerEnvCube, n);
-	}
-    else {
-        fragColor = backgroundColor;
-    }
+    // debug outputs
+    //fragColor = float4(fluidDepth, (fluidDepth - 2)/2, (fluidDepth - 4)/4, 1.0);
+    //fragColor = float4(n, 1.0);
+    //fragColor = float4(thickness.xxx, 1.0);
+    //fragColor = float4(abs(lightDir_view_space.x), abs(lightDir_view_space.y), abs(lightDir_view_space.z), 1.0);
+    //fragColor = float4(abs(lightDirViewSpaceTest.x), abs(lightDirViewSpaceTest.y), abs(lightDirViewSpaceTest.z), 1.0);
+    //eyePos /= 10;
+    //fragColor = float4(abs(eyePos.x), abs(eyePos.y), abs(eyePos.z), 1.0);
+    //fragColor = texCUBE(samplerEnvCube, n);
+
 }

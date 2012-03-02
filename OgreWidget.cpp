@@ -267,8 +267,11 @@ bool OgreWidget::frameStarted(const Ogre::FrameEvent &evt) {
 	// set view space light direction as shader parameter (because auto params not properly available in Compositor render_quad pass...)
 	Matrix3 normalMatrix;
 	mCamera->getViewMatrix().inverseAffine().transpose().extract3x3Matrix(normalMatrix);
+	GpuProgramManager::getSingleton().getSharedParameters("lighting_params")->setNamedConstant("normalMatrix", normalMatrix);
+
+
 	Vector3 lightDir_view_space = -normalMatrix * mSceneMgr->getLight("SunLight")->getDirection();
-	GpuProgramManager::getSingleton().getSharedParameters("lightDir_view_space")->setNamedConstant("lightDir_view_space", lightDir_view_space);
+	GpuProgramManager::getSingleton().getSharedParameters("lighting_params")->setNamedConstant("lightDir_view_space", lightDir_view_space);
 
 	return true;
 }
@@ -289,24 +292,26 @@ bool OgreWidget::frameRenderingQueued(const Ogre::FrameEvent &evt) {
 bool OgreWidget::frameEnded(const Ogre::FrameEvent &evt) {
 	static Real summedTime = 0;
 	summedTime += evt.timeSinceLastFrame;
-	if (summedTime >= 1) { // TODO!: checkTimeAndReloadIfNeeded every x seconds: make toggle off button? for performance?
-		summedTime = 0;
+	// TODO!!!!: reloading doesn't work with the shared param stuff...
+	//if (summedTime >= 1) { // TODO!: checkTimeAndReloadIfNeeded every x seconds: make toggle off button? for performance?
+	//	summedTime = 0;
 
-        //if (mResourceGroupHelper->filesChanged("General1")) { // TODO!: bit hackish and redundant...
-	        //reload changed ressources
-            //SimpleRenderable* fluidRenderable = dynamic_cast<Ogre::SimpleRenderable*>(mFluid->getRenderable());
-            //String fluidMaterialName = fluidRenderable->getMaterial()->getName();
-            CompositorManager::getSingleton().removeCompositor(mViewport, "ScreenSpaceParticleFluid");
-	        if (mResourceGroupHelper->checkTimeAndReloadIfNeeded("General1", std::string(), false)) {
-                //fluidRenderable->setMaterial("BaseWhite");
-                //fluidRenderable->setMaterial(fluidMaterialName);
+ //       //if (mResourceGroupHelper->filesChanged("General1")) { // TODO!: bit hackish and redundant...
+	//        //reload changed ressources
+ //           //SimpleRenderable* fluidRenderable = dynamic_cast<Ogre::SimpleRenderable*>(mFluid->getRenderable());
+ //           //String fluidMaterialName = fluidRenderable->getMaterial()->getName();
+ //           CompositorManager::getSingleton().removeCompositor(mViewport, "ScreenSpaceParticleFluid");
+	//		//GpuProgramManager::getSingleton().removeAll();
+	//        if (mResourceGroupHelper->checkTimeAndReloadIfNeeded("General1", std::string(), false)) {
+ //               //fluidRenderable->setMaterial("BaseWhite");
+ //               //fluidRenderable->setMaterial(fluidMaterialName);
 
-            }
-            CompositorManager::getSingleton().addCompositor(mViewport, "ScreenSpaceParticleFluid");
-	        CompositorManager::getSingleton().setCompositorEnabled(mViewport, "ScreenSpaceParticleFluid", true);
-        //}
+ //           }
+ //           CompositorManager::getSingleton().addCompositor(mViewport, "ScreenSpaceParticleFluid");
+	//        CompositorManager::getSingleton().setCompositorEnabled(mViewport, "ScreenSpaceParticleFluid", true);
+ //       //}
 
-	}
+	//}
 
 	return true;
 }
@@ -433,6 +438,8 @@ void OgreWidget::setupResources()
                                 archName, typeName, secName);
                 }
         }
+
+		//GpuProgramManager::getSingleton().createSharedParameters("lighting_params");
 
         // Initialise, parse scripts etc
         Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
