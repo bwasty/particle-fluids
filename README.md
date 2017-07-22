@@ -9,4 +9,4 @@ Rendering for Games (GDC 2010)](http://developer.download.nvidia.com/presentatio
 
 ### Video
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=6fRd4qMZs7s
-" target="_blank"><img src="http://img.youtube.com/vi/6fRd4qMZs7s/hqdefault.jpg" /></a>
+" target="_blank"><img src="https://user-images.githubusercontent.com/1647415/28491134-62777f72-6eeb-11e7-832d-d431427f8494.png" /></a>
